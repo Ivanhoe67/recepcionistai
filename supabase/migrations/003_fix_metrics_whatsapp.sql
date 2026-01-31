@@ -1,9 +1,14 @@
 -- =====================================================
 -- Fix Metrics & Analytics to include WhatsApp
 -- =====================================================
+-- Run this in Supabase SQL Editor
+-- =====================================================
 
 -- 1. Update lead_metrics view to include WhatsApp
-CREATE OR REPLACE VIEW public.lead_metrics AS
+-- Must DROP first because column order changed
+DROP VIEW IF EXISTS public.lead_metrics;
+
+CREATE VIEW public.lead_metrics AS
 SELECT
   b.id as business_id,
   b.user_id,
@@ -51,3 +56,5 @@ BEGIN
   ORDER BY DATE(l.created_at);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+SELECT 'WhatsApp metrics fix completed!' as status;
