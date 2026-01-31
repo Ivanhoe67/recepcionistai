@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run typecheck:*)",
+      "Bash(python -m json.tool:*)",
+      "Bash(python:*)",
+      "Bash(npx supabase --version)",
+      "Bash(where supabase:*)",
+      "Bash(where:*)",
+      "Bash(node -e:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: Complete Retell & WhatsApp integration with appointment sync\n\n- Fix Retell webhook to extract appointments from transcript_with_tool_calls\n- Add timezone conversion \\(America/Detroit → UTC\\) for correct scheduling\n- Prevent duplicate appointments between call_ended and call_analyzed events\n- Fix NaN error in dashboard metrics \\(whatsapp_leads fallback\\)\n- Update lead_metrics view to include whatsapp_leads column\n- Add createAppointmentFromWebhook service for unified appointment creation\n- WhatsApp webhook now supports appointment object from n8n\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+    ]
+  }
+}

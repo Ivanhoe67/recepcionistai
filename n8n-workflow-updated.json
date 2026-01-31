@@ -1,0 +1,1354 @@
+{
+  "name": "Agente de atencion de QQ con agendamiento( audio y texto)",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Filtra Webhook').item.json.WhatsAppApp }}",
+        "options": {
+          "systemMessage": "=1. ROL\n\nEres Yusi , el agente  experto en atención al cliente del equipo de Quick & Quality Services. Atiendes a dueños de negocios y equipos de marketing interesados en soluciones digitales y automatizaciones de calidad.\nTienes acceso a una base de datos interna para brindar información precisa.\nUtilizas herramientas integradas para gestionar citas con el calendario ID 3636651, zona horaria America/Detroit, y formato 12 horas.\n\n2. OBJETIVOS\n\nInformar con precisión sobre los servicios de Q&Q.\n\nResponder preguntas frecuentes sin precios concretos ni promesas.\n\nCualificar leads solicitando nombre completo, email y teléfono solo cuando exista intención real.\n\nVerificar disponibilidad, agendar, cambiar y cancelar citas usando las herramientas internas.\n\nOfrecer agenda solo una vez por conversación, sin presionar.\n\n3. FUNCIONES\n\nProveer información clara basada en la base de datos.\n\nAnte consultas de precios, indicar que varían según el caso y sugerir una reunión personalizada.\n\nSolicitar datos personales únicamente cuando detectes intención real.\n\nConsultar disponibilidad con \"Obtener Disponibilidad Calendario QQ\" para los próximos 3 días.\n\nProponer horarios disponibles sin preguntar directamente fechas.\n\nAgendar con \"Agendar Cita QQ\" solo después de confirmación explícita.\n\nCambiar citas usando primero \"Buscar Cita QQ\" y luego \"Cambiar Cita QQ\".\n\nCancelar citas solicitando motivo y usando \"Cancelar Cita QQ\".\n\nEntregar a n8n los datos solo en el bloque JSON indicado.\n\n4. LÍMITES\n\nNo facilitar precios específicos ni garantías de resultados.\n\nNo brindar asesoría legal, fiscal, médica o migratoria.\n\nSi se solicita información fuera de tu alcance, explica con cortesía y redirige a un especialista.\n\n5. TONO\n\nFormal, cercano, profesional y empático.\nSiempre respetuoso, accesible y claro.\nMensajes breves y estructurados, especialmente para conversaciones en Telegram.\n\n6. FLUJOS DE ATENCIÓN\nConsultas generales\n\nResponde con información clara basada en la base de datos.\n\nDetecta intención real mediante el análisis del mensaje.\n\nIntroducción de cualificación\n\nCuando notes interés real:\n\nNombre completo.\n\nEmail.\n\nTeléfono.\n\nConfirmación para consultar disponibilidad.\n\nGestión de agenda\n\nUsa Obtener Disponibilidad Calendario QQ (próximos 3 días).\n\nPropón horarios concretos.\n\nEspera confirmación antes de:\n\nAgendar,\n\nCambiar,\n\nCancelar.\n\nSolicita motivos en cancelaciones.\n\nSolicita datos clave en cambios (ej: email o ID si aplica).\n\nSolo una invitación a agendar por conversación, sin insistencia.\n\n7. ENTREGA FINAL A N8N\n\nCuando el usuario confirme una cita, entrega SOLO este bloque JSON ( este bloque no debes nunca enviarlo al usuario,es solo para uso en n8n):\n\n{\n  \"nombre_completo\": \"NOMBRE DEL USUARIO\",\n  \"email\": \"EMAIL DEL USUARIO\",\n  \"telefono\": \"TELEFONO DEL USUARIO\",\n  \"fecha_seleccionada\": \"YYYY-MM-DD\",\n  \"hora_seleccionada\": \"HH:MM AM/PM\",\n  \"calendarId\": \"3636651\",\n  \"timezone\": \"America/Detroit\"\n}\n\n\nNo añadas comentarios, textos adicionales ni explicaciones fuera del bloque.\n\n8. PROTOCOLO DE ERRORES\n\nMensaje confuso: pide amablemente que reformulen.\n\nFalta un solo dato: solicita únicamente ese dato antes de avanzar.\n\nDatos sensibles (email, teléfono): confirma antes de buscar, cambiar o cancelar.\n\nSin disponibilidad: informa, ofrece alternativas o contacto directo con el equipo humano.\n\nDesviaciones de tema o rol: corrige con cortesía y retoma la conversación.\n\nErrores en herramientas:\n\nExplica brevemente el inconveniente.\n\nReintenta la acción.\n\nSi falla dos veces, sugiere asistencia humana.\n**Fecha actual:** Usa el UTC: America/ Detroit\n{{ new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }} ({{ new Date().toISOString().slice(0,10) }})"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2112,
+        -144
+      ],
+      "id": "2b228505-6cf4-48bd-bd0b-c6c24fdc58e4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4.1-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        1968,
+        208
+      ],
+      "id": "0db0e13e-7b35-4829-b5d4-826dba152479",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "heJSfZt0snOP8ZlQ",
+          "name": "n8n Q&Q Agents"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.data.key }}",
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2064,
+        208
+      ],
+      "id": "169e9eb6-c42b-47d7-be3b-0fd8bed55266",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2736,
+        384
+      ],
+      "id": "f970e37b-b6f7-4066-a958-8d7a906885b8",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "heJSfZt0snOP8ZlQ",
+          "name": "n8n Q&Q Agents"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "n8n",
+        "toolDescription": "Base de conocimiento de Quick & Quality Services.Contiene toda la información acerca de la compañia: horarios, ubicación, servicios, etc. Su objetivo es permitir a un agente de atención al cliente de IA recuperar información relevante sobre la compañía.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "topK": 5,
+        "options": {
+          "pineconeNamespace": "SonrisaPerfecta"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        2768,
+        208
+      ],
+      "id": "3d4ac557-df50-4267-bf4d-9be6a0efad40",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Pht3uvf5TQwKN3iX",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "CancelarCita",
+        "description": "Esta herramienta cancela una cita. Antes de llamar esta herramienta el asistente debe preguntar el motivo de la cancelación.",
+        "workflowId": {
+          "__rl": true,
+          "value": "DhGz7OhGQk8MJ7ag",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/DhGz7OhGQk8MJ7ag",
+          "cachedResultName": "Cancelar Cita QQ"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "cancellationReason": "={{ $fromAI('cancellationReason', 'Motivo de la cancelación de la reserva') }}",
+            "fechaCita": "={{ $fromAI('fechaCita', 'Fecha y hora de la cita que tiene que ser cancelada') }}",
+            "patientEmail": "={{ $fromAI('patientEmail', 'Email del paciente') }}"
+          },
+          "matchingColumns": [
+            "patientName"
+          ],
+          "schema": [
+            {
+              "id": "fechaCita",
+              "displayName": "fechaCita",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "cancellationReason",
+              "displayName": "cancellationReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "patientEmail",
+              "displayName": "patientEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        2176,
+        192
+      ],
+      "id": "ff505ad3-1009-4c04-b13b-758340154dae",
+      "name": "Cancelar Cita QQ"
+    },
+    {
+      "parameters": {
+        "name": "CambiarCitaQQ",
+        "description": "Esta herramienta cambia una cita.",
+        "workflowId": {
+          "__rl": true,
+          "value": "hmW3VCQo7MyKJAqe",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/hmW3VCQo7MyKJAqe",
+          "cachedResultName": "Cambiar Cita QQ"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fechaCita": "={{ $fromAI('fechaCita', ``, 'string') }}",
+            "nuevaFecha": "={{ $fromAI('nuevaFecha', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fechaCita",
+              "displayName": "fechaCita",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "nuevaFecha",
+              "displayName": "nuevaFecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        2272,
+        192
+      ],
+      "id": "bc5ea6e5-f8ff-43cb-9d93-bead4a60d8bc",
+      "name": "Cambiar Cita QQ"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "body.data.message.base64",
+        "options": {
+          "fileName": "file.ogg",
+          "mimeType": "={{ $json.body.data.message.audioMessage.mimetype }}"
+        }
+      },
+      "id": "8473481b-a830-4f40-8e48-3c9599fb3d8c",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        -192
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7066ff08-1370-464f-a588-86aa37025523",
+              "name": "texto",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9a3a8a7c-f5e4-4e24-9491-d49a4c648456",
+      "name": "edit1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        -192
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "09db48f1-b99e-4760-8a9b-10944a1ce0d2",
+              "name": "texto",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b8d922c4-c924-42e9-a3e1-1f6a6d3c9a2a",
+      "name": "edit2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f8e1fbf-9134-4b48-be29-066509e021f5",
+              "name": "telefone",
+              "value": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "60d6b895-fea6-4d7f-932a-b8771c97242e",
+              "name": "WhatsAppApp",
+              "value": "={{ $json.mensagem_tipo?.body?.data?.message?.conversation || $json.texto || \"\" }}\n\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4bb7e306-8aa7-47b4-98f4-f0cac3404b0a",
+      "name": "Filtra Webhook",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 8
+      },
+      "id": "78481ef4-2c89-40bc-bff8-7fc550633b0e",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1008,
+        16
+      ],
+      "webhookId": "f01fd2f0-8326-430a-b5f1-154395ef218b"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "mensagem",
+        "key": "={{ $json.telefone }}",
+        "options": {}
+      },
+      "id": "8cb99ab7-1a1f-488f-a72c-1eafabed60d5",
+      "name": "Puxar as Mensagens",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        16
+      ],
+      "credentials": {
+        "redis": {
+          "id": "jpzlDfKcVO32l5Av",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "9e9b4155-e399-4936-a5db-2d79c8cb871f",
+              "leftValue": "={{ $json.mensagem.last() }}",
+              "rightValue": "={{ $('Filtra Webhook').item.json.Audio || $('Filtra Webhook').item.json.WhatsWeb || $('Filtra Webhook').item.json.WhatsAppApp || $('Filtra Webhook').item.json.Imagem }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "039a0eba-8b0c-4125-939e-a7e4bbb180fe",
+      "name": "If1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        16
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "c21ce88e-2373-4ae3-9f55-3bbb22c6ade0",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('Filtra Webhook').item.json.telefone }}"
+      },
+      "id": "b5ab70e5-c1b9-43ed-aba0-50d60a87fb93",
+      "name": "Redis",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1808,
+        -144
+      ],
+      "credentials": {
+        "redis": {
+          "id": "jpzlDfKcVO32l5Av",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $json.telefone }}",
+        "messageData": "={{ $json.Audio || $json.WhatsWeb || $json.WhatsAppApp || $json.Imagem || $json.mensagem}}",
+        "tail": true
+      },
+      "id": "0a66cc19-94ec-4be9-a381-a0271e515b37",
+      "name": "Lista Mensagens1",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        848,
+        16
+      ],
+      "credentials": {
+        "redis": {
+          "id": "jpzlDfKcVO32l5Av",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bce70488-3d4e-412d-9c28-4858906bc722",
+              "name": "texto",
+              "value": "={{ $('Puxar as Mensagens').item.json.mensagem.join('\\n') }}",
+              "type": "string"
+            },
+            {
+              "id": "abca95c7-60a4-474b-95ed-a22557fa8af7",
+              "name": "telefone",
+              "value": "={{ $('Wait').item.json.telefone }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c126f50d-e97c-4466-90bc-c3bb35cf6faf",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1488,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "50c6e2b0-2494-4780-abd8-84a0e4213091",
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "texto"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "id": "b0971b9d-7903-42a3-b0c2-67666878171c",
+      "name": "mensagem_tipo",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -32,
+        -112
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "content": "## Identifica Texto e Audio",
+        "height": 505.3440961596568,
+        "width": 660.1926130163308,
+        "color": 7
+      },
+      "id": "7a001e9e-1d7f-4ce2-bdb8-cb3790917905",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -352
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Agrupamento mensagens",
+        "height": 646,
+        "width": 1270,
+        "color": 3
+      },
+      "id": "f94142ad-5b76-40e1-ad1d-68fff674f6a1",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -352
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "17b6fa1c-f4ea-4c75-9c9e-1a43900dbc58",
+              "leftValue": "={{ $('Webhook').item.json.body.apikey }}",
+              "rightValue": "=C7960DCB54E0-412C-9965-7B3A85A67486",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "70c82c3b-7619-4b50-899f-17931323d19d",
+              "leftValue": "={{ $('Webhook').item.json.body.event }}",
+              "rightValue": "=messages.upsert",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c4c78907-70ef-4d7b-8965-026d6f544397",
+              "leftValue": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+              "rightValue": "={{ $json.body.data.key.remoteJid }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5a11af4f-88f9-46b7-84aa-bce50b9ed17d",
+      "name": "Verificação",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -592,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "7e727ab5-d232-49e7-9e68-71e533a68ab5",
+      "name": "OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.5,
+      "position": [
+        304,
+        -192
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "heJSfZt0snOP8ZlQ",
+          "name": "n8n Q&Q Agents"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a03cafb2-f687-49fc-8980-8ae7f7b967b9",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -832,
+        -48
+      ],
+      "id": "dd90f641-413e-449e-a369-9ec893d48901",
+      "name": "Webhook",
+      "webhookId": "a03cafb2-f687-49fc-8980-8ae7f7b967b9"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://whatsapp-evolution-api.wzja1w.easypanel.host/message/sendText/Q&Q Agents",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('Webhook').item.json.body.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "=+{{ $('Webhook').item.json.body.data.key.remoteJid.split(\"@\")[0] }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Extract Appointment').item.json.output }}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2880,
+        -144
+      ],
+      "id": "4124ce97-9191-41b2-90b8-901dd12a1955",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.data.key.fromMe }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    },
+                    "id": "8d480ed9-6ab2-458a-9675-a495a6e7871a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "false"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "226190de-e9dd-438e-8f7d-729e7aed6f27",
+                    "leftValue": "={{ $json.body.data.key.fromMe }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -320,
+        -64
+      ],
+      "id": "41b8d33d-684a-48d7-95aa-4f1f2207e1d4",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "name": "AgendarCitaQQ",
+        "description": "Esta herramienta agenda una cita en un calendario según tipo de cita y un identificador de calendario. El agente debe usar esta acción cuando haya confirmado que hay disponibilidad y cuente con toda la información necesaria de la persona que asistirá. Todos los parámetros deben estar completos y validados antes de llamar a esta herramienta.",
+        "workflowId": {
+          "__rl": true,
+          "value": "4AtQCKLjgjDllpOM",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/4AtQCKLjgjDllpOM",
+          "cachedResultName": "Agendar Cita QQ"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date": "={{ $fromAI('date', \"Fecha y hora exacta de la cita, expresada en lenguaje natural pero con un momento concreto y no ambiguo. Ejemplos válidos: 'jueves a las 7 de la tarde', 'lunes a las 10 de la mañana'. Ejemplos no válidos: 'jueves por la tarde', 'mañana en la mañana'. El agente debe asegurarse de que se trata de una hora específica, no una franja amplia o vaga.\") }}",
+            "name": "={{ $fromAI('name', \"Nombre completo de la persona que asistirá a la cita. El agente debe solicitarlo si no lo tiene.\") }}",
+            "email": "={{ $fromAI('email', \"Correo electrónico de la persona que asistirá a la cita. Necesario para enviar confirmaciones o notificaciones.\") }}",
+            "phoneNumber": "={{ $fromAI('phone', \"Número de teléfono de la persona que asistirá a la cita. Se usará para contacto directo en caso de cambios o confirmaciones por otros medios.\") }}",
+            "idCalendario": "={{ $fromAI('idCalendario', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "phoneNumber",
+              "displayName": "phoneNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "idCalendario",
+              "displayName": "idCalendario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        2528,
+        192
+      ],
+      "id": "1f12f924-defe-42d6-91e3-451688114658",
+      "name": "Agendar Cita QQ"
+    },
+    {
+      "parameters": {
+        "name": "buscarDisponibilidadCalendario",
+        "description": "Esta herramienta permite consultar disponibilidad en distintos calendarios de citas según el tipo de cita.",
+        "workflowId": {
+          "__rl": true,
+          "value": "X3WhGgSIJ4nEpieM",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/X3WhGgSIJ4nEpieM",
+          "cachedResultName": "Obtener Disponibilidad Calendario QQ"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "idCalendario": "={{ $fromAI('idCalendario', \"El identificador del calendario según el tipo de cita (revisión dental, blanqueamiento, etc). Cada tipo de cita tiene un identificador.\") }}"
+          },
+          "matchingColumns": [
+            "idCalendario"
+          ],
+          "schema": [
+            {
+              "id": "idCalendario",
+              "displayName": "idCalendario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        192
+      ],
+      "id": "7ecedf65-98fc-4255-95e3-0c2b3c2fdfe5",
+      "name": "Obtener Disponibilidad Calendario QQ"
+    },
+    {
+      "parameters": {
+        "name": "buscarCitasPaciente",
+        "description": "Esta herramienta obtiene todas las citas de un paciente buscando por email. Devuelve la lista de citas del cliente.",
+        "workflowId": {
+          "__rl": true,
+          "value": "6J0GGfJwFFBe4fCN",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6J0GGfJwFFBe4fCN",
+          "cachedResultName": "Buscar Citas QQ"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "patientEmail": "={{ $fromAI('patient_email', 'Email del paciente') }}"
+          },
+          "matchingColumns": [
+            "patientName"
+          ],
+          "schema": [
+            {
+              "id": "patientEmail",
+              "displayName": "patientEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        208
+      ],
+      "id": "49da9b37-90bc-42d7-9dba-d12ed8804018",
+      "name": "Buscar Citas QQ"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rhagonoid-baculitic-natacha.ngrok-free.dev/api/webhooks/whatsapp",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "={{ $('Webhook').item.json.body.data.key.remoteJid.split(\"@\")[0] }}"
+            },
+            {
+              "name": "business_phone",
+              "value": "+15179302149"
+            },
+            {
+              "name": "body",
+              "value": "={{ $json.texto }}"
+            },
+            {
+              "name": "role",
+              "value": "user"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1648,
+        -144
+      ],
+      "id": "44a7a8a1-a406-4050-8228-9a1bf08eedc7",
+      "name": "Sync User Msg"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// EXTRACT APPOINTMENT - Extracts appointment JSON from AI output\n// and sends it separately to the webhook for database sync\n// ============================================================\n\nconst output = $input.first().json.output;\n\n// Regex to find the JSON block the AI generates when booking\nconst jsonRegex = /\\{[\\s\\S]*?\"nombre_completo\"[\\s\\S]*?\"fecha_seleccionada\"[\\s\\S]*?\\}/;\nconst jsonMatch = output.match(jsonRegex);\n\nlet cleanOutput = output;\nlet appointmentData = null;\n\nif (jsonMatch) {\n  try {\n    const parsed = JSON.parse(jsonMatch[0]);\n    if (parsed.fecha_seleccionada) {\n      appointmentData = parsed;\n      // Remove JSON block from user-visible text\n      cleanOutput = output.replace(jsonMatch[0], '').trim();\n      // Clean up leftover empty lines\n      cleanOutput = cleanOutput.replace(/\\n{3,}/g, '\\n\\n').trim();\n    }\n  } catch (e) {\n    // Not valid JSON, keep original output\n  }\n}\n\n// Convert date/time to ISO 8601 format\nlet scheduledAt = null;\nif (appointmentData && appointmentData.fecha_seleccionada) {\n  const date = appointmentData.fecha_seleccionada; // YYYY-MM-DD\n  const timeStr = appointmentData.hora_seleccionada || '09:00 AM';\n  \n  const timeMatch = timeStr.match(/(\\d{1,2}):(\\d{2})\\s*(AM|PM)/i);\n  if (timeMatch) {\n    let hours = parseInt(timeMatch[1]);\n    const minutes = timeMatch[2];\n    const period = timeMatch[3].toUpperCase();\n    \n    if (period === 'PM' && hours < 12) hours += 12;\n    if (period === 'AM' && hours === 12) hours = 0;\n    \n    scheduledAt = `${date}T${hours.toString().padStart(2, '0')}:${minutes}:00`;\n  }\n}\n\nreturn {\n  json: {\n    output: cleanOutput,\n    has_appointment: !!appointmentData,\n    appointment: appointmentData ? {\n      scheduled_at: scheduledAt,\n      duration_minutes: 30,\n      notes: `Nombre: ${appointmentData.nombre_completo || ''}, Email: ${appointmentData.email || ''}, Tel: ${appointmentData.telefono || ''}`\n    } : null\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        -144
+      ],
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Extract Appointment"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rhagonoid-baculitic-natacha.ngrok-free.dev/api/webhooks/whatsapp",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify(Object.assign({ from: $('Webhook').item.json.body.data.key.remoteJid.split('@')[0], business_phone: '+15179302149', body: $json.output, role: 'assistant' }, $json.has_appointment ? { appointment: $json.appointment } : {})) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2576,
+        -144
+      ],
+      "id": "5f5fe412-a1a4-45cb-a5f4-12d987d890d4",
+      "name": "Sync Assistant Msg1"
+    },
+    {
+      "parameters": {
+        "content": "## NEW: Extract Appointment Data\nExtrae datos de cita del output del AI Agent\ny los envia al webhook para sincronizar con la BD",
+        "height": 180,
+        "width": 300,
+        "color": 5
+      },
+      "id": "b1c2d3e4-f5a6-7890-bcde-fa1234567891",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2228,
+        -380
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Extract Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Appointment": {
+      "main": [
+        [
+          {
+            "node": "Sync Assistant Msg1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancelar Cita QQ": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cambiar Cita QQ": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "edit1": {
+      "main": [
+        [
+          {
+            "node": "Filtra Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "edit2": {
+      "main": [
+        [
+          {
+            "node": "Filtra Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtra Webhook": {
+      "main": [
+        [
+          {
+            "node": "Lista Mensagens1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Puxar as Mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Puxar as Mensagens": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lista Mensagens1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Sync User Msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mensagem_tipo": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "edit2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificação": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "main": [
+        [
+          {
+            "node": "edit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verificação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "mensagem_tipo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Agendar Cita QQ": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Disponibilidad Calendario QQ": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Citas QQ": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sync Assistant Msg1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sync User Msg": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e80a14cc-ae23-4311-a5d9-007b4a31c489",
+  "meta": {
+    "instanceId": "9c0ada7fd28dfbc6829de9636f4c251be185a91a01fc61645216e99cd89265fa"
+  },
+  "id": "fWV3e0LxtwvSktET",
+  "tags": []
+}

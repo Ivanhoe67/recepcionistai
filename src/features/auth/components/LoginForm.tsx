@@ -1,0 +1,127 @@
+'use client'
+
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
+import { Loader2, Sparkles, Mail, Lock } from 'lucide-react'
+
+import { loginSchema, LoginInput } from '../types'
+import { signIn } from '../services/auth.service'
+
+export function LoginForm() {
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const form = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  async function onSubmit(data: LoginInput) {
+    setIsLoading(true)
+    setError(null)
+
+    const result = await signIn(data)
+
+    if (result?.error) {
+      setError(result.error)
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="glass-card p-8 animate-scale-in">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="glass-metric-icon w-16 h-16 mx-auto mb-4">
+          <Sparkles className="h-8 w-8 text-sky-500" />
+        </div>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
+          Bienvenido de vuelta
+        </h1>
+        <p className="text-sky-600/70 mt-2">
+          Ingresa tus credenciales para acceder
+        </p>
+      </div>
+
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {error && (
+          <div className="glass-badge-danger px-4 py-3 rounded-xl text-sm w-full block">
+            {error}
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <label htmlFor="email" className="text-sm font-medium text-sky-800">
+            Email
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-sky-400" />
+            <input
+              id="email"
+              type="email"
+              placeholder="tu@email.com"
+              className="glass-input w-full pl-12"
+              {...form.register('email')}
+            />
+          </div>
+          {form.formState.errors.email && (
+            <p className="text-sm text-red-500">
+              {form.formState.errors.email.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="password" className="text-sm font-medium text-sky-800">
+            Contraseña
+          </label>
+          <div className="relative">
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-sky-400" />
+            <input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              className="glass-input w-full pl-12"
+              {...form.register('password')}
+            />
+          </div>
+          {form.formState.errors.password && (
+            <p className="text-sm text-red-500">
+              {form.formState.errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="glass-button w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span>Ingresando...</span>
+            </>
+          ) : (
+            <span>Ingresar</span>
+          )}
+        </button>
+
+        <p className="text-center text-sm text-sky-700">
+          ¿No tienes cuenta?{' '}
+          <Link
+            href="/signup"
+            className="font-semibold text-sky-600 hover:text-sky-800 transition-colors"
+          >
+            Regístrate
+          </Link>
+        </p>
+      </form>
+    </div>
+  )
+}
