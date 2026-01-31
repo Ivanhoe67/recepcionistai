@@ -16,6 +16,7 @@ export type Database = {
           full_name: string | null
           phone: string | null
           avatar_url: string | null
+          role: 'admin' | 'user'
           created_at: string
           updated_at: string
         }
@@ -25,6 +26,7 @@ export type Database = {
           full_name?: string | null
           phone?: string | null
           avatar_url?: string | null
+          role?: 'admin' | 'user'
           created_at?: string
           updated_at?: string
         }
@@ -34,6 +36,166 @@ export type Database = {
           full_name?: string | null
           phone?: string | null
           avatar_url?: string | null
+          role?: 'admin' | 'user'
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      subscription_plans: {
+        Row: {
+          id: string
+          name: 'basic' | 'pro' | 'premium' | 'enterprise'
+          display_name: string
+          description: string | null
+          price_monthly: number | null
+          price_yearly: number | null
+          currency: string
+          has_messaging: boolean
+          has_voice: boolean
+          has_appointments: boolean
+          has_analytics: boolean
+          has_api_access: boolean
+          has_white_label: boolean
+          has_priority_support: boolean
+          max_messages_monthly: number | null
+          max_voice_minutes_monthly: number | null
+          max_leads_monthly: number | null
+          max_businesses: number | null
+          is_active: boolean
+          sort_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          display_name: string
+          description?: string | null
+          price_monthly: number | null
+          price_yearly?: number | null
+          currency?: string
+          has_messaging?: boolean
+          has_voice?: boolean
+          has_appointments?: boolean
+          has_analytics?: boolean
+          has_api_access?: boolean
+          has_white_label?: boolean
+          has_priority_support?: boolean
+          max_messages_monthly?: number | null
+          max_voice_minutes_monthly?: number | null
+          max_leads_monthly?: number | null
+          max_businesses?: number | null
+          is_active?: boolean
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          display_name?: string
+          description?: string | null
+          price_monthly?: number | null
+          price_yearly?: number | null
+          currency?: string
+          has_messaging?: boolean
+          has_voice?: boolean
+          has_appointments?: boolean
+          has_analytics?: boolean
+          has_api_access?: boolean
+          has_white_label?: boolean
+          has_priority_support?: boolean
+          max_messages_monthly?: number | null
+          max_voice_minutes_monthly?: number | null
+          max_leads_monthly?: number | null
+          max_businesses?: number | null
+          is_active?: boolean
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          plan_id: string
+          status: 'active' | 'cancelled' | 'expired' | 'trial' | 'past_due'
+          billing_cycle: 'monthly' | 'yearly'
+          current_period_start: string
+          current_period_end: string | null
+          trial_ends_at: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          cancelled_at: string | null
+          cancel_reason: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          plan_id: string
+          status?: 'active' | 'cancelled' | 'expired' | 'trial' | 'past_due'
+          billing_cycle?: 'monthly' | 'yearly'
+          current_period_start?: string
+          current_period_end?: string | null
+          trial_ends_at?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          cancelled_at?: string | null
+          cancel_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          plan_id?: string
+          status?: 'active' | 'cancelled' | 'expired' | 'trial' | 'past_due'
+          billing_cycle?: 'monthly' | 'yearly'
+          current_period_start?: string
+          current_period_end?: string | null
+          trial_ends_at?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          cancelled_at?: string | null
+          cancel_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      subscription_usage: {
+        Row: {
+          id: string
+          subscription_id: string
+          period_start: string
+          period_end: string
+          messages_used: number
+          voice_minutes_used: number
+          leads_created: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          subscription_id: string
+          period_start: string
+          period_end: string
+          messages_used?: number
+          voice_minutes_used?: number
+          leads_created?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          subscription_id?: string
+          period_start?: string
+          period_end?: string
+          messages_used?: number
+          voice_minutes_used?: number
+          leads_created?: number
           created_at?: string
           updated_at?: string
         }
@@ -308,6 +470,36 @@ export type SmsConversation = Tables<'sms_conversations'>
 export type CallTranscript = Tables<'call_transcripts'>
 export type Appointment = Tables<'appointments'>
 export type Notification = Tables<'notifications'>
+export type SubscriptionPlan = Tables<'subscription_plans'>
+export type Subscription = Tables<'subscriptions'>
+export type SubscriptionUsage = Tables<'subscription_usage'>
+
+// Role types
+export type UserRole = 'admin' | 'user'
+export type PlanName = 'basic' | 'pro' | 'premium' | 'enterprise'
+export type SubscriptionStatus = 'active' | 'cancelled' | 'expired' | 'trial' | 'past_due'
+
+// User plan features (from get_user_plan_features function)
+export interface UserPlanFeatures {
+  plan_name: PlanName | 'none'
+  has_messaging: boolean
+  has_voice: boolean
+  has_appointments: boolean
+  has_analytics: boolean
+  has_priority_support: boolean
+  max_messages_monthly: number | null
+  max_voice_minutes_monthly: number | null
+  messages_used: number
+  voice_minutes_used: number
+  subscription_status: SubscriptionStatus | 'none'
+  is_admin: boolean
+}
+
+// Plan with subscription info
+export interface PlanWithSubscription extends SubscriptionPlan {
+  subscription?: Subscription | null
+  usage?: SubscriptionUsage | null
+}
 
 // SMS Message type
 export interface SmsMessage {

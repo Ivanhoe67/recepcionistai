@@ -12,22 +12,96 @@ import {
   LogOut,
   Sparkles,
   BarChart3,
+  Shield,
+  CreditCard,
+  Lock,
+  Crown,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { signOut } from '@/features/auth/services/auth.service'
+import { UserPlanFeatures } from '@/lib/database.types'
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Analíticas', href: '/analytics', icon: BarChart3 },
-  { name: 'Leads', href: '/leads', icon: Users },
-  { name: 'Llamadas', href: '/calls', icon: Phone },
-  { name: 'SMS', href: '/sms', icon: MessageSquare },
-  { name: 'Citas', href: '/appointments', icon: Calendar },
-  { name: 'Configuración', href: '/settings', icon: Settings },
-]
+interface SidebarProps {
+  planFeatures?: UserPlanFeatures | null
+}
 
-export function Sidebar() {
+export function Sidebar({ planFeatures }: SidebarProps) {
   const pathname = usePathname()
+
+  const isAdmin = planFeatures?.is_admin ?? false
+  const hasMessaging = planFeatures?.has_messaging ?? false
+  const hasVoice = planFeatures?.has_voice ?? false
+  const hasAnalytics = planFeatures?.has_analytics ?? false
+  const planName = planFeatures?.plan_name ?? 'none'
+
+  // Base navigation items
+  const navigation = [
+    {
+      name: 'Dashboard',
+      href: '/dashboard',
+      icon: LayoutDashboard,
+      available: true,
+    },
+    {
+      name: 'Analiticas',
+      href: '/analytics',
+      icon: BarChart3,
+      available: isAdmin || hasAnalytics,
+      requiredFeature: 'analytics',
+    },
+    {
+      name: 'Leads',
+      href: '/leads',
+      icon: Users,
+      available: true,
+    },
+    {
+      name: 'Llamadas',
+      href: '/calls',
+      icon: Phone,
+      available: isAdmin || hasVoice,
+      requiredFeature: 'voice',
+    },
+    {
+      name: 'Mensajes',
+      href: '/sms',
+      icon: MessageSquare,
+      available: isAdmin || hasMessaging,
+      requiredFeature: 'messaging',
+    },
+    {
+      name: 'Citas',
+      href: '/appointments',
+      icon: Calendar,
+      available: true,
+    },
+  ]
+
+  // Settings navigation
+  const settingsNav = [
+    {
+      name: 'Configuracion',
+      href: '/settings',
+      icon: Settings,
+      available: true,
+    },
+    {
+      name: 'Suscripcion',
+      href: '/settings/subscription',
+      icon: CreditCard,
+      available: !isAdmin, // Admins don't need subscription page
+    },
+  ]
+
+  // Admin-only navigation
+  const adminNav = [
+    {
+      name: 'Admin Panel',
+      href: '/admin',
+      icon: Shield,
+      available: isAdmin,
+    },
+  ]
 
   return (
     <div className="glass-sidebar flex h-screen w-72 flex-col relative z-20">
@@ -44,9 +118,91 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-4 py-6">
+      {/* Plan badge */}
+      {planFeatures && (
+        <div className="mx-4 mt-4 rounded-lg bg-gradient-to-r from-violet-500/10 to-purple-500/10 px-3 py-2">
+          <div className="flex items-center gap-2">
+            {isAdmin ? (
+              <Shield className="h-4 w-4 text-violet-600" />
+            ) : (
+              <Crown className="h-4 w-4 text-violet-600" />
+            )}
+            <span className="text-sm font-medium text-violet-700">
+              {isAdmin ? 'Administrador' : `Plan ${planName === 'none' ? 'Gratis' : planName.charAt(0).toUpperCase() + planName.slice(1)}`}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Main Navigation */}
+      <nav className="flex-1 space-y-1 px-4 py-6 overflow-y-auto">
+        <p className="px-3 text-xs font-semibold uppercase tracking-wider text-sky-600/60 mb-2">
+          Menu Principal
+        </p>
         {navigation.map((item, index) => {
+          const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+          const isLocked = !item.available
+
+          return (
+            <Link
+              key={item.name}
+              href={isLocked ? '/settings/subscription' : item.href}
+              className={cn(
+                'glass-nav-item opacity-0 animate-fade-in relative group',
+                isActive && 'active',
+                isLocked && 'opacity-50',
+                `stagger-${index + 1}`
+              )}
+            >
+              <item.icon className="h-5 w-5" />
+              <span className="flex-1">{item.name}</span>
+              {isLocked && (
+                <Lock className="h-4 w-4 text-gray-400" />
+              )}
+              {isLocked && (
+                <div className="absolute left-full ml-2 hidden group-hover:block">
+                  <div className="rounded-lg bg-gray-900 px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap">
+                    Disponible en plan {item.requiredFeature === 'voice' ? 'Pro' : 'Basico'}
+                  </div>
+                </div>
+              )}
+            </Link>
+          )
+        })}
+
+        {/* Admin section */}
+        {isAdmin && (
+          <>
+            <div className="my-4 border-t border-white/20" />
+            <p className="px-3 text-xs font-semibold uppercase tracking-wider text-violet-600/60 mb-2">
+              Administracion
+            </p>
+            {adminNav.filter(i => i.available).map((item, index) => {
+              const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    'glass-nav-item opacity-0 animate-fade-in',
+                    isActive && 'active bg-violet-500/20',
+                    `stagger-${navigation.length + index + 1}`
+                  )}
+                >
+                  <item.icon className="h-5 w-5 text-violet-600" />
+                  <span>{item.name}</span>
+                </Link>
+              )
+            })}
+          </>
+        )}
+
+        {/* Settings section */}
+        <div className="my-4 border-t border-white/20" />
+        <p className="px-3 text-xs font-semibold uppercase tracking-wider text-sky-600/60 mb-2">
+          Configuracion
+        </p>
+        {settingsNav.filter(i => i.available).map((item, index) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
           return (
             <Link
@@ -55,7 +211,7 @@ export function Sidebar() {
               className={cn(
                 'glass-nav-item opacity-0 animate-fade-in',
                 isActive && 'active',
-                `stagger-${index + 1}`
+                `stagger-${navigation.length + adminNav.length + index + 1}`
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -73,7 +229,7 @@ export function Sidebar() {
             className="glass-nav-item w-full text-sky-600 hover:text-sky-800"
           >
             <LogOut className="h-5 w-5" />
-            <span>Cerrar Sesión</span>
+            <span>Cerrar Sesion</span>
           </button>
         </form>
       </div>
