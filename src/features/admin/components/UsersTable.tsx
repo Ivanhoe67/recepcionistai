@@ -12,7 +12,9 @@ import {
   MoreVertical,
   Crown,
   UserCheck,
+  Eye,
 } from 'lucide-react'
+import Link from 'next/link'
 
 interface UserWithSubscription {
   id: string
@@ -166,6 +168,13 @@ export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProp
                             onClick={() => setSelectedUser(null)}
                           />
                           <div className="absolute right-0 z-20 mt-2 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                            <Link
+                              href={`/admin/users/${user.id}`}
+                              className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                            >
+                              <Eye className="h-4 w-4" />
+                              Ver Perfil
+                            </Link>
                             <button
                               onClick={() => {
                                 onUpdateRole?.(user.id, user.role === 'admin' ? 'user' : 'admin')

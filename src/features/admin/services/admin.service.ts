@@ -125,7 +125,7 @@ export async function getUserDetails(userId: string) {
     `)
     .eq('user_id', userId)
     .in('status', ['active', 'trial'])
-    .single()
+    .maybeSingle()
 
   // Get businesses
   const { data: businesses } = await supabase
@@ -134,10 +134,14 @@ export async function getUserDetails(userId: string) {
     .eq('user_id', userId)
 
   // Get leads count
-  const { count: leadsCount } = await supabase
-    .from('leads')
-    .select('*', { count: 'exact', head: true })
-    .in('business_id', businesses?.map(b => b.id) || [])
+  let leadsCount = 0
+  if (businesses && businesses.length > 0) {
+    const { count } = await supabase
+      .from('leads')
+      .select('*', { count: 'exact', head: true })
+      .in('business_id', businesses.map(b => b.id))
+    leadsCount = count || 0
+  }
 
   return {
     profile,
@@ -270,7 +274,80 @@ export async function cancelUserSubscription(userId: string) {
 }
 
 /**
- * Update user business settings (admin only)
+ * Create or update user business settings (admin only)
+ */
+export async function createOrUpdateUserBusiness(
+  userId: string,
+  businessId: string | null,
+  data: {
+    name: string
+    phone_number?: string
+    timezone?: string
+    retell_agent_id?: string
+    whatsapp_phone?: string
+  }
+) {
+  if (!await requireAdmin()) {
+    throw new Error('Unauthorized')
+  }
+
+  const supabase = createAdminClient()
+
+  try {
+    // If businessId exists, update it
+    if (businessId) {
+      const { error } = await supabase
+        .from('businesses')
+        .update({ 
+          name: data.name,
+          phone: data.phone_number || null,
+          timezone: data.timezone || 'America/Mexico_City',
+          retell_agent_id: data.retell_agent_id || null,
+          whatsapp_phone: data.whatsapp_phone || null,
+          updated_at: new Date().toISOString() 
+        })
+        .eq('id', businessId)
+
+      if (error) {
+        console.error('Error updating business:', error)
+        throw new Error(`Error al actualizar el negocio: ${error.message}`)
+      }
+      
+      revalidatePath('/admin')
+      revalidatePath(`/admin/users/${userId}`)
+      return { success: true, businessId }
+    }
+
+    // Otherwise, create a new business
+    const { data: newBusiness, error } = await supabase
+      .from('businesses')
+      .insert({
+        user_id: userId,
+        name: data.name,
+        phone: data.phone_number || null,
+        timezone: data.timezone || 'America/Mexico_City',
+        retell_agent_id: data.retell_agent_id || null,
+        whatsapp_phone: data.whatsapp_phone || null,
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error creating business:', error)
+      throw new Error(`Error al crear el negocio: ${error.message}`)
+    }
+
+    revalidatePath('/admin')
+    revalidatePath(`/admin/users/${userId}`)
+    return { success: true, businessId: newBusiness.id }
+  } catch (error: any) {
+    console.error('Error in createOrUpdateUserBusiness:', error)
+    throw error
+  }
+}
+
+/**
+ * Update user business settings (admin only) - kept for backwards compatibility
  */
 export async function updateUserBusiness(
   businessId: string,
@@ -288,9 +365,16 @@ export async function updateUserBusiness(
 
   const supabase = createAdminClient()
 
+  // Map phone_number to phone column
+  const updateData: any = { ...data }
+  if (data.phone_number !== undefined) {
+    updateData.phone = data.phone_number
+    delete updateData.phone_number
+  }
+
   const { error } = await supabase
     .from('businesses')
-    .update({ ...data, updated_at: new Date().toISOString() })
+    .update({ ...updateData, updated_at: new Date().toISOString() })
     .eq('id', businessId)
 
   if (error) throw error

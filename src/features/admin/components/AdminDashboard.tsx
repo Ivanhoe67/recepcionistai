@@ -16,6 +16,7 @@ import {
   Building2,
   Eye,
 } from 'lucide-react'
+import Link from 'next/link'
 import { updateUserRole } from '../services/admin.service'
 import { AssignPlanModal } from './AssignPlanModal'
 
@@ -330,13 +331,13 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
                                 <CreditCard className="h-4 w-4" />
                                 Asignar Plan
                               </button>
-                              <a
+                              <Link
                                 href={`/admin/users/${user.id}`}
                                 className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
                               >
                                 <Eye className="h-4 w-4" />
                                 Ver Detalles
-                              </a>
+                              </Link>
                             </div>
                           </>
                         )}

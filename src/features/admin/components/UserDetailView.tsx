@@ -14,8 +14,10 @@ import {
   Crown,
   ExternalLink,
   MessageSquare,
+  Settings,
 } from 'lucide-react'
 import Link from 'next/link'
+import { ConfigureUserModal } from './ConfigureUserModal'
 
 interface UserDetailViewProps {
   userId: string
@@ -31,6 +33,7 @@ interface UserDetailViewProps {
 
 export function UserDetailView({ userId, user }: UserDetailViewProps) {
   const { profile, email, last_sign_in, subscription, businesses, leads_count } = user
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const formatDate = (date: string | null | undefined) => {
     if (!date) return 'Nunca'
@@ -208,7 +211,7 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="flex items-center gap-1.5 text-sm text-gray-700">
                             <Phone className="h-3.5 w-3.5 text-gray-400" />
-                            {biz.phone_number || 'No configurado'}
+                            {biz.phone || 'No configurado'}
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
@@ -263,11 +266,27 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
               <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-violet-700 hover:shadow-violet-200 active:scale-95">
                 Enviar Notificación
               </button>
-              <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 transition-all hover:bg-gray-50">
-                Editar Perfil
+              <button 
+                onClick={() => setIsEditModalOpen(true)}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 transition-all hover:bg-gray-50"
+              >
+                <Settings className="h-4 w-4" />
+                Configurar Agentes
               </button>
             </div>
           </div>
+
+          {/* Configure Modal */}
+          <ConfigureUserModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            user={{
+              id: userId,
+              full_name: profile?.full_name || email || 'Usuario',
+              email: email || '',
+              businesses: businesses || []
+            }}
+          />
 
           {/* Integration Status */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
