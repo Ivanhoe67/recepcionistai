@@ -61,6 +61,8 @@ export type Database = {
           max_voice_minutes_monthly: number | null
           max_leads_monthly: number | null
           max_businesses: number | null
+          overage_per_message_cents: number | null
+          overage_per_minute_cents: number | null
           is_active: boolean
           sort_order: number
           created_at: string
@@ -85,6 +87,8 @@ export type Database = {
           max_voice_minutes_monthly?: number | null
           max_leads_monthly?: number | null
           max_businesses?: number | null
+          overage_per_message_cents?: number | null
+          overage_per_minute_cents?: number | null
           is_active?: boolean
           sort_order?: number
           created_at?: string
@@ -109,6 +113,8 @@ export type Database = {
           max_voice_minutes_monthly?: number | null
           max_leads_monthly?: number | null
           max_businesses?: number | null
+          overage_per_message_cents?: number | null
+          overage_per_minute_cents?: number | null
           is_active?: boolean
           sort_order?: number
           created_at?: string

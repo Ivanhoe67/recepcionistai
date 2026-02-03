@@ -294,6 +294,7 @@ src/features/auth/
 - **.claude/prompts/** - Metodologías y patrones
 - **.claude/PRPs/prp-base.md** - Sistema de Blueprints
 - **.claude/skills/** - Skills reutilizables
+- **docs/pricing.md** - Precios, límites y sobreuso (lanzamiento); referencia para Stripe y backend
 
 ## 🚨 Troubleshooting
 
