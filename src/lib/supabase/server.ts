@@ -27,7 +27,10 @@ export async function createClient() {
   )
 }
 
-// Admin client for webhooks (uses service role key)
+/**
+ * Admin client for webhooks and server-side operations.
+ * Uses service role key - bypasses RLS.
+ */
 export function createAdminClient() {
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
