@@ -1,38 +1,123 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+'use client'
+
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { getSubscriptionPlans, getCurrentSubscription, getUserPlanFeatures } from '@/features/subscriptions/services/subscription.service'
 import { PricingCards } from '@/features/subscriptions/components/PricingCards'
-import { CreditCard, Zap, BarChart3, Shield } from 'lucide-react'
+import { CreditCard, Zap, BarChart3, Shield, ExternalLink, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
+import { SubscriptionPlan } from '@/lib/database.types'
 
-export default async function SubscriptionPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+export default function SubscriptionPage() {
+  const [loading, setLoading] = useState(true)
+  const [plans, setPlans] = useState<any[]>([])
+  const [subscription, setSubscription] = useState<any>(null)
+  const [features, setFeatures] = useState<any>(null)
+  const [isPortalLoading, setIsPortalLoading] = useState(false)
 
-  if (!user) {
-    redirect('/login')
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [plansData, subData, featuresData] = await Promise.all([
+          getSubscriptionPlans(),
+          getCurrentSubscription(),
+          getUserPlanFeatures(),
+        ])
+        setPlans(plansData)
+        setSubscription(subData)
+        setFeatures(featuresData)
+      } catch (error) {
+        console.error('Error loading subscription data:', error)
+        toast.error('Error al cargar datos de suscripción')
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  const handleSelectPlan = async (plan: SubscriptionPlan) => {
+    try {
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId: plan.id,
+          billingCycle: 'monthly' // Default for now
+        }),
+      })
+
+      const data = await response.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        toast.error(data.error || 'Error al iniciar el pago')
+      }
+    } catch (error) {
+      console.error('Checkout error:', error)
+      toast.error('Error al conectar con la pasarela de pago')
+    }
   }
 
-  const [plans, subscription, features] = await Promise.all([
-    getSubscriptionPlans(),
-    getCurrentSubscription(),
-    getUserPlanFeatures(),
-  ])
+  const handleOpenPortal = async () => {
+    setIsPortalLoading(true)
+    try {
+      const response = await fetch('/api/stripe/billing-portal', {
+        method: 'POST',
+      })
+      const data = await response.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        toast.error(data.error || 'Error al abrir el portal de facturación')
+      }
+    } catch (error) {
+      console.error('Portal error:', error)
+      toast.error('Error al conectar con el portal de facturación')
+    } finally {
+      setIsPortalLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Suscripcion</h1>
-        <p className="mt-1 text-gray-600">
-          Administra tu plan y facturacion
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Suscripción</h1>
+          <p className="mt-1 text-gray-600">
+            Administra tu plan y facturación
+          </p>
+        </div>
+        {subscription?.stripe_customer_id && (
+          <button
+            onClick={handleOpenPortal}
+            disabled={isPortalLoading}
+            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+          >
+            {isPortalLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ExternalLink className="h-4 w-4" />
+            )}
+            Gestionar Facturación
+          </button>
+        )}
       </div>
 
       {/* Current subscription info */}
       {subscription && (
         <div className="rounded-2xl border border-gray-200 bg-gradient-to-r from-violet-50 to-purple-50 p-6">
           <div className="flex items-start justify-between">
-            <div className="space-y-4">
+            <div className="space-y-4 w-full">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg">
                   <CreditCard className="h-6 w-6 text-white" />
@@ -42,7 +127,7 @@ export default async function SubscriptionPage() {
                     Plan {subscription.plan.display_name}
                   </h2>
                   <p className="text-sm text-gray-600">
-                    {subscription.billing_cycle === 'monthly' ? 'Facturacion mensual' : 'Facturacion anual'}
+                    {subscription.billing_cycle === 'monthly' ? 'Facturación mensual' : 'Facturación anual'}
                   </p>
                 </div>
               </div>
@@ -53,14 +138,14 @@ export default async function SubscriptionPage() {
                   <p className="font-medium text-emerald-600 capitalize">{subscription.status}</p>
                 </div>
                 <div className="rounded-lg bg-white/80 px-4 py-2">
-                  <p className="text-xs text-gray-500">Proximo cobro</p>
+                  <p className="text-xs text-gray-500">Próximo cobro</p>
                   <p className="font-medium text-gray-900">
                     {subscription.current_period_end
                       ? new Date(subscription.current_period_end).toLocaleDateString('es-MX', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })
                       : 'N/A'}
                   </p>
                 </div>
@@ -71,7 +156,7 @@ export default async function SubscriptionPage() {
       )}
 
       {/* Usage stats */}
-      {subscription && (
+      {subscription && features && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {features.has_messaging && (
             <div className="rounded-xl border border-gray-200 bg-white p-4">
@@ -130,13 +215,13 @@ export default async function SubscriptionPage() {
       )}
 
       {/* Admin badge */}
-      {features.is_admin && (
+      {features?.is_admin && (
         <div className="flex items-center gap-3 rounded-xl border border-violet-200 bg-violet-50 p-4">
           <Shield className="h-5 w-5 text-violet-600" />
           <div>
             <p className="font-medium text-violet-900">Eres Administrador</p>
             <p className="text-sm text-violet-700">
-              Tienes acceso completo a todas las funcionalidades sin limite de uso.
+              Tienes acceso completo a todas las funcionalidades sin límite de uso.
             </p>
           </div>
         </div>
@@ -150,8 +235,10 @@ export default async function SubscriptionPage() {
         <PricingCards
           plans={plans}
           currentPlanName={subscription?.plan.name}
+          onSelectPlan={handleSelectPlan}
         />
       </div>
     </div>
   )
 }
+

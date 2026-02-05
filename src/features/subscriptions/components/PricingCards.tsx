@@ -13,6 +13,18 @@ interface PricingCardsProps {
 export function PricingCards({ plans, currentPlanName, onSelectPlan }: PricingCardsProps) {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly')
 
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null)
+
+  const handleSelectPlan = async (plan: SubscriptionPlan) => {
+    if (!onSelectPlan) return
+    setSelectedPlanId(plan.id)
+    try {
+      await onSelectPlan(plan)
+    } finally {
+      setSelectedPlanId(null)
+    }
+  }
+
   // Filter out enterprise for now (custom pricing)
   const displayPlans = plans.filter(p => p.name !== 'enterprise')
 
@@ -107,14 +119,12 @@ export function PricingCards({ plans, currentPlanName, onSelectPlan }: PricingCa
         </span>
         <button
           onClick={() => setBillingCycle(prev => prev === 'monthly' ? 'yearly' : 'monthly')}
-          className={`relative h-7 w-14 rounded-full transition-colors ${
-            billingCycle === 'yearly' ? 'bg-violet-600' : 'bg-gray-200'
-          }`}
+          className={`relative h-7 w-14 rounded-full transition-colors ${billingCycle === 'yearly' ? 'bg-violet-600' : 'bg-gray-200'
+            }`}
         >
           <span
-            className={`absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-              billingCycle === 'yearly' ? 'translate-x-7' : 'translate-x-0'
-            }`}
+            className={`absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow transition-transform ${billingCycle === 'yearly' ? 'translate-x-7' : 'translate-x-0'
+              }`}
           />
         </button>
         <span className={`text-sm font-medium ${billingCycle === 'yearly' ? 'text-gray-900' : 'text-gray-500'}`}>
@@ -140,11 +150,10 @@ export function PricingCards({ plans, currentPlanName, onSelectPlan }: PricingCa
           return (
             <div
               key={plan.id}
-              className={`relative overflow-hidden rounded-2xl border-2 bg-white p-6 shadow-lg transition-all hover:shadow-xl ${
-                isPro
-                  ? 'border-violet-300 ring-2 ring-violet-200'
-                  : 'border-gray-100'
-              } ${isCurrentPlan ? 'ring-2 ring-emerald-400' : ''}`}
+              className={`relative overflow-hidden rounded-2xl border-2 bg-white p-6 shadow-lg transition-all hover:shadow-xl ${isPro
+                ? 'border-violet-300 ring-2 ring-violet-200'
+                : 'border-gray-100'
+                } ${isCurrentPlan ? 'ring-2 ring-emerald-400' : ''}`}
             >
               {/* Popular badge */}
               {isPro && (
@@ -198,17 +207,20 @@ export function PricingCards({ plans, currentPlanName, onSelectPlan }: PricingCa
 
               {/* CTA */}
               <button
-                onClick={() => onSelectPlan?.(plan)}
-                disabled={isCurrentPlan}
-                className={`w-full rounded-xl py-3 text-sm font-semibold transition-all ${
-                  isCurrentPlan
+                onClick={() => handleSelectPlan(plan)}
+                disabled={isCurrentPlan || !!selectedPlanId}
+                className={`w-full rounded-xl py-3 text-sm font-semibold transition-all ${isCurrentPlan
                     ? 'cursor-not-allowed bg-gray-100 text-gray-400'
                     : isPro
                       ? `bg-gradient-to-r ${gradient} text-white shadow-lg hover:shadow-xl`
                       : 'bg-gray-900 text-white hover:bg-gray-800'
-                }`}
+                  } ${selectedPlanId === plan.id ? 'opacity-70 cursor-wait' : ''}`}
               >
-                {isCurrentPlan ? 'Plan Actual' : 'Seleccionar Plan'}
+                {isCurrentPlan
+                  ? 'Plan Actual'
+                  : selectedPlanId === plan.id
+                    ? 'Procesando...'
+                    : 'Seleccionar Plan'}
               </button>
             </div>
           )
