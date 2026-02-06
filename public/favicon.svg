@@ -1,0 +1,51 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="100%" style="stop-color:#0284c7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo circular -->
+  <circle cx="16" cy="16" r="15" fill="url(#gradient)" opacity="0.15"/>
+
+  <!-- Cara del agente -->
+  <circle cx="16" cy="16" r="9" fill="white" opacity="0.95"/>
+
+  <!-- Ojos -->
+  <circle cx="13" cy="15" r="1.5" fill="#0284c7"/>
+  <circle cx="19" cy="15" r="1.5" fill="#0284c7"/>
+
+  <!-- Brillo en los ojos -->
+  <circle cx="13.5" cy="14.5" r="0.5" fill="white"/>
+  <circle cx="19.5" cy="14.5" r="0.5" fill="white"/>
+
+  <!-- Sonrisa -->
+  <path d="M 12 18 Q 16 20, 20 18"
+        stroke="#0284c7"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Headset - Arco -->
+  <path d="M 10 16 Q 10 10, 16 10 Q 22 10, 22 16"
+        stroke="url(#gradient)"
+        stroke-width="2"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Auriculares -->
+  <rect x="8" y="15" width="4" height="7" rx="2" fill="url(#gradient)"/>
+  <rect x="20" y="15" width="4" height="7" rx="2" fill="url(#gradient)"/>
+
+  <!-- Micrófono -->
+  <path d="M 20 18 Q 24 18, 24 21 L 24 25"
+        stroke="url(#gradient)"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        fill="none"/>
+  <circle cx="24" cy="26" r="1.5" fill="#0ea5e9"/>
+
+  <!-- Chispa de IA -->
+  <path d="M 7 7 L 8.5 8.5 M 8.5 7 L 7 8.5" stroke="#0ea5e9" stroke-width="1" stroke-linecap="round"/>
+</svg>

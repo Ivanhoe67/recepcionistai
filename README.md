@@ -1,6 +1,6 @@
-# 🚀 Next.js + Claude Code - Frontend Setup
+# 🤖 RecepcionistAI - Tu Recepcionista Virtual Inteligente
 
-Setup completo de Next.js 16 + Supabase + Claude Code listo para producción. Arquitectura Feature-First optimizada para desarrollo asistido por IA.
+Asistente de IA que atiende llamadas, WhatsApp y captura leads 24/7 mientras duermes. Construido con Next.js 16 + Supabase + Claude Code.
 
 ## 🎯 ¿Qué es esto?
 

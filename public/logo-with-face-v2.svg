@@ -1,0 +1,91 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo circular con gradiente -->
+  <defs>
+    <linearGradient id="bgGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#0284c7;stop-opacity:0.2" />
+    </linearGradient>
+    <linearGradient id="headsetGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="faceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e0f2fe;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Círculo de fondo -->
+  <circle cx="100" cy="100" r="95" fill="url(#bgGradient2)"/>
+
+  <!-- CARA DEL AGENTE - Estilo robot/IA más definido -->
+  <circle cx="100" cy="100" r="42" fill="url(#faceGradient)"/>
+  <circle cx="100" cy="100" r="42" stroke="#0ea5e9" stroke-width="2"/>
+
+  <!-- Ojos del agente - estilo digital/LED -->
+  <!-- Ojo izquierdo -->
+  <rect x="83" y="92" width="10" height="10" rx="2" fill="#0284c7"/>
+  <rect x="85" y="94" width="3" height="3" fill="#0ea5e9"/>
+
+  <!-- Ojo derecho -->
+  <rect x="107" y="92" width="10" height="10" rx="2" fill="#0284c7"/>
+  <rect x="109" y="94" width="3" height="3" fill="#0ea5e9"/>
+
+  <!-- Líneas de energía/datos en la cara -->
+  <line x1="90" y1="85" x2="95" y2="85" stroke="#0ea5e9" stroke-width="1.5" opacity="0.5"/>
+  <line x1="105" y1="85" x2="110" y2="85" stroke="#0ea5e9" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Sonrisa digital -->
+  <path d="M 82 112 L 87 112 L 87 115 L 82 115 Z" fill="#0284c7"/>
+  <path d="M 92 115 L 97 115 L 97 118 L 92 118 Z" fill="#0284c7"/>
+  <path d="M 103 115 L 108 115 L 108 118 L 103 118 Z" fill="#0284c7"/>
+  <path d="M 113 112 L 118 112 L 118 115 L 113 115 Z" fill="#0284c7"/>
+
+  <!-- Indicador de IA activa -->
+  <circle cx="100" cy="78" r="3" fill="#0ea5e9">
+    <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Headset - Arco superior -->
+  <path d="M 60 100 Q 60 60, 100 60 Q 140 60, 140 100"
+        stroke="url(#headsetGradient2)"
+        stroke-width="8"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Headset - Auricular izquierdo -->
+  <rect x="50" y="95" width="20" height="35" rx="10" fill="url(#headsetGradient2)"/>
+  <!-- Detalles del auricular -->
+  <circle cx="60" cy="112" r="4" fill="white" opacity="0.3"/>
+
+  <!-- Headset - Auricular derecho -->
+  <rect x="130" y="95" width="20" height="35" rx="10" fill="url(#headsetGradient2)"/>
+  <!-- Detalles del auricular -->
+  <circle cx="140" cy="112" r="4" fill="white" opacity="0.3"/>
+
+  <!-- Micrófono -->
+  <path d="M 130 115 Q 148 115, 148 130 L 148 145"
+        stroke="url(#headsetGradient2)"
+        stroke-width="6"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Punta del micrófono con indicador -->
+  <circle cx="148" cy="150" r="6" fill="#0ea5e9"/>
+  <circle cx="148" cy="150" r="3" fill="white" opacity="0.6">
+    <animate attributeName="r" values="3;5;3" dur="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Chispas de IA -->
+  <path d="M 38 48 L 42 52 M 42 48 L 38 52" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 160 48 L 164 52 M 164 48 L 160 52" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 33 138 L 37 142 M 37 138 L 33 142" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 165 138 L 169 142 M 169 138 L 165 142" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Partículas de datos flotantes -->
+  <circle cx="48" cy="68" r="2" fill="#0ea5e9" opacity="0.7"/>
+  <circle cx="152" cy="68" r="2" fill="#0ea5e9" opacity="0.7"/>
+  <rect x="68" y="148" width="3" height="3" fill="#0284c7" opacity="0.6"/>
+  <rect x="128" y="153" width="3" height="3" fill="#0284c7" opacity="0.6"/>
+</svg>

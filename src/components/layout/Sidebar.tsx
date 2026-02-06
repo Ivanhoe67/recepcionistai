@@ -107,14 +107,14 @@ export function Sidebar({ planFeatures }: SidebarProps) {
     <div className="glass-sidebar flex h-screen w-72 flex-col relative z-20">
       {/* Logo */}
       <div className="flex h-20 items-center gap-3 px-6 border-b border-white/30">
-        <div className="glass-metric-icon w-10 h-10">
-          <Sparkles className="h-5 w-5 text-sky-500" />
+        <div className="w-12 h-12 flex items-center justify-center">
+          <img src="/logo.svg" alt="RecepcionistAI" className="w-full h-full" />
         </div>
         <div>
           <h1 className="text-lg font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
-            LeadCapture AI
+            RecepcionistAI
           </h1>
-          <p className="text-xs text-sky-600/70">Asistente Virtual 24/7</p>
+          <p className="text-xs text-sky-600/70">Tu recepcionista 24/7</p>
         </div>
       </div>
 

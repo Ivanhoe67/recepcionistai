@@ -1,0 +1,110 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo circular con gradiente -->
+  <defs>
+    <linearGradient id="bgGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#0284c7;stop-opacity:0.2" />
+    </linearGradient>
+    <linearGradient id="headsetGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="faceGlow">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="80%" style="stop-color:#e0f2fe;stop-opacity:0.95" />
+      <stop offset="100%" style="stop-color:#bae6fd;stop-opacity:0.9" />
+    </radialGradient>
+  </defs>
+
+  <!-- Círculo de fondo -->
+  <circle cx="100" cy="100" r="95" fill="url(#bgGradient3)"/>
+
+  <!-- CARA DEL AGENTE - Minimalista y moderna -->
+  <!-- Círculo de resplandor -->
+  <circle cx="100" cy="100" r="48" fill="url(#faceGlow)"/>
+
+  <!-- Contorno sutil -->
+  <circle cx="100" cy="100" r="44" fill="none" stroke="#0ea5e9" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Ojos - estilo minimalista -->
+  <ellipse cx="88" cy="94" rx="4" ry="6" fill="#0284c7"/>
+  <ellipse cx="112" cy="94" rx="4" ry="6" fill="#0284c7"/>
+
+  <!-- Reflejos en los ojos -->
+  <ellipse cx="89" cy="92" rx="1.5" ry="2" fill="white" opacity="0.8"/>
+  <ellipse cx="113" cy="92" rx="1.5" ry="2" fill="white" opacity="0.8"/>
+
+  <!-- Mejillas/sensores -->
+  <circle cx="75" cy="105" r="3" fill="#0ea5e9" opacity="0.3"/>
+  <circle cx="125" cy="105" r="3" fill="#0ea5e9" opacity="0.3"/>
+
+  <!-- Sonrisa amigable y simple -->
+  <path d="M 84 112 Q 100 120, 116 112"
+        stroke="#0284c7"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Línea de energía en la frente -->
+  <path d="M 95 82 L 105 82"
+        stroke="#0ea5e9"
+        stroke-width="2"
+        stroke-linecap="round"
+        opacity="0.6"/>
+
+  <!-- Puntos de conexión/circuitos -->
+  <circle cx="90" cy="82" r="1.5" fill="#0ea5e9" opacity="0.5"/>
+  <circle cx="110" cy="82" r="1.5" fill="#0ea5e9" opacity="0.5"/>
+
+  <!-- Headset - Arco superior -->
+  <path d="M 58 100 Q 58 58, 100 58 Q 142 58, 142 100"
+        stroke="url(#headsetGradient3)"
+        stroke-width="7"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Headset - Auricular izquierdo -->
+  <rect x="48" y="95" width="20" height="35" rx="10" fill="url(#headsetGradient3)"/>
+  <rect x="51" y="100" width="14" height="25" rx="7" fill="white" opacity="0.15"/>
+
+  <!-- Headset - Auricular derecho -->
+  <rect x="132" y="95" width="20" height="35" rx="10" fill="url(#headsetGradient3)"/>
+  <rect x="135" y="100" width="14" height="25" rx="7" fill="white" opacity="0.15"/>
+
+  <!-- Micrófono -->
+  <path d="M 132 115 Q 146 115, 146 128 L 146 144"
+        stroke="url(#headsetGradient3)"
+        stroke-width="5"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Punta del micrófono -->
+  <circle cx="146" cy="149" r="5" fill="#0ea5e9"/>
+  <circle cx="146" cy="149" r="3" fill="white" opacity="0.4"/>
+
+  <!-- Ondas de sonido del micrófono -->
+  <path d="M 154 143 Q 158 146, 154 149"
+        stroke="#0ea5e9"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        opacity="0.4"
+        fill="none"/>
+  <path d="M 159 140 Q 164 146, 159 152"
+        stroke="#0ea5e9"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        opacity="0.3"
+        fill="none"/>
+
+  <!-- Chispas de IA - más sutiles -->
+  <path d="M 36 46 L 40 50 M 40 46 L 36 50" stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 162 46 L 166 50 M 166 46 L 162 50" stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 32 136 L 36 140 M 36 136 L 32 140" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+  <path d="M 166 136 L 170 140 M 170 136 L 166 140" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- Partículas flotantes -->
+  <circle cx="46" cy="66" r="2.5" fill="#0ea5e9" opacity="0.5"/>
+  <circle cx="154" cy="66" r="2.5" fill="#0ea5e9" opacity="0.5"/>
+  <circle cx="68" cy="152" r="2" fill="#0284c7" opacity="0.4"/>
+  <circle cx="132" cy="157" r="2" fill="#0284c7" opacity="0.4"/>
+</svg>

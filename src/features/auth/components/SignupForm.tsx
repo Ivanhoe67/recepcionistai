@@ -38,14 +38,14 @@ export function SignupForm() {
     <div className="glass-card p-8 animate-scale-in">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="glass-metric-icon w-16 h-16 mx-auto mb-4">
-          <Sparkles className="h-8 w-8 text-sky-500" />
+        <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+          <img src="/logo.svg" alt="RecepcionistAI" className="w-full h-full" />
         </div>
         <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
-          Crear Cuenta
+          Únete a RecepcionistAI
         </h1>
         <p className="text-sky-600/70 mt-2">
-          Regístrate para empezar a capturar leads
+          Crea tu cuenta y empieza a capturar leads 24/7
         </p>
       </div>
 

@@ -1,0 +1,76 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo circular con gradiente -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#0284c7;stop-opacity:0.2" />
+    </linearGradient>
+    <linearGradient id="headsetGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Círculo de fondo -->
+  <circle cx="100" cy="100" r="95" fill="url(#bgGradient)"/>
+
+  <!-- CARA DEL AGENTE - Círculo central -->
+  <circle cx="100" cy="100" r="45" fill="white" opacity="0.95"/>
+  <circle cx="100" cy="100" r="45" fill="url(#headsetGradient)" opacity="0.1"/>
+
+  <!-- Ojos del agente - estilo minimalista -->
+  <circle cx="88" cy="95" r="5" fill="#0284c7"/>
+  <circle cx="112" cy="95" r="5" fill="#0284c7"/>
+
+  <!-- Brillo en los ojos -->
+  <circle cx="90" cy="93" r="2" fill="white"/>
+  <circle cx="114" cy="93" r="2" fill="white"/>
+
+  <!-- Sonrisa del agente -->
+  <path d="M 85 110 Q 100 118, 115 110"
+        stroke="#0284c7"
+        stroke-width="3"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Headset - Arco superior -->
+  <path d="M 60 100 Q 60 60, 100 60 Q 140 60, 140 100"
+        stroke="url(#headsetGradient)"
+        stroke-width="8"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Headset - Auricular izquierdo -->
+  <rect x="50" y="95" width="20" height="35" rx="10" fill="url(#headsetGradient)"/>
+
+  <!-- Headset - Auricular derecho -->
+  <rect x="130" y="95" width="20" height="35" rx="10" fill="url(#headsetGradient)"/>
+
+  <!-- Micrófono -->
+  <path d="M 130 115 Q 145 115, 145 130 L 145 145"
+        stroke="url(#headsetGradient)"
+        stroke-width="6"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Punta del micrófono -->
+  <circle cx="145" cy="150" r="6" fill="#0ea5e9"/>
+
+  <!-- Chispas de IA - Superior izquierda -->
+  <path d="M 40 50 L 44 54 M 44 50 L 40 54" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Chispas de IA - Superior derecha -->
+  <path d="M 160 50 L 164 54 M 164 50 L 160 54" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Chispas de IA - Inferior izquierda -->
+  <path d="M 35 140 L 39 144 M 39 140 L 35 144" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Chispas de IA - Inferior derecha -->
+  <path d="M 165 140 L 169 144 M 169 140 L 165 144" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Partículas pequeñas -->
+  <circle cx="50" cy="70" r="3" fill="#0ea5e9" opacity="0.6"/>
+  <circle cx="150" cy="70" r="3" fill="#0ea5e9" opacity="0.6"/>
+  <circle cx="70" cy="150" r="2" fill="#0284c7" opacity="0.5"/>
+  <circle cx="130" cy="155" r="2" fill="#0284c7" opacity="0.5"/>
+</svg>
