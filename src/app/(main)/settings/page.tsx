@@ -126,7 +126,7 @@ export default function SettingsPage() {
                             <div className="relative">
                                 <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-sky-400" />
                                 <select
-                                    value={business.timezone}
+                                    value={business.timezone || 'America/New_York'}
                                     onChange={(e) => setBusiness({ ...business, timezone: e.target.value })}
                                     className="w-full pl-10 pr-4 py-2 bg-white/50 border border-sky-100 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all appearance-none"
                                 >
