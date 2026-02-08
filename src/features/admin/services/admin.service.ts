@@ -148,7 +148,7 @@ export async function getUserDetails(userId: string) {
     email: authUser?.email,
     last_sign_in: authUser?.last_sign_in_at,
     subscription,
-    businesses,
+    businesses: businesses || [],
     leads_count: leadsCount || 0,
   }
 }
