@@ -7,623 +7,1115 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
-      profiles: {
+      appointments: {
         Row: {
+          business_id: string
+          cal_event_id: string | null
+          created_at: string | null
+          duration_minutes: number | null
+          google_event_id: string | null
           id: string
-          email: string
-          full_name: string | null
-          phone: string | null
-          avatar_url: string | null
-          role: 'admin' | 'user'
-          created_at: string
-          updated_at: string
+          lead_id: string
+          notes: string | null
+          scheduled_at: string
+          source: string
+          status: string | null
+          updated_at: string | null
         }
         Insert: {
-          id: string
-          email: string
-          full_name?: string | null
-          phone?: string | null
-          avatar_url?: string | null
-          role?: 'admin' | 'user'
-          created_at?: string
-          updated_at?: string
+          business_id: string
+          cal_event_id?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          google_event_id?: string | null
+          id?: string
+          lead_id: string
+          notes?: string | null
+          scheduled_at: string
+          source: string
+          status?: string | null
+          updated_at?: string | null
         }
         Update: {
+          business_id?: string
+          cal_event_id?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          google_event_id?: string | null
           id?: string
-          email?: string
-          full_name?: string | null
-          phone?: string | null
-          avatar_url?: string | null
-          role?: 'admin' | 'user'
-          created_at?: string
-          updated_at?: string
+          lead_id?: string
+          notes?: string | null
+          scheduled_at?: string
+          source?: string
+          status?: string | null
+          updated_at?: string | null
         }
-      }
-      subscription_plans: {
-        Row: {
-          id: string
-          name: 'basic' | 'pro' | 'premium' | 'enterprise'
-          display_name: string
-          description: string | null
-          price_monthly: number | null
-          price_yearly: number | null
-          currency: string
-          has_messaging: boolean
-          has_voice: boolean
-          has_appointments: boolean
-          has_analytics: boolean
-          has_api_access: boolean
-          has_white_label: boolean
-          has_priority_support: boolean
-          max_messages_monthly: number | null
-          max_voice_minutes_monthly: number | null
-          max_leads_monthly: number | null
-          max_businesses: number | null
-          overage_per_message_cents: number | null
-          overage_per_minute_cents: number | null
-          is_active: boolean
-          sort_order: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          name: string
-          display_name: string
-          description?: string | null
-          price_monthly: number | null
-          price_yearly?: number | null
-          currency?: string
-          has_messaging?: boolean
-          has_voice?: boolean
-          has_appointments?: boolean
-          has_analytics?: boolean
-          has_api_access?: boolean
-          has_white_label?: boolean
-          has_priority_support?: boolean
-          max_messages_monthly?: number | null
-          max_voice_minutes_monthly?: number | null
-          max_leads_monthly?: number | null
-          max_businesses?: number | null
-          overage_per_message_cents?: number | null
-          overage_per_minute_cents?: number | null
-          is_active?: boolean
-          sort_order?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string
-          display_name?: string
-          description?: string | null
-          price_monthly?: number | null
-          price_yearly?: number | null
-          currency?: string
-          has_messaging?: boolean
-          has_voice?: boolean
-          has_appointments?: boolean
-          has_analytics?: boolean
-          has_api_access?: boolean
-          has_white_label?: boolean
-          has_priority_support?: boolean
-          max_messages_monthly?: number | null
-          max_voice_minutes_monthly?: number | null
-          max_leads_monthly?: number | null
-          max_businesses?: number | null
-          overage_per_message_cents?: number | null
-          overage_per_minute_cents?: number | null
-          is_active?: boolean
-          sort_order?: number
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      subscriptions: {
-        Row: {
-          id: string
-          user_id: string
-          plan_id: string
-          status: 'active' | 'cancelled' | 'expired' | 'trial' | 'past_due'
-          billing_cycle: 'monthly' | 'yearly'
-          current_period_start: string
-          current_period_end: string | null
-          trial_ends_at: string | null
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
-          cancelled_at: string | null
-          cancel_reason: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          plan_id: string
-          status?: 'active' | 'cancelled' | 'expired' | 'trial' | 'past_due'
-          billing_cycle?: 'monthly' | 'yearly'
-          current_period_start?: string
-          current_period_end?: string | null
-          trial_ends_at?: string | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          cancelled_at?: string | null
-          cancel_reason?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          plan_id?: string
-          status?: 'active' | 'cancelled' | 'expired' | 'trial' | 'past_due'
-          billing_cycle?: 'monthly' | 'yearly'
-          current_period_start?: string
-          current_period_end?: string | null
-          trial_ends_at?: string | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          cancelled_at?: string | null
-          cancel_reason?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      subscription_usage: {
-        Row: {
-          id: string
-          subscription_id: string
-          period_start: string
-          period_end: string
-          messages_used: number
-          voice_minutes_used: number
-          leads_created: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          subscription_id: string
-          period_start: string
-          period_end: string
-          messages_used?: number
-          voice_minutes_used?: number
-          leads_created?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          subscription_id?: string
-          period_start?: string
-          period_end?: string
-          messages_used?: number
-          voice_minutes_used?: number
-          leads_created?: number
-          created_at?: string
-          updated_at?: string
-        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_summary"
+            referencedColumns: ["business_id"]
+          },
+          {
+            foreignKeyName: "appointments_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "lead_metrics"
+            referencedColumns: ["business_id"]
+          },
+          {
+            foreignKeyName: "appointments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       businesses: {
         Row: {
+          assistant_script: string | null
+          business_hours: Json | null
+          created_at: string | null
           id: string
-          user_id: string
           name: string
           phone: string | null
-          timezone: string
-          business_hours: Json
-          services: Json
-          qualification_questions: Json
-          assistant_script: string | null
+          qualification_questions: Json | null
           retell_agent_id: string | null
-          created_at: string
-          updated_at: string
+          services: Json | null
+          timezone: string | null
+          updated_at: string | null
+          user_id: string
+          whatsapp_phone: string | null
         }
         Insert: {
+          assistant_script?: string | null
+          business_hours?: Json | null
+          created_at?: string | null
           id?: string
-          user_id: string
           name: string
           phone?: string | null
-          timezone?: string
-          business_hours?: Json
-          services?: Json
-          qualification_questions?: Json
-          assistant_script?: string | null
+          qualification_questions?: Json | null
           retell_agent_id?: string | null
-          created_at?: string
-          updated_at?: string
+          services?: Json | null
+          timezone?: string | null
+          updated_at?: string | null
+          user_id: string
+          whatsapp_phone?: string | null
         }
         Update: {
+          assistant_script?: string | null
+          business_hours?: Json | null
+          created_at?: string | null
           id?: string
-          user_id?: string
           name?: string
           phone?: string | null
-          timezone?: string
-          business_hours?: Json
-          services?: Json
-          qualification_questions?: Json
-          assistant_script?: string | null
+          qualification_questions?: Json | null
           retell_agent_id?: string | null
-          created_at?: string
-          updated_at?: string
+          services?: Json | null
+          timezone?: string | null
+          updated_at?: string | null
+          user_id?: string
+          whatsapp_phone?: string | null
         }
-      }
-      leads: {
-        Row: {
-          id: string
-          business_id: string
-          name: string | null
-          phone: string
-          email: string | null
-          source: 'call' | 'sms' | 'whatsapp'
-          status: 'new' | 'qualified' | 'appointment_scheduled' | 'converted' | 'lost'
-          case_type: string | null
-          urgency: 'low' | 'medium' | 'high' | 'urgent' | null
-          notes: string | null
-          retell_call_id: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          business_id: string
-          name?: string | null
-          phone: string
-          email?: string | null
-          source: 'call' | 'sms' | 'whatsapp'
-          status?: 'new' | 'qualified' | 'appointment_scheduled' | 'converted' | 'lost'
-          case_type?: string | null
-          urgency?: 'low' | 'medium' | 'high' | 'urgent' | null
-          notes?: string | null
-          retell_call_id?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          business_id?: string
-          name?: string | null
-          phone?: string
-          email?: string | null
-          source?: 'call' | 'sms' | 'whatsapp'
-          status?: 'new' | 'qualified' | 'appointment_scheduled' | 'converted' | 'lost'
-          case_type?: string | null
-          urgency?: 'low' | 'medium' | 'high' | 'urgent' | null
-          notes?: string | null
-          retell_call_id?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      sms_conversations: {
-        Row: {
-          id: string
-          lead_id: string
-          messages: Json
-          last_message_at: string
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          lead_id: string
-          messages?: Json
-          last_message_at?: string
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          lead_id?: string
-          messages?: Json
-          last_message_at?: string
-          created_at?: string
-          updated_at?: string
-        }
+        Relationships: [
+          {
+            foreignKeyName: "businesses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users_overview"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "businesses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       call_transcripts: {
         Row: {
-          id: string
-          lead_id: string
-          retell_call_id: string
-          transcript: Json | null
-          summary: string | null
-          duration_seconds: number | null
           call_status: string | null
-          recording_url: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          lead_id: string
-          retell_call_id: string
-          transcript?: Json | null
-          summary?: string | null
-          duration_seconds?: number | null
-          call_status?: string | null
-          recording_url?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          lead_id?: string
-          retell_call_id?: string
-          transcript?: Json | null
-          summary?: string | null
-          duration_seconds?: number | null
-          call_status?: string | null
-          recording_url?: string | null
-          created_at?: string
-        }
-      }
-      appointments: {
-        Row: {
+          classification: Json | null
+          created_at: string | null
+          duration_seconds: number | null
           id: string
           lead_id: string
-          business_id: string
-          scheduled_at: string
-          duration_minutes: number
-          source: 'retell' | 'sms' | 'manual'
-          status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show'
-          google_event_id: string | null
-          cal_event_id: string | null
-          notes: string | null
-          created_at: string
-          updated_at: string
+          recording_url: string | null
+          retell_call_id: string
+          sentiment_score: number | null
+          summary: string | null
+          transcript: Json | null
         }
         Insert: {
+          call_status?: string | null
+          classification?: Json | null
+          created_at?: string | null
+          duration_seconds?: number | null
           id?: string
           lead_id: string
-          business_id: string
-          scheduled_at: string
-          duration_minutes?: number
-          source: 'retell' | 'sms' | 'manual'
-          status?: 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show'
-          google_event_id?: string | null
-          cal_event_id?: string | null
-          notes?: string | null
-          created_at?: string
-          updated_at?: string
+          recording_url?: string | null
+          retell_call_id: string
+          sentiment_score?: number | null
+          summary?: string | null
+          transcript?: Json | null
         }
         Update: {
+          call_status?: string | null
+          classification?: Json | null
+          created_at?: string | null
+          duration_seconds?: number | null
           id?: string
           lead_id?: string
-          business_id?: string
-          scheduled_at?: string
-          duration_minutes?: number
-          source?: 'retell' | 'sms' | 'manual'
-          status?: 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show'
-          google_event_id?: string | null
-          cal_event_id?: string | null
-          notes?: string | null
-          created_at?: string
-          updated_at?: string
+          recording_url?: string | null
+          retell_call_id?: string
+          sentiment_score?: number | null
+          summary?: string | null
+          transcript?: Json | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "call_transcripts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          business_id: string
+          case_type: string | null
+          classification: Json | null
+          created_at: string | null
+          email: string | null
+          first_response_seconds: number | null
+          id: string
+          name: string | null
+          notes: string | null
+          phone: string
+          retell_call_id: string | null
+          source: string
+          status: string | null
+          updated_at: string | null
+          urgency: string | null
+        }
+        Insert: {
+          business_id: string
+          case_type?: string | null
+          classification?: Json | null
+          created_at?: string | null
+          email?: string | null
+          first_response_seconds?: number | null
+          id?: string
+          name?: string | null
+          notes?: string | null
+          phone: string
+          retell_call_id?: string | null
+          source: string
+          status?: string | null
+          updated_at?: string | null
+          urgency?: string | null
+        }
+        Update: {
+          business_id?: string
+          case_type?: string | null
+          classification?: Json | null
+          created_at?: string | null
+          email?: string | null
+          first_response_seconds?: number | null
+          id?: string
+          name?: string | null
+          notes?: string | null
+          phone?: string
+          retell_call_id?: string | null
+          source?: string
+          status?: string | null
+          updated_at?: string | null
+          urgency?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_summary"
+            referencedColumns: ["business_id"]
+          },
+          {
+            foreignKeyName: "leads_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "lead_metrics"
+            referencedColumns: ["business_id"]
+          },
+        ]
       }
       notifications: {
         Row: {
-          id: string
-          user_id: string
-          lead_id: string | null
-          type: 'new_lead' | 'appointment' | 'missed_call' | 'sms_received'
-          channel: 'email' | 'sms' | 'push'
-          title: string
           body: string | null
-          read: boolean
-          sent_at: string
+          channel: string
+          id: string
+          lead_id: string | null
+          read: boolean | null
           read_at: string | null
+          sent_at: string | null
+          title: string
+          type: string
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          lead_id?: string | null
-          type: 'new_lead' | 'appointment' | 'missed_call' | 'sms_received'
-          channel: 'email' | 'sms' | 'push'
-          title: string
           body?: string | null
-          read?: boolean
-          sent_at?: string
+          channel: string
+          id?: string
+          lead_id?: string | null
+          read?: boolean | null
           read_at?: string | null
+          sent_at?: string | null
+          title: string
+          type: string
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          lead_id?: string | null
-          type?: 'new_lead' | 'appointment' | 'missed_call' | 'sms_received'
-          channel?: 'email' | 'sms' | 'push'
-          title?: string
           body?: string | null
-          read?: boolean
-          sent_at?: string
+          channel?: string
+          id?: string
+          lead_id?: string | null
+          read?: boolean | null
           read_at?: string | null
+          sent_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users_overview"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          role: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      sms_conversations: {
+        Row: {
+          classification: Json | null
+          created_at: string | null
+          id: string
+          last_message_at: string | null
+          lead_id: string
+          messages: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          classification?: Json | null
+          created_at?: string | null
+          id?: string
+          last_message_at?: string | null
+          lead_id: string
+          messages?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          classification?: Json | null
+          created_at?: string | null
+          id?: string
+          last_message_at?: string | null
+          lead_id?: string
+          messages?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sms_conversations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          display_name: string
+          has_analytics: boolean | null
+          has_api_access: boolean | null
+          has_appointments: boolean | null
+          has_messaging: boolean | null
+          has_priority_support: boolean | null
+          has_voice: boolean | null
+          has_white_label: boolean | null
+          id: string
+          is_active: boolean | null
+          max_businesses: number | null
+          max_leads_monthly: number | null
+          max_messages_monthly: number | null
+          max_voice_minutes_monthly: number | null
+          name: string
+          overage_per_message_cents: number | null
+          overage_per_minute_cents: number | null
+          price_monthly: number | null
+          price_yearly: number | null
+          sort_order: number | null
+          stripe_price_id_monthly: string | null
+          stripe_price_id_yearly: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          display_name: string
+          has_analytics?: boolean | null
+          has_api_access?: boolean | null
+          has_appointments?: boolean | null
+          has_messaging?: boolean | null
+          has_priority_support?: boolean | null
+          has_voice?: boolean | null
+          has_white_label?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          max_businesses?: number | null
+          max_leads_monthly?: number | null
+          max_messages_monthly?: number | null
+          max_voice_minutes_monthly?: number | null
+          name: string
+          overage_per_message_cents?: number | null
+          overage_per_minute_cents?: number | null
+          price_monthly?: number | null
+          price_yearly?: number | null
+          sort_order?: number | null
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          display_name?: string
+          has_analytics?: boolean | null
+          has_api_access?: boolean | null
+          has_appointments?: boolean | null
+          has_messaging?: boolean | null
+          has_priority_support?: boolean | null
+          has_voice?: boolean | null
+          has_white_label?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          max_businesses?: number | null
+          max_leads_monthly?: number | null
+          max_messages_monthly?: number | null
+          max_voice_minutes_monthly?: number | null
+          name?: string
+          overage_per_message_cents?: number | null
+          overage_per_minute_cents?: number | null
+          price_monthly?: number | null
+          price_yearly?: number | null
+          sort_order?: number | null
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      subscription_usage: {
+        Row: {
+          created_at: string | null
+          id: string
+          leads_created: number | null
+          messages_used: number | null
+          period_end: string
+          period_start: string
+          subscription_id: string
+          updated_at: string | null
+          voice_minutes_used: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          leads_created?: number | null
+          messages_used?: number | null
+          period_end: string
+          period_start: string
+          subscription_id: string
+          updated_at?: string | null
+          voice_minutes_used?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          leads_created?: number | null
+          messages_used?: number | null
+          period_end?: string
+          period_start?: string
+          subscription_id?: string
+          updated_at?: string | null
+          voice_minutes_used?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_usage_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          billing_cycle: string | null
+          cancel_reason: string | null
+          cancelled_at: string | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          plan_id: string
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          trial_ends_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          billing_cycle?: string | null
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan_id: string
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_ends_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          billing_cycle?: string | null
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan_id?: string
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_ends_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "admin_users_overview"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_analytics: {
+        Row: {
+          conversation_id: string | null
+          created_at: string | null
+          id: string
+          question_category: string | null
+          question_summary: string | null
+          response_time_seconds: number | null
+          satisfaction_rating: number | null
+          user_id: string | null
+          was_answered: boolean | null
+          was_escalated: boolean | null
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          question_category?: string | null
+          question_summary?: string | null
+          response_time_seconds?: number | null
+          satisfaction_rating?: number | null
+          user_id?: string | null
+          was_answered?: boolean | null
+          was_escalated?: boolean | null
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          question_category?: string | null
+          question_summary?: string | null
+          response_time_seconds?: number | null
+          satisfaction_rating?: number | null
+          user_id?: string | null
+          was_answered?: boolean | null
+          was_escalated?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_analytics_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "support_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_message_at: string | null
+          messages: Json | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_message_at?: string | null
+          messages?: Json | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_message_at?: string | null
+          messages?: Json | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      support_embeddings: {
+        Row: {
+          content: string
+          created_at: string | null
+          embedding: string | null
+          id: string
+          resource_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          resource_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          resource_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_embeddings_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "support_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_resources: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          conversation_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          priority: string | null
+          resolved_at: string | null
+          status: string | null
+          subject: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          conversation_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          priority?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          subject: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          conversation_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          priority?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          subject?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "support_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
+      admin_users_overview: {
+        Row: {
+          business_count: number | null
+          current_period_end: string | null
+          email: string | null
+          full_name: string | null
+          messages_used: number | null
+          plan_display_name: string | null
+          plan_name: string | null
+          role: string | null
+          subscription_status: string | null
+          total_leads: number | null
+          user_created_at: string | null
+          user_id: string | null
+          voice_minutes_used: number | null
+        }
+        Relationships: []
+      }
+      analytics_summary: {
+        Row: {
+          appointment_completion_rate: number | null
+          avg_call_duration: number | null
+          business_id: string | null
+          call_leads: number | null
+          cancelled_appointments: number | null
+          completed_appointments: number | null
+          conversion_rate: number | null
+          converted_leads: number | null
+          high_urgency_leads: number | null
+          leads_last_30_days: number | null
+          leads_last_7_days: number | null
+          lost_leads: number | null
+          low_urgency_leads: number | null
+          medium_urgency_leads: number | null
+          new_leads: number | null
+          no_show_appointments: number | null
+          qualified_leads: number | null
+          scheduled_appointments: number | null
+          scheduled_leads: number | null
+          sms_leads: number | null
+          total_appointments: number | null
+          total_calls: number | null
+          total_leads: number | null
+          urgent_leads: number | null
+          user_id: string | null
+          whatsapp_leads: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "businesses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users_overview"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "businesses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_metrics: {
         Row: {
-          business_id: string
-          user_id: string
-          total_leads: number
-          new_leads: number
-          qualified_leads: number
-          scheduled_leads: number
-          converted_leads: number
-          lost_leads: number
-          call_leads: number
-          sms_leads: number
-          whatsapp_leads: number
-          leads_last_7_days: number
-          leads_last_30_days: number
+          business_id: string | null
+          call_leads: number | null
+          converted_leads: number | null
+          leads_last_30_days: number | null
+          leads_last_7_days: number | null
+          lost_leads: number | null
+          new_leads: number | null
+          qualified_leads: number | null
+          scheduled_leads: number | null
+          sms_leads: number | null
+          total_leads: number | null
+          user_id: string | null
+          whatsapp_leads: number | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "businesses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users_overview"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "businesses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
+    }
+    Functions: {
+      can_use_feature: {
+        Args: { p_feature: string; p_user_id: string }
+        Returns: boolean
+      }
+      get_case_type_stats: {
+        Args: { p_business_id: string }
+        Returns: {
+          case_type: string
+          count: number
+          percentage: number
+        }[]
+      }
+      get_leads_by_date: {
+        Args: {
+          p_business_id: string
+          p_end_date: string
+          p_start_date: string
+        }
+        Returns: {
+          call_count: number
+          date: string
+          lead_count: number
+          sms_count: number
+        }[]
+      }
+      get_user_plan_features: {
+        Args: { p_user_id: string }
+        Returns: {
+          has_analytics: boolean
+          has_appointments: boolean
+          has_messaging: boolean
+          has_priority_support: boolean
+          has_voice: boolean
+          is_admin: boolean
+          max_messages_monthly: number
+          max_voice_minutes_monthly: number
+          messages_used: number
+          plan_name: string
+          subscription_status: string
+          voice_minutes_used: number
+        }[]
+      }
+      increment_usage: {
+        Args: { p_amount?: number; p_usage_type: string; p_user_id: string }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
+      match_support_embeddings: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          content: string
+          id: string
+          similarity: number
+        }[]
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }
 
-// Helper types
-export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
-export type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert']
-export type UpdateTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update']
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-// Convenience types
-export type Profile = Tables<'profiles'>
-export type Business = Tables<'businesses'>
-export type Lead = Tables<'leads'>
-export type SmsConversation = Tables<'sms_conversations'>
-export type CallTranscript = Tables<'call_transcripts'>
-export type Appointment = Tables<'appointments'>
-export type Notification = Tables<'notifications'>
-export type SubscriptionPlan = Tables<'subscription_plans'>
-export type Subscription = Tables<'subscriptions'>
-export type SubscriptionUsage = Tables<'subscription_usage'>
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
-// Role types
-export type UserRole = 'admin' | 'user'
-export type PlanName = 'basic' | 'pro' | 'premium' | 'enterprise'
-export type SubscriptionStatus = 'active' | 'cancelled' | 'expired' | 'trial' | 'past_due'
-
-// User plan features (from get_user_plan_features function)
-export interface UserPlanFeatures {
-  plan_name: PlanName | 'none'
-  has_messaging: boolean
-  has_voice: boolean
-  has_appointments: boolean
-  has_analytics: boolean
-  has_priority_support: boolean
-  max_messages_monthly: number | null
-  max_voice_minutes_monthly: number | null
-  messages_used: number
-  voice_minutes_used: number
-  subscription_status: SubscriptionStatus | 'none'
-  is_admin: boolean
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
-// Plan with subscription info
-export interface PlanWithSubscription extends SubscriptionPlan {
-  subscription?: Subscription | null
-  usage?: SubscriptionUsage | null
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
-// SMS Message type
-export interface SmsMessage {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  timestamp: string
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
-// Classification types for analytics
-export interface ClassificationFlags {
-  urgent?: boolean
-  needs_follow_up?: boolean
-  potential_high_value?: boolean
-  complaint?: boolean
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
-export interface Classification {
-  intent?: 'consultation' | 'appointment' | 'information' | 'complaint' | 'follow_up'
-  sentiment?: 'positive' | 'neutral' | 'negative'
-  quality?: 'high' | 'medium' | 'low' | 'spam'
-  topics?: string[]
-  summary?: string
-  flags?: ClassificationFlags
-  classified_at?: string
-  classified_by?: 'ai' | 'manual'
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
-// Analytics types
-export interface AnalyticsOverview {
-  totalLeads: number
-  leadsLast7Days: number
-  leadsLast30Days: number
-  conversionRate: number
-  appointmentCompletionRate: number
-}
-
-export interface StatusDistribution {
-  new: number
-  qualified: number
-  scheduled: number
-  converted: number
-  lost: number
-}
-
-export interface SourceDistribution {
-  call: number
-  sms: number
-  whatsapp: number
-}
-
-export interface UrgencyDistribution {
-  urgent: number
-  high: number
-  medium: number
-  low: number
-}
-
-export interface CallMetrics {
-  totalCalls: number
-  avgDuration: number
-  callsWithTranscripts: number
-}
-
-export interface AppointmentMetrics {
-  total: number
-  scheduled: number
-  completed: number
-  cancelled: number
-  noShow: number
-  completionRate: number
-}
-
-export interface LeadsByDate {
-  date: string
-  leadCount: number
-  callCount: number
-  smsCount: number
-}
-
-export interface CaseTypeStats {
-  caseType: string
-  count: number
-  percentage: number
-}
-
-export interface AnalyticsData {
-  overview: AnalyticsOverview
-  statusDistribution: StatusDistribution
-  sourceDistribution: SourceDistribution
-  urgencyDistribution: UrgencyDistribution
-  callMetrics: CallMetrics
-  appointmentMetrics: AppointmentMetrics
-  leadsByDate: LeadsByDate[]
-  caseTypeStats: CaseTypeStats[]
-}
-
-// Business Hours type
-export interface BusinessHours {
-  [day: string]: {
-    start: string
-    end: string
-  } | null
-}
-
-// Service type
-export interface Service {
-  id: string
-  name: string
-  description?: string
-  price?: number
-}
-
-// Qualification Question type
-export interface QualificationQuestion {
-  id: string
-  question: string
-  type: 'text' | 'select' | 'multi_select'
-  options?: string[]
-  required: boolean
-}
+export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
+  public: {
+    Enums: {},
+  },
+} as const

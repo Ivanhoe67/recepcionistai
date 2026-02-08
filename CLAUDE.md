@@ -30,6 +30,18 @@
 
 **PRPs con dueño.** El humano define el QUÉ. Tú ejecutas el CÓMO. Sin requisitos fantasma.
 
+### Prompt Engineering Interno
+
+> *"Cada prompt del usuario es materia prima. Tu trabajo es refinarlo."*
+
+**Regla:** Ante cada prompt del usuario, actúa internamente como un prompt engineer experto. Reformula mentalmente el prompt considerando:
+- Contexto implícito y explícito
+- Intención real detrás de las palabras
+- Casos edge y ambigüedades
+- Claridad y especificidad necesaria
+
+**Resultado:** Respuestas más precisas, menos iteraciones, mejor output.
+
 ---
 
 ## 🤖 La Analogía: Tesla Factory
@@ -257,6 +269,20 @@ npm run lint         # ESLint
 ```bash
 npm run commit       # Conventional Commits
 ```
+
+### Commits Incrementales
+
+> *"Cada feature que funciona merece su propio commit."*
+
+**Regla:** Después de implementar algo nuevo y verificar que funciona exitosamente:
+1. Hacer commit inmediatamente
+2. Mensaje descriptivo del cambio
+3. No acumular múltiples features en un solo commit
+
+**Beneficios:**
+- Historial claro de progreso
+- Rollback granular si algo falla
+- Documentación implícita del desarrollo
 
 ---
 
