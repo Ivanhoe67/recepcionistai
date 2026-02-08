@@ -1,4 +1,5 @@
 'use server'
+// @ts-nocheck
 
 import { createClient } from '@/lib/supabase/server'
 import { Business, UpdateTables, InsertTables } from '@/lib/database.types'

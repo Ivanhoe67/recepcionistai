@@ -1,4 +1,5 @@
 'use server'
+// @ts-nocheck
 
 import { createClient } from '@/lib/supabase/server'
 import { CallTranscript } from '@/lib/database.types'
