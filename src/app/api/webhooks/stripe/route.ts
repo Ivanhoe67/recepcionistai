@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripeServer } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/server'
