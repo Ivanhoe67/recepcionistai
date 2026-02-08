@@ -14,7 +14,7 @@ import {
   ChevronDown,
 } from 'lucide-react'
 
-import { LeadWithRelations, STATUS_LABELS, URGENCY_LABELS } from '../types'
+import { LeadWithRelations, LeadStatus, STATUS_LABELS, URGENCY_LABELS } from '../types'
 import { updateLeadStatus } from '../services/leads.service'
 import { SmsMessage } from '@/lib/database.types'
 
@@ -32,13 +32,13 @@ const statusBadgeClasses: Record<string, string> = {
 
 export function LeadDetail({ lead }: LeadDetailProps) {
   const router = useRouter()
-  const [status, setStatus] = useState(lead.status)
+  const [status, setStatus] = useState(lead.status ?? 'new')
   const [showStatusMenu, setShowStatusMenu] = useState(false)
   const [activeTab, setActiveTab] = useState<'call' | 'sms' | 'appointments'>(
     lead.source === 'call' ? 'call' : 'sms'
   )
 
-  async function handleStatusChange(newStatus: typeof lead.status) {
+  async function handleStatusChange(newStatus: LeadStatus) {
     setStatus(newStatus)
     setShowStatusMenu(false)
     await updateLeadStatus(lead.id, newStatus)
@@ -80,7 +80,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
                 {Object.entries(STATUS_LABELS).map(([value, label]) => (
                   <button
                     key={value}
-                    onClick={() => handleStatusChange(value as typeof lead.status)}
+                    onClick={() => handleStatusChange(value as LeadStatus)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                       status === value
                         ? 'bg-glass-sky text-sky-800'
@@ -118,7 +118,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
           {
             icon: Calendar,
             label: 'Creado',
-            value: format(new Date(lead.created_at), 'dd MMM yyyy', { locale: es }),
+            value: lead.created_at ? format(new Date(lead.created_at as string), 'dd MMM yyyy', { locale: es }) : '-',
           },
         ].map((card, index) => (
           <div

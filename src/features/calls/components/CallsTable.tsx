@@ -46,7 +46,7 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                                         <td>
                                             <div className="flex items-center gap-2 text-sky-900">
                                                 <Clock className="h-4 w-4 text-sky-400" />
-                                                {format(new Date(call.created_at), "d 'de' MMMM, HH:mm", { locale: es })}
+                                                {call.created_at ? format(new Date(call.created_at as string), "d 'de' MMMM, HH:mm", { locale: es }) : '-'}
                                             </div>
                                         </td>
                                         <td>
@@ -112,7 +112,7 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                                         Detalles de la Llamada: {selectedCall.leads.name || selectedCall.leads.phone}
                                     </h2>
                                     <p className="text-sm text-sky-600/70">
-                                        {format(new Date(selectedCall.created_at), "PPPP 'a las' HH:mm", { locale: es })}
+                                        {selectedCall.created_at ? format(new Date(selectedCall.created_at as string), "PPPP 'a las' HH:mm", { locale: es }) : '-'}
                                     </p>
                                 </div>
                             </div>

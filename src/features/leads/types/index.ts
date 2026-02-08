@@ -1,7 +1,7 @@
 import { Lead, SmsConversation, CallTranscript, Appointment } from '@/lib/database.types'
 
-export type LeadStatus = Lead['status']
-export type LeadSource = Lead['source']
+export type LeadStatus = NonNullable<Lead['status']>
+export type LeadSource = NonNullable<Lead['source']>
 export type LeadUrgency = NonNullable<Lead['urgency']>
 
 export interface LeadWithRelations extends Lead {

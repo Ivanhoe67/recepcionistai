@@ -10,14 +10,17 @@ import { createClient } from '@/lib/supabase/server'
  * Uses OpenAI directly via OpenRouter for reliability.
  */
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY || '',
-  baseURL: 'https://openrouter.ai/api/v1',
-  defaultHeaders: {
-    'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://recepcionistai.com',
-    'X-Title': 'RecepcionistAI',
-  },
-})
+// Lazy initialization to avoid build-time errors
+function getOpenAI() {
+  return new OpenAI({
+    apiKey: process.env.OPENROUTER_API_KEY || '',
+    baseURL: 'https://openrouter.ai/api/v1',
+    defaultHeaders: {
+      'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://recepcionistai.com',
+      'X-Title': 'RecepcionistAI',
+    },
+  })
+}
 
 const SYSTEM_PROMPT = `Eres un asistente de soporte técnico profesional para RecepcionistAI, un SaaS que ayuda a negocios a capturar leads por SMS con IA.
 
@@ -110,7 +113,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Create streaming response
-    const stream = await openai.chat.completions.create({
+    const stream = await getOpenAI().chat.completions.create({
       model: 'openai/gpt-4o-mini',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },

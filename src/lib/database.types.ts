@@ -1126,7 +1126,13 @@ export type Lead = Database['public']['Tables']['leads']['Row']
 export type Profile = Database['public']['Tables']['profiles']['Row']
 export type SubscriptionPlan = Database['public']['Tables']['subscription_plans']['Row']
 export type SmsConversation = Database['public']['Tables']['sms_conversations']['Row']
-export type SmsMessage = Database['public']['Tables']['sms_messages']['Row']
+// SmsMessage is stored as JSON in sms_conversations.messages
+export interface SmsMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: string
+}
 export type CallTranscript = Database['public']['Tables']['call_transcripts']['Row']
 export type Appointment = Database['public']['Tables']['appointments']['Row']
 

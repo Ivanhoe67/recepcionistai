@@ -75,14 +75,14 @@ export function RecentLeads({ leads }: RecentLeadsProps) {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className={`glass-badge ${statusBadgeClasses[lead.status] || 'glass-badge-sky'}`}>
-                {STATUS_LABELS[lead.status]}
+              <span className={`glass-badge ${statusBadgeClasses[String(lead.status || 'new')] || 'glass-badge-sky'}`}>
+                {STATUS_LABELS[String(lead.status || 'new') as keyof typeof STATUS_LABELS]}
               </span>
               <span className="text-sm text-sky-600/60">
-                {formatDistanceToNow(new Date(lead.created_at), {
+                {lead.created_at ? formatDistanceToNow(new Date(lead.created_at as string), {
                   addSuffix: true,
                   locale: es,
-                })}
+                }) : '-'}
               </span>
             </div>
           </Link>

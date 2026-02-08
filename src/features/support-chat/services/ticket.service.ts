@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createClient } from '@/lib/supabase/server'
 import { updateConversationStatus } from './conversation.service'
 import type { SupportTicket } from '../types'

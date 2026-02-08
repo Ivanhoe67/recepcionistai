@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { Phone, MessageSquare, MoreHorizontal, Inbox, Eye, CheckCircle, XCircle, Trash2 } from 'lucide-react'
 
 import {
+  LeadStatus,
   STATUS_LABELS,
   URGENCY_LABELS,
 } from '../types'
@@ -107,15 +108,15 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                   )}
                 </td>
                 <td>
-                  <span className={`glass-badge ${statusBadgeClasses[lead.status]}`}>
-                    {STATUS_LABELS[lead.status]}
+                  <span className={`glass-badge ${statusBadgeClasses[(lead.status ?? 'new') as LeadStatus]}`}>
+                    {STATUS_LABELS[(lead.status ?? 'new') as LeadStatus]}
                   </span>
                 </td>
                 <td className="text-sky-600/60">
-                  {formatDistanceToNow(new Date(lead.created_at), {
+                  {lead.created_at ? formatDistanceToNow(new Date(lead.created_at as string), {
                     addSuffix: true,
                     locale: es,
-                  })}
+                  }) : '-'}
                 </td>
                 <td>
                   <div className="relative">

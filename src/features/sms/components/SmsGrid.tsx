@@ -49,7 +49,7 @@ export function SmsGrid({ initialConversations }: SmsGridProps) {
                                         </div>
                                     </div>
                                     <span className="text-[10px] text-sky-600/50">
-                                        {format(new Date(conv.last_message_at), "HH:mm")}
+                                        {conv.last_message_at ? format(new Date(conv.last_message_at as string), "HH:mm") : '-'}
                                     </span>
                                 </div>
 
