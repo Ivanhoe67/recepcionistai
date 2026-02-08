@@ -1124,3 +1124,28 @@ export const Constants = {
 export type Business = Database['public']['Tables']['businesses']['Row']
 export type Lead = Database['public']['Tables']['leads']['Row']
 export type Profile = Database['public']['Tables']['profiles']['Row']
+export type SubscriptionPlan = Database['public']['Tables']['subscription_plans']['Row']
+export type SmsConversation = Database['public']['Tables']['sms_conversations']['Row']
+export type SmsMessage = Database['public']['Tables']['sms_messages']['Row']
+export type CallTranscript = Database['public']['Tables']['call_transcripts']['Row']
+export type Appointment = Database['public']['Tables']['appointments']['Row']
+
+// Insert/Update helper types
+export type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert']
+export type UpdateTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update']
+
+// User plan features (from function)
+export type UserPlanFeatures = {
+  plan_name: string
+  has_messaging: boolean
+  has_voice: boolean
+  has_appointments: boolean
+  has_analytics: boolean
+  has_priority_support: boolean
+  max_messages_monthly: number | null
+  max_voice_minutes_monthly: number | null
+  messages_used: number
+  voice_minutes_used: number
+  subscription_status: string
+  is_admin: boolean
+}
