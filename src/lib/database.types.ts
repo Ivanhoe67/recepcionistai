@@ -1119,3 +1119,8 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+// Helper types for common tables
+export type Business = Database['public']['Tables']['businesses']['Row']
+export type Lead = Database['public']['Tables']['leads']['Row']
+export type Profile = Database['public']['Tables']['profiles']['Row']
