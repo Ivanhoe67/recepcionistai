@@ -9,9 +9,9 @@ interface Plan {
   name: string
   display_name: string
   price_monthly: number | null
-  has_messaging: boolean
-  has_voice: boolean
-  has_analytics: boolean
+  has_messaging: boolean | null
+  has_voice: boolean | null
+  has_analytics: boolean | null
 }
 
 interface AssignPlanModalProps {
