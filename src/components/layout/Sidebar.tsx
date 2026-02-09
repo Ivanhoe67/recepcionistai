@@ -16,6 +16,7 @@ import {
   CreditCard,
   Lock,
   Crown,
+  X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { signOut } from '@/features/auth/services/auth.service'
@@ -23,9 +24,11 @@ import { UserPlanFeatures } from '@/lib/database.types'
 
 interface SidebarProps {
   planFeatures?: UserPlanFeatures | null
+  isOpen?: boolean
+  onClose?: () => void
 }
 
-export function Sidebar({ planFeatures }: SidebarProps) {
+export function Sidebar({ planFeatures, isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname()
 
   const isAdmin = planFeatures?.is_admin ?? false
@@ -103,20 +106,53 @@ export function Sidebar({ planFeatures }: SidebarProps) {
     },
   ]
 
+  // Handle link clicks on mobile - close sidebar after navigation
+  const handleLinkClick = () => {
+    if (onClose) {
+      onClose()
+    }
+  }
+
   return (
-    <div className="glass-sidebar flex h-screen w-72 flex-col relative z-20">
-      {/* Logo */}
-      <div className="flex h-20 items-center gap-3 px-6 border-b border-white/30">
-        <div className="w-12 h-12 flex items-center justify-center">
-          <img src="/logo.svg" alt="RecepcionistAI" className="w-full h-full" />
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden backdrop-blur-sm"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={cn(
+          'glass-sidebar flex h-screen w-72 flex-col fixed md:relative z-40 md:z-20',
+          'transition-transform duration-300 ease-in-out',
+          // Mobile: hidden by default, slide in when open
+          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        )}
+      >
+        {/* Logo */}
+        <div className="flex h-20 items-center gap-3 px-6 border-b border-white/30">
+          <div className="w-12 h-12 flex items-center justify-center">
+            <img src="/logo.svg" alt="RecepcionistAI" className="w-full h-full" />
+          </div>
+          <div className="flex-1">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
+              RecepcionistAI
+            </h1>
+            <p className="text-xs text-sky-600/70">Tu recepcionista 24/7</p>
+          </div>
+          {/* Close button - mobile only */}
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-white/50 transition-colors md:hidden"
+            aria-label="Cerrar menu"
+          >
+            <X className="h-5 w-5 text-sky-700" />
+          </button>
         </div>
-        <div>
-          <h1 className="text-lg font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
-            RecepcionistAI
-          </h1>
-          <p className="text-xs text-sky-600/70">Tu recepcionista 24/7</p>
-        </div>
-      </div>
 
       {/* Plan badge */}
       {planFeatures && (
@@ -147,6 +183,7 @@ export function Sidebar({ planFeatures }: SidebarProps) {
             <Link
               key={item.name}
               href={isLocked ? '/settings/subscription' : item.href}
+              onClick={handleLinkClick}
               className={cn(
                 'glass-nav-item opacity-0 animate-fade-in relative group',
                 isActive && 'active',
@@ -183,6 +220,7 @@ export function Sidebar({ planFeatures }: SidebarProps) {
                 <Link
                   key={item.name}
                   href={item.href}
+                  onClick={handleLinkClick}
                   className={cn(
                     'glass-nav-item opacity-0 animate-fade-in',
                     isActive && 'active bg-violet-500/20',
@@ -208,6 +246,7 @@ export function Sidebar({ planFeatures }: SidebarProps) {
             <Link
               key={item.name}
               href={item.href}
+              onClick={handleLinkClick}
               className={cn(
                 'glass-nav-item opacity-0 animate-fade-in',
                 isActive && 'active',
@@ -233,6 +272,7 @@ export function Sidebar({ planFeatures }: SidebarProps) {
           </button>
         </form>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

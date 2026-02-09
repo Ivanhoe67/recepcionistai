@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getUserPlanFeatures } from '@/features/subscriptions/services/subscription.service'
-import { Sidebar } from '@/components/layout/Sidebar'
+import { LayoutWrapper } from '@/components/layout/LayoutWrapper'
 import { Toaster } from '@/components/ui/sonner'
 
 export default async function MainLayout({
@@ -21,14 +21,11 @@ export default async function MainLayout({
   const planFeatures = await getUserPlanFeatures()
 
   return (
-    <div className="flex h-screen liquid-bg">
-      <Sidebar planFeatures={planFeatures} />
-      <main className="flex-1 overflow-auto relative z-10">
-        <div className="p-8">
-          {children}
-        </div>
-      </main>
+    <>
+      <LayoutWrapper planFeatures={planFeatures}>
+        {children}
+      </LayoutWrapper>
       <Toaster />
-    </div>
+    </>
   )
 }
