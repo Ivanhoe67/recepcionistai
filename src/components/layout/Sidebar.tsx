@@ -127,7 +127,7 @@ export function Sidebar({ planFeatures, isOpen = false, onClose }: SidebarProps)
       {/* Sidebar */}
       <div
         className={cn(
-          'glass-sidebar flex h-screen w-72 flex-col fixed md:relative z-40 md:z-20',
+          'glass-sidebar flex h-[100dvh] w-72 flex-col fixed md:relative z-40 md:z-20',
           'transition-transform duration-300 ease-in-out',
           // Mobile: hidden by default, slide in when open
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
@@ -171,7 +171,7 @@ export function Sidebar({ planFeatures, isOpen = false, onClose }: SidebarProps)
       )}
 
       {/* Main Navigation */}
-      <nav className="flex-1 space-y-1 px-4 py-6 overflow-y-auto">
+      <nav className="flex-1 min-h-0 space-y-1 px-4 py-6 overflow-y-auto">
         <p className="px-3 text-xs font-semibold uppercase tracking-wider text-sky-600/60 mb-2">
           Menu Principal
         </p>
