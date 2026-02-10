@@ -5,7 +5,6 @@ import {
   Calendar,
   Clock,
   TrendingUp,
-  Shield,
   CheckCircle2,
   ArrowRight,
   Play,
@@ -14,8 +13,13 @@ import {
   Users,
   BarChart3,
   Bot,
-  ChevronDown
+  ChevronDown,
+  Headphones
 } from 'lucide-react'
+
+// Tu número de WhatsApp para el botón flotante (sin +, solo números)
+const WHATSAPP_NUMBER = "TU_NUMERO_AQUI" // Ejemplo: "5215512345678"
+const WHATSAPP_MESSAGE = "Hola! Me interesa RecepcionistAI, quiero agendar una demo."
 
 export default function LandingPage() {
   return (
@@ -52,12 +56,31 @@ export default function LandingPage() {
                 href="/signup"
                 className="glass-button text-sm px-4 py-2"
               >
-                Prueba Gratis
+                Crear Cuenta
               </Link>
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Floating WhatsApp Button */}
+      <a
+        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white px-5 py-4 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 group"
+      >
+        <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        <span className="hidden sm:block font-semibold">Habla con nuestro AI</span>
+        <span className="absolute -top-2 -right-2 flex h-5 w-5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-5 w-5 bg-white items-center justify-center">
+            <Headphones className="w-3 h-3 text-[#25D366]" />
+          </span>
+        </span>
+      </a>
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 md:px-8 overflow-hidden">
@@ -86,13 +109,15 @@ export default function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link
-                href="/signup"
-                className="glass-button text-lg px-8 py-4 flex items-center gap-2 w-full sm:w-auto justify-center"
+              <a
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass-button text-lg px-8 py-4 flex items-center gap-2 w-full sm:w-auto justify-center bg-[#25D366] hover:bg-[#128C7E]"
               >
-                Empezar Prueba Gratis
-                <ArrowRight className="w-5 h-5" />
-              </Link>
+                <MessageSquare className="w-5 h-5" />
+                Agendar Demo Gratis
+              </a>
               <a
                 href="#demo"
                 className="glass-button-secondary text-lg px-8 py-4 flex items-center gap-2 w-full sm:w-auto justify-center rounded-xl"
@@ -106,11 +131,11 @@ export default function LandingPage() {
             <div className="flex flex-wrap items-center justify-center gap-6 pt-8 text-sky-600">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                <span>14 días gratis</span>
+                <span>7 días de prueba gratis</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                <span>Sin tarjeta de crédito</span>
+                <span>Configuración incluida</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
@@ -280,10 +305,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
-              Funciona en 3 simples pasos
+              Empieza en 3 simples pasos
             </h2>
             <p className="text-xl text-sky-700">
-              Configúralo en minutos, no en semanas
+              Nosotros nos encargamos de todo
             </p>
           </div>
 
@@ -291,20 +316,20 @@ export default function LandingPage() {
             {[
               {
                 step: "1",
-                title: "Crea tu cuenta",
-                description: "Regístrate gratis y configura tu perfil de negocio en menos de 5 minutos.",
-                icon: Users
+                title: "Agenda tu demo",
+                description: "Habla con nuestro agente AI por WhatsApp y agenda una llamada de demostración gratuita.",
+                icon: MessageSquare
               },
               {
                 step: "2",
-                title: "Conecta tu número",
-                description: "Vincula tu número de teléfono actual o te damos uno nuevo. Sin cambiar tu línea.",
-                icon: Phone
+                title: "Elige tu plan",
+                description: "Selecciona el plan que mejor se adapte a tu negocio. Incluye 7 días de prueba gratis.",
+                icon: CheckCircle2
               },
               {
                 step: "3",
-                title: "Activa y relájate",
-                description: "RecepcionistAI empieza a trabajar. Tú te enfocas en lo que importa: tu negocio.",
+                title: "Listo para atender",
+                description: "Configuramos tu agente personalizado y empiezas a recibir clientes 24/7.",
                 icon: Zap
               }
             ].map((step, index) => (
@@ -354,7 +379,7 @@ export default function LandingPage() {
               {
                 name: "Roberto Sánchez",
                 role: "Taller Automotriz RS",
-                quote: "Pensé que era muy tecnológico para mí, pero la configuración fue súper fácil. Ahora atiendo clientes hasta los domingos sin trabajar.",
+                quote: "El equipo de RecepcionistAI configuró todo por mí. Ahora atiendo clientes hasta los domingos sin trabajar.",
                 rating: 5
               }
             ].map((testimonial, index) => (
@@ -405,7 +430,7 @@ export default function LandingPage() {
                   "Dashboard básico",
                   "Soporte por email"
                 ],
-                cta: "Empezar Gratis",
+                cta: "Empezar con 7 días gratis",
                 popular: false
               },
               {
@@ -421,7 +446,7 @@ export default function LandingPage() {
                   "Integraciones",
                   "Soporte prioritario"
                 ],
-                cta: "Empezar Gratis",
+                cta: "Empezar con 7 días gratis",
                 popular: true
               },
               {
@@ -481,7 +506,7 @@ export default function LandingPage() {
           </div>
 
           <p className="text-center text-sky-600 mt-8">
-            Todos los planes incluyen 14 días de prueba gratis. Sin tarjeta de crédito.
+            Todos los planes incluyen 7 días de prueba gratis y configuración personalizada.
           </p>
         </div>
       </section>
@@ -498,6 +523,10 @@ export default function LandingPage() {
           <div className="space-y-4">
             {[
               {
+                question: "¿Cómo funciona la prueba de 7 días?",
+                answer: "Al elegir tu plan, tienes 7 días completos para probar el servicio. Si no estás satisfecho, cancelas antes de que termine el periodo y no se te cobra nada."
+              },
+              {
                 question: "¿Necesito cambiar mi número de teléfono?",
                 answer: "No. Puedes mantener tu número actual y redirigir las llamadas a RecepcionistAI, o podemos darte un número nuevo dedicado."
               },
@@ -510,8 +539,8 @@ export default function LandingPage() {
                 answer: "Puedes configurar reglas para transferir llamadas a un humano en casos específicos, o la IA puede tomar un mensaje y notificarte inmediatamente."
               },
               {
-                question: "¿Cuánto tarda la configuración?",
-                answer: "La mayoría de nuestros clientes están operativos en menos de 30 minutos. Nuestro equipo de soporte te guía en cada paso."
+                question: "¿Quién configura el agente de IA?",
+                answer: "Nosotros nos encargamos de toda la configuración. Solo necesitamos la información de tu negocio (horarios, servicios, precios) y configuramos tu agente personalizado."
               },
               {
                 question: "¿Puedo cancelar en cualquier momento?",
@@ -546,19 +575,21 @@ export default function LandingPage() {
                 ¿Listo para no perder más clientes?
               </h2>
               <p className="text-xl text-sky-700 mb-8 max-w-2xl mx-auto">
-                Únete a cientos de negocios que ya usan RecepcionistAI para atender a sus clientes 24/7
+                Habla con nuestro agente AI y descubre cómo podemos ayudar a tu negocio
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link
-                  href="/signup"
-                  className="glass-button text-lg px-8 py-4 flex items-center gap-2"
+                <a
+                  href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-button text-lg px-8 py-4 flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E]"
                 >
-                  Empezar Prueba Gratis de 14 Días
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
+                  <MessageSquare className="w-5 h-5" />
+                  Agendar Demo por WhatsApp
+                </a>
               </div>
               <p className="text-sky-600 mt-6">
-                Sin tarjeta de crédito • Configura en 5 minutos • Cancela cuando quieras
+                7 días gratis • Configuración incluida • Cancela cuando quieras
               </p>
             </div>
           </div>
