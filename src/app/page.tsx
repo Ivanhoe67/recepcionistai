@@ -17,8 +17,8 @@ import {
   Headphones
 } from 'lucide-react'
 
-// Tu número de WhatsApp para el botón flotante (sin +, solo números)
-const WHATSAPP_NUMBER = "TU_NUMERO_AQUI" // Ejemplo: "5215512345678"
+// Número de WhatsApp del agente AI (USA)
+const WHATSAPP_NUMBER = "15179302149"
 const WHATSAPP_MESSAGE = "Hola! Me interesa RecepcionistAI, quiero agendar una demo."
 
 export default function LandingPage() {
