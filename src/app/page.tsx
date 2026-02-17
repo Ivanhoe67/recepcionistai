@@ -119,23 +119,14 @@ export default function LandingPage() {
           {/* Hero Image/Demo */}
           <div id="demo" className="mt-16 relative">
             <div className="glass-card p-2 md:p-4 max-w-5xl mx-auto">
-              <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-sky-100 to-sky-200 aspect-video flex items-center justify-center">
-                {/* Placeholder for demo video - replace with actual video embed */}
-                <div className="text-center space-y-4">
-                  <div className="w-20 h-20 rounded-full bg-white/80 flex items-center justify-center mx-auto cursor-pointer hover:scale-110 transition-transform shadow-lg">
-                    <Play className="w-8 h-8 text-sky-600 ml-1" />
-                  </div>
-                  <p className="text-sky-700 font-medium">Ver cómo funciona RecepcionistAI</p>
-                </div>
-                {/* Uncomment and replace VIDEO_ID when you have a video:
+              <div className="relative rounded-2xl overflow-hidden aspect-video">
                 <iframe
                   className="w-full h-full absolute inset-0"
-                  src="https://www.youtube.com/embed/VIDEO_ID"
+                  src="https://www.loom.com/embed/ae56793a37ec465eaeb1d5d748586d67"
                   title="RecepcionistAI Demo"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  frameBorder="0"
                   allowFullScreen
                 />
-                */}
               </div>
             </div>
 

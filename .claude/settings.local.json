@@ -28,7 +28,10 @@
       "Bash(npm run build:*)",
       "Bash(git push:*)",
       "Bash(timeout /t 8 /nobreak)",
-      "Bash(ping:*)"
+      "Bash(ping:*)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(dir:*)",
+      "WebFetch(domain:gist.github.com)"
     ]
   }
 }
