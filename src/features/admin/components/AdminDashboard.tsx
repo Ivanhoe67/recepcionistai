@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Shield,
   Users,
@@ -68,6 +69,7 @@ interface AdminDashboardProps {
 }
 
 export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
+  const t = useTranslations('Admin')
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [assignPlanUser, setAssignPlanUser] = useState<UserData | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -80,8 +82,8 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
   }
 
   const formatDate = (date: string | null) => {
-    if (!date) return 'Nunca'
-    return new Date(date).toLocaleDateString('es-MX', {
+    if (!date) return 'Never'
+    return new Date(date).toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -105,33 +107,33 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
           <Shield className="h-6 w-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Panel de Administracion</h1>
-          <p className="text-gray-600">Gestiona usuarios, suscripciones y configuraciones</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="text-gray-600">{t('subtitle')}</p>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          title="Total Usuarios"
+          title={t('stats.totalUsers')}
           value={stats.total_users}
           icon={Users}
           gradient="from-sky-400 to-sky-600"
         />
         <StatCard
-          title="Suscripciones Activas"
+          title={t('stats.activeSubscriptions')}
           value={stats.active_subscriptions}
           icon={CreditCard}
           gradient="from-emerald-400 to-green-600"
         />
         <StatCard
-          title="Ingresos Mensuales"
+          title={t('stats.mrr')}
           value={`$${stats.mrr.toLocaleString()}`}
           icon={TrendingUp}
           gradient="from-amber-400 to-orange-500"
         />
         <StatCard
-          title="Leads Este Mes"
+          title={t('stats.leadsMonth')}
           value={stats.leads_this_month}
           icon={Phone}
           gradient="from-violet-400 to-purple-600"
@@ -142,7 +144,7 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
       <div className="rounded-xl border border-gray-200 bg-white p-6">
         <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
           <CreditCard className="h-5 w-5 text-violet-600" />
-          Planes Disponibles
+          {t('plans.title')}
         </h2>
         <div className="grid gap-4 md:grid-cols-4">
           {plans.map((plan) => (
@@ -155,26 +157,26 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
                 {plan.price_monthly ? (
                   <>
                     ${plan.price_monthly}
-                    <span className="text-sm font-normal text-gray-500">/mes</span>
+                    <span className="text-sm font-normal text-gray-500">{t('plans.perMonth')}</span>
                   </>
                 ) : (
-                  <span className="text-base">Personalizado</span>
+                  <span className="text-base">{t('plans.custom')}</span>
                 )}
               </p>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {plan.has_messaging && (
                   <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700">
-                    Mensajeria
+                    {t('plans.features.messaging')}
                   </span>
                 )}
                 {plan.has_voice && (
                   <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
-                    Voz
+                    {t('plans.features.voice')}
                   </span>
                 )}
                 {plan.has_analytics && (
                   <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">
-                    Analytics
+                    {t('plans.features.analytics')}
                   </span>
                 )}
               </div>
@@ -191,8 +193,8 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
               <Users className="h-5 w-5 text-violet-600" />
             </div>
             <div>
-              <h2 className="font-semibold text-gray-900">Usuarios</h2>
-              <p className="text-sm text-gray-500">{users.length} usuarios registrados</p>
+              <h2 className="font-semibold text-gray-900">{t('users.title')}</h2>
+              <p className="text-sm text-gray-500">{t('users.registeredCount', { count: users.length })}</p>
             </div>
           </div>
         </div>
@@ -202,22 +204,22 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50/50">
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Usuario
+                  {t('users.table.user')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Rol
+                  {t('users.table.role')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Plan
+                  {t('users.table.plan')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Negocios
+                  {t('users.table.businessCount')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Ultimo Acceso
+                  {t('users.table.lastSignIn')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Acciones
+                  {t('users.table.actions')}
                 </th>
               </tr>
             </thead>
@@ -234,7 +236,7 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900">
-                            {user.full_name || 'Sin nombre'}
+                            {user.full_name || t('users.noName')}
                           </p>
                           <p className="flex items-center gap-1 text-sm text-gray-500">
                             <Mail className="h-3 w-3" />
@@ -244,17 +246,16 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-                        user.role === 'admin'
-                          ? 'bg-violet-100 text-violet-700'
-                          : 'bg-gray-100 text-gray-700'
-                      }`}>
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${user.role === 'admin'
+                        ? 'bg-violet-100 text-violet-700'
+                        : 'bg-gray-100 text-gray-700'
+                        }`}>
                         {user.role === 'admin' ? (
                           <Shield className="h-3 w-3" />
                         ) : (
                           <User className="h-3 w-3" />
                         )}
-                        {user.role === 'admin' ? 'Administrador' : 'Usuario'}
+                        {user.role === 'admin' ? t('users.roles.admin') : t('users.roles.user')}
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
@@ -269,7 +270,7 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
                           </span>
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-400">Sin plan</span>
+                        <span className="text-sm text-gray-400">{t('users.noPlan')}</span>
                       )}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
@@ -312,12 +313,12 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
                                 {user.role === 'admin' ? (
                                   <>
                                     <User className="h-4 w-4" />
-                                    Convertir a Usuario
+                                    {t('users.actions.toUser')}
                                   </>
                                 ) : (
                                   <>
                                     <Shield className="h-4 w-4" />
-                                    Convertir a Admin
+                                    {t('users.actions.toAdmin')}
                                   </>
                                 )}
                               </button>
@@ -329,14 +330,14 @@ export function AdminDashboard({ users, plans, stats }: AdminDashboardProps) {
                                 className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
                               >
                                 <CreditCard className="h-4 w-4" />
-                                Asignar Plan
+                                {t('users.actions.assignPlan')}
                               </button>
                               <Link
                                 href={`/admin/users/${user.id}`}
                                 className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
                               >
                                 <Eye className="h-4 w-4" />
-                                Ver Detalles
+                                {t('users.actions.viewDetails')}
                               </Link>
                             </div>
                           </>

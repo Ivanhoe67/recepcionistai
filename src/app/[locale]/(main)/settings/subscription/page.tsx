@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import { getSubscriptionPlans, getCurrentSubscription, getUserPlanFeatures } from '@/features/subscriptions/services/subscription.service'
 import { PricingCards } from '@/features/subscriptions/components/PricingCards'
@@ -28,7 +29,7 @@ export default function SubscriptionPage() {
         setFeatures(featuresData)
       } catch (error) {
         console.error('Error loading subscription data:', error)
-        toast.error('Error al cargar datos de suscripción')
+        toast.error(t('errors.load'))
       } finally {
         setLoading(false)
       }
@@ -51,11 +52,11 @@ export default function SubscriptionPage() {
       if (data.url) {
         window.location.href = data.url
       } else {
-        toast.error(data.error || 'Error al iniciar el pago')
+        toast.error(data.error || t('errors.checkout'))
       }
     } catch (error) {
       console.error('Checkout error:', error)
-      toast.error('Error al conectar con la pasarela de pago')
+      toast.error(t('errors.checkoutConnection'))
     }
   }
 
@@ -69,15 +70,17 @@ export default function SubscriptionPage() {
       if (data.url) {
         window.location.href = data.url
       } else {
-        toast.error(data.error || 'Error al abrir el portal de facturación')
+        toast.error(data.error || t('errors.portal'))
       }
     } catch (error) {
       console.error('Portal error:', error)
-      toast.error('Error al conectar con el portal de facturación')
+      toast.error(t('errors.portalConnection'))
     } finally {
       setIsPortalLoading(false)
     }
   }
+
+  const t = useTranslations('Subscriptions')
 
   if (loading) {
     return (
@@ -92,9 +95,9 @@ export default function SubscriptionPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Suscripción</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
           <p className="mt-1 text-gray-600">
-            Administra tu plan y facturación
+            {t('subtitle')}
           </p>
         </div>
         {subscription?.stripe_customer_id && (
@@ -108,7 +111,7 @@ export default function SubscriptionPage() {
             ) : (
               <ExternalLink className="h-4 w-4" />
             )}
-            Gestionar Facturación
+            {t('manageBilling')}
           </button>
         )}
       </div>
@@ -124,24 +127,24 @@ export default function SubscriptionPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">
-                    Plan {subscription.plan.display_name}
+                    {t('currentPlan', { plan: subscription.plan.display_name })}
                   </h2>
                   <p className="text-sm text-gray-600">
-                    {subscription.billing_cycle === 'monthly' ? 'Facturación mensual' : 'Facturación anual'}
+                    {subscription.billing_cycle === 'monthly' ? t('monthlyBilling') : t('annualBilling')}
                   </p>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-4">
                 <div className="rounded-lg bg-white/80 px-4 py-2">
-                  <p className="text-xs text-gray-500">Estado</p>
+                  <p className="text-xs text-gray-500">{t('status')}</p>
                   <p className="font-medium text-emerald-600 capitalize">{subscription.status}</p>
                 </div>
                 <div className="rounded-lg bg-white/80 px-4 py-2">
-                  <p className="text-xs text-gray-500">Próximo cobro</p>
+                  <p className="text-xs text-gray-500">{t('nextBilling')}</p>
                   <p className="font-medium text-gray-900">
                     {subscription.current_period_end
-                      ? new Date(subscription.current_period_end).toLocaleDateString('es-MX', {
+                      ? new Date(subscription.current_period_end).toLocaleDateString(undefined, {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
@@ -165,7 +168,7 @@ export default function SubscriptionPage() {
                   <Zap className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Mensajes</p>
+                  <p className="text-sm text-gray-500">{t('usage.messages')}</p>
                   <p className="font-semibold text-gray-900">
                     {features.messages_used}
                     {features.max_messages_monthly && (
@@ -192,7 +195,7 @@ export default function SubscriptionPage() {
                   <BarChart3 className="h-5 w-5 text-violet-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Minutos de voz</p>
+                  <p className="text-sm text-gray-500">{t('usage.voiceMinutes')}</p>
                   <p className="font-semibold text-gray-900">
                     {features.voice_minutes_used}
                     {features.max_voice_minutes_monthly && (
@@ -219,9 +222,9 @@ export default function SubscriptionPage() {
         <div className="flex items-center gap-3 rounded-xl border border-violet-200 bg-violet-50 p-4">
           <Shield className="h-5 w-5 text-violet-600" />
           <div>
-            <p className="font-medium text-violet-900">Eres Administrador</p>
+            <p className="font-medium text-violet-900">{t('adminBadge.title')}</p>
             <p className="text-sm text-violet-700">
-              Tienes acceso completo a todas las funcionalidades sin límite de uso.
+              {t('adminBadge.description')}
             </p>
           </div>
         </div>
@@ -230,7 +233,7 @@ export default function SubscriptionPage() {
       {/* Pricing cards */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-gray-900">
-          {subscription ? 'Cambiar de Plan' : 'Elige tu Plan'}
+          {subscription ? t('plans.change') : t('plans.select')}
         </h2>
         <PricingCards
           plans={plans}

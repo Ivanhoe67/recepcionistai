@@ -1,0 +1,476 @@
+{
+    "Common": {
+        "loading": "Cargando...",
+        "error": "Ha ocurrido un error",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "delete": "Eliminar",
+        "edit": "Editar",
+        "actions": "Acciones"
+    },
+    "Auth": {
+        "login": "Iniciar Sesión",
+        "signup": "Registrarse",
+        "email": "Correo electrónico",
+        "password": "Contraseña",
+        "noAccount": "¿No tienes cuenta? ",
+        "noAccountAction": "Regístrate",
+        "hasAccount": "¿Ya tienes cuenta? ",
+        "hasAccountAction": "Inicia sesión",
+        "welcome": "Bienvenido a RecepcionistAI",
+        "credentials": "Ingresa tus credenciales para acceder",
+        "emailPlaceholder": "tu@email.com",
+        "loggingIn": "Ingresando...",
+        "submit": "Ingresar",
+        "register": "Regístrate",
+        "signupTitle": "Únete a RecepcionistAI",
+        "signupSubtitle": "Crea tu cuenta y empieza a capturar leads 24/7",
+        "fullName": "Nombre Completo",
+        "fullNamePlaceholder": "Juan Pérez",
+        "creatingAccount": "Creando cuenta...",
+        "createAccount": "Crear Cuenta"
+    },
+    "Landing": {
+        "features": {
+            "title": "Características principales",
+            "voice": {
+                "title": "Agente de voz",
+                "description": "Atiende llamadas entrantes y agenda citas automáticamente."
+            },
+            "sms": {
+                "title": "SMS Inteligentes",
+                "description": "Automatiza conversaciones vía SMS y WhatsApp 24/7."
+            }
+        },
+        "hero": {
+            "title": "Tu Recepcionista AI Personal",
+            "subtitle": "Automatiza tus llamadas, SMS y agendamiento de citas con inteligencia artificial.",
+            "cta": "Empezar ahora",
+            "badge": "Potenciado por Inteligencia Artificial",
+            "callAI": "Llamar al AI Ahora",
+            "connecting": "Conectando...",
+            "endCall": "Terminar Llamada",
+            "whatsapp": "WhatsApp Demo",
+            "whatsappMsg": "¡Hola! Me interesa Recepcionista AI, quiero agendar una demo.",
+            "subheadline": "Atiende llamadas, responde mensajes y agenda citas 24/7. Sin contratar personal. Sin perder clientes.",
+            "demoVideo": "O mira el video demo",
+            "trust": {
+                "trial": "7 días de prueba gratis",
+                "setup": "Configuración incluida",
+                "cancel": "Cancela cuando quieras"
+            },
+            "stats": {
+                "callsAttended": "Llamadas atendidas"
+            }
+        },
+        "problems": {
+            "title": "¿Te suena familiar?",
+            "subtitle": "Estos problemas le cuestan dinero a tu negocio todos los días",
+            "p1": {
+                "title": "Llamadas perdidas",
+                "desc": "Clientes que llaman fuera de horario o cuando estás ocupado. Cada llamada perdida es dinero que se va.",
+                "stat": "67%",
+                "statLabel": "de clientes no vuelven a llamar"
+            },
+            "p2": {
+                "title": "Tiempo desperdiciado",
+                "desc": "Horas contestando las mismas preguntas: horarios, precios, ubicación. Tiempo que podrías usar para vender.",
+                "stat": "4hrs",
+                "statLabel": "diarias en tareas repetitivas"
+            },
+            "p3": {
+                "title": "Personal costoso",
+                "desc": "Una recepcionista cuesta $800-1,500/mes, solo trabaja 8 horas, se enferma y toma vacaciones.",
+                "stat": "$1,200",
+                "statLabel": "costo mensual promedio"
+            }
+        },
+        "solution": {
+            "badge": "La Solución",
+            "title": "RecepcionistaAI trabaja por ti 24/7",
+            "subtitle": "Por menos de $7 al día, tienes una recepcionista que nunca descansa, nunca se enferma y siempre está de buen humor.",
+            "f1": {
+                "title": "Agente de voz 24/7",
+                "desc": "Atiende llamadas entrantes y agenda citas automáticamente."
+            },
+            "f2": {
+                "title": "SMS Inteligentes",
+                "desc": "Automatiza conversaciones vía SMS y WhatsApp 24/7."
+            },
+            "f3": {
+                "title": "Agenda citas automáticamente",
+                "desc": "Sincroniza con tu calendario y permite a los clientes reservar sin tu intervención."
+            },
+            "f4": {
+                "title": "Dashboard con métricas",
+                "desc": "Ve todas las interacciones, leads capturados y oportunidades en un solo lugar."
+            }
+        },
+        "steps": {
+            "title": "Empieza en 3 simples pasos",
+            "subtitle": "Nosotros nos encargamos de todo",
+            "s1": {
+                "title": "Agenda tu demo",
+                "desc": "Habla con nuestro agente AI por WhatsApp y agenda una llamada de demostración gratuita."
+            },
+            "s2": {
+                "title": "Elige tu plan",
+                "desc": "Selecciona el plan que mejor se adapte a tu negocio. Incluye 7 días de prueba gratis."
+            },
+            "s3": {
+                "title": "Listo para atender",
+                "desc": "Configuramos tu agente personalizado y empiezas a recibir clientes 24/7."
+            }
+        },
+        "testimonials": {
+            "title": "Lo que dicen nuestros clientes",
+            "c1": {
+                "name": "Dr. Carlos Méndez",
+                "role": "Clínica Dental Sonrisa",
+                "quote": "Antes perdía 5-6 llamadas diarias. Ahora RecepcionistAI las atiende todas y hasta agenda las citas. Recuperé mi inversión en la primera semana."
+            },
+            "c2": {
+                "name": "María González",
+                "role": "Inmobiliaria MG",
+                "quote": "Mis agentes ya no pierden tiempo contestando preguntas básicas. La IA califica los leads y solo nos pasa los interesados reales."
+            },
+            "c3": {
+                "name": "Roberto Sánchez",
+                "role": "Taller Automotriz RS",
+                "quote": "El equipo de RecepcionistAI configuró todo por mí. Ahora atiendo clientes hasta los domingos sin trabajar."
+            }
+        },
+        "faq": {
+            "title": "Preguntas Frecuentes",
+            "q1": {
+                "q": "¿Cómo funciona la prueba de 7 días?",
+                "a": "Al elegir tu plan, tienes 7 días completos para probar el servicio. Si no estás satisfecho, cancelas antes de que termine el periodo y no se te cobra nada."
+            },
+            "q2": {
+                "q": "¿Necesito cambiar mi número de teléfono?",
+                "a": "No. Puedes mantener tu número actual y redirigir las llamadas a RecepcionistAI, o podemos darte un número nuevo dedicado."
+            },
+            "q3": {
+                "q": "¿La IA suena como un robot?",
+                "a": "No. Usamos la tecnología de voz más avanzada disponible. Nuestros clientes reportan que sus usuarios no notan la diferencia con una persona real."
+            },
+            "q4": {
+                "q": "¿Qué pasa si la IA no puede responder algo?",
+                "a": "Puedes configurar reglas para transferir llamadas a un humano en casos específicos, o la IA puede tomar un mensaje y notificarte inmediatamente."
+            },
+            "q5": {
+                "q": "¿Quién configura el agente de IA?",
+                "a": "Nosotros nos encargamos de toda la configuración. Solo necesitamos la información de tu negocio (horarios, servicios, precios) y configuramos tu agente personalizado."
+            },
+            "q6": {
+                "q": "¿Puedo cancelar en cualquier momento?",
+                "a": "Sí. No hay contratos ni compromisos. Puedes cancelar tu suscripción cuando quieras desde tu panel de control."
+            },
+            "q7": {
+                "q": "¿Funciona en mi país?",
+                "a": "RecepcionistAI funciona en toda Latinoamérica, Estados Unidos y España. Soportamos números locales en múltiples países."
+            }
+        },
+        "finalCta": {
+            "title": "¿Listo para no perder más clientes?",
+            "subtitle": "Habla con nuestro agente AI y descubre cómo podemos ayudar a tu negocio",
+            "footer": "7 días gratis • Configuración incluida • Cancela cuando quieras"
+        },
+        "footer": {
+            "product": "Producto",
+            "company": "Empresa",
+            "legal": "Legal",
+            "about": "Sobre Nosotros",
+            "blog": "Blog",
+            "contact": "Contacto",
+            "terms": "Términos de Servicio",
+            "privacy": "Política de Privacidad"
+        }
+    },
+    "Dashboard": {
+        "title": "Panel de Control",
+        "subtitle": "Resumen de tu actividad y leads",
+        "welcome": "Bienvenido de nuevo",
+        "metrics": {
+            "total_leads": "Total Leads",
+            "new": "Nuevos",
+            "qualified": "Calificados",
+            "appointments": "Citas Agendadas",
+            "conversion": "Conversión",
+            "byChannel": "Por Canal",
+            "last7Days": "{count} últimos 7 días",
+            "pendingQualification": "Pendientes de calificar",
+            "readyForFollowup": "Listos para seguimiento",
+            "pendingAttendance": "Pendientes de atender",
+            "convertedCount": "{count} convertidos",
+            "callsMessages": "{calls} llamadas, {messages} mensajes"
+        },
+        "recentLeads": {
+            "title": "Leads Recientes",
+            "empty": "No hay leads aún",
+            "emptyDesc": "Los leads aparecerán aquí cuando recibas llamadas o mensajes.",
+            "viewAll": "Ver todos",
+            "noCaseType": "Sin tipo de caso"
+        }
+    },
+    "Leads": {
+        "title": "Leads",
+        "total_leads": "{count} leads en total",
+        "total_lead": "{count} lead en total",
+        "status": {
+            "new": "Nuevo",
+            "qualified": "Calificado",
+            "appointment_scheduled": "Cita Agendada",
+            "converted": "Convertido",
+            "lost": "Perdido"
+        },
+        "source": {
+            "call": "Llamada",
+            "sms": "SMS",
+            "whatsapp": "WhatsApp"
+        },
+        "urgency": {
+            "low": "Baja",
+            "medium": "Media",
+            "high": "Alta",
+            "urgent": "Urgente"
+        },
+        "table": {
+            "contact": "Contacto",
+            "source": "Fuente",
+            "caseType": "Tipo de Caso",
+            "urgency": "Urgencia",
+            "status": "Estado",
+            "date": "Fecha",
+            "noName": "Sin nombre",
+            "actions": {
+                "viewDetails": "Ver detalles",
+                "markQualified": "Marcar calificado",
+                "markConverted": "Marcar convertido",
+                "markLost": "Marcar perdido",
+                "delete": "Eliminar"
+            }
+        }
+    },
+    "Calls": {
+        "title": "Llamadas",
+        "subtitle": "Registro detallado de llamadas y transcripciones de la IA",
+        "table": {
+            "contact": "Contacto",
+            "duration": "Duración",
+            "date": "Fecha",
+            "status": "Estado",
+            "noTranscript": "No hay transcripción",
+            "viewTranscript": "Ver transcripción"
+        }
+    },
+    "Sms": {
+        "title": "Mensajes SMS",
+        "subtitle": "Conversaciones capturadas vía SMS y WhatsApp",
+        "grid": {
+            "empty": "No hay conversaciones de mensajes."
+        }
+    },
+    "Appointments": {
+        "title": "Citas Agendadas",
+        "subtitle": "Gestión de citas confirmadas por el asistente virtual",
+        "empty": "No hay citas programadas para estas fechas.",
+        "noName": "Cita de Lead",
+        "duration": "{count} min de duración",
+        "status": {
+            "scheduled": "Programada",
+            "completed": "Completada",
+            "cancelled": "Cancelada",
+            "no_show": "No asistió"
+        }
+    },
+    "Settings": {
+        "title": "Configuración",
+        "subtitle": "Gestiona el perfil y la personalidad de tu asistente virtual",
+        "businessProfile": "Perfil del Negocio",
+        "businessName": "Nombre del Negocio",
+        "businessNamePlaceholder": "Ej. Clínica Dental Sonrisa",
+        "phone": "Teléfono",
+        "phonePlaceholder": "+1 234 567 890",
+        "timezone": "Zona Horaria",
+        "aiConfig": "Configuración de IA",
+        "assistantScript": "Script del Asistente",
+        "assistantScriptPlaceholder": "Describe cómo quieres que actúe tu asistente, qué servicios ofreces, etc.",
+        "assistantScriptDesc": "Este script define el comportamiento básico y el conocimiento de tu asistente virtual.",
+        "retellAgentId": "Retell Agent ID",
+        "retellAgentIdDesc": "ID del agente configurado en su panel de Retell.ai para la integración de voz.",
+        "saveSettings": "Guardar Configuración",
+        "saving": "Guardando...",
+        "success": "Configuración guardada correctamente",
+        "error": "Error al guardar la configuración",
+        "loadError": "Error al cargar los datos del negocio"
+    },
+    "Pricing": {
+        "title": "Planes simples, sin sorpresas",
+        "subtitle": "Elige el plan que mejor se adapte a tu negocio",
+        "popular": "Más Popular",
+        "cta": "Empezar con 7 días gratis",
+        "trial": "Todos los planes incluyen 7 días de prueba gratis y configuración personalizada.",
+        "starter": {
+            "name": "Básico",
+            "desc": "Perfecto para pequeños negocios"
+        },
+        "pro": {
+            "name": "Pro",
+            "desc": "Para negocios en crecimiento"
+        },
+        "enterprise": {
+            "name": "Enterprise",
+            "desc": "Para equipos y franquicias",
+            "cta": "Contactar Ventas"
+        },
+        "features": {
+            "messages": "{count} mensajes/mes",
+            "phone": "{count} número de teléfono",
+            "autoReply": "Respuestas automáticas",
+            "dashboard": "Dashboard básico",
+            "support": "Soporte por email",
+            "minutes": "{count} minutos de voz",
+            "appointments": "Agenda de citas",
+            "analytics": "Analíticas avanzadas",
+            "integrations": "Integraciones",
+            "priority": "Soporte prioritario",
+            "unlimited": "Mensajes ilimitados",
+            "phoneUnlimited": "Números ilimitados",
+            "api": "API completa",
+            "users": "Múltiples usuarios",
+            "reports": "Reportes personalizados",
+            "manager": "Gerente de cuenta dedicado"
+        }
+    },
+    "Footer": {
+        "description": "Tu recepcionista AI que trabaja 24/7 para que tú no tengas que hacerlo.",
+        "rights": "Todos los derechos reservados."
+    },
+    "Sidebar": {
+        "dashboard": "Dashboard",
+        "analytics": "Analiticas",
+        "leads": "Leads",
+        "calls": "Llamadas",
+        "messages": "Mensajes",
+        "appointments": "Citas",
+        "settings": "Configuración",
+        "subscription": "Suscripción",
+        "adminPanel": "Panel de Admin",
+        "logout": "Cerrar Sesión",
+        "admin": "Administrador",
+        "freePlan": "Plan Gratis",
+        "plan": "Plan {plan}",
+        "mainMenu": "Menú Principal",
+        "administration": "Administración",
+        "configuration": "Configuración",
+        "tagline": "Tu recepcionista 24/7",
+        "closeMenu": "Cerrar menú",
+        "openMenu": "Abrir menú"
+    },
+    "Analytics": {
+        "title": "Analíticas",
+        "subtitle": "Métricas detalladas del rendimiento de tu asistente",
+        "fetchError": "Fallo al cargar las analíticas",
+        "connectionError": "Error de conexión al servidor",
+        "retry": "Reintentar",
+        "noData": "No hay datos todavía",
+        "overview": {
+            "totalLeads": "Total Leads",
+            "last7Days": "Últimos 7 días",
+            "last30Days": "Últimos 30 días",
+            "conversionRate": "Tasa Conversión",
+            "appointmentsCompleted": "Citas Completadas"
+        },
+        "quality": {
+            "title": "Distribución de Calidad",
+            "high": "Alta Calidad",
+            "medium": "Media",
+            "low": "Baja",
+            "lost": "Perdidos"
+        },
+        "source": {
+            "title": "Distribución por Fuente",
+            "calls": "Llamadas",
+            "sms": "SMS",
+            "whatsapp": "WhatsApp"
+        },
+        "status": {
+            "title": "Estado de Leads",
+            "new": "Nuevos",
+            "qualified": "Calificados",
+            "scheduled": "Con Cita",
+            "converted": "Convertidos",
+            "lost": "Perdidos"
+        },
+        "calls": {
+            "title": "Métricas de Llamadas",
+            "total": "Total Llamadas",
+            "avgDuration": "Duración Promedio",
+            "transcripts": "Con Transcripción"
+        },
+        "appointments": {
+            "title": "Métricas de Citas",
+            "total": "Total",
+            "completed": "Completadas",
+            "cancelled": "Canceladas",
+            "noShow": "No Asistieron"
+        },
+        "caseType": {
+            "title": "Análisis por Tipo de Caso",
+            "subtitle": "Identificación de áreas de mejora",
+            "table": {
+                "type": "Tipo de Caso",
+                "leads": "Leads",
+                "lostRate": "Tasa Pérdida",
+                "conversionRate": "Tasa Conversión",
+                "urgentRate": "% Urgentes"
+            }
+        },
+        "contentGaps": {
+            "title": "Áreas de Atención",
+            "subtitle": "Priorización basada en tasa de pérdida vs conversión",
+            "leads": "leads",
+            "lost": "perdidos",
+            "converted": "convertidos",
+            "scoreLabel": "Gap Score",
+            "explanationTitle": "¿Cómo se calcula el Gap Score?",
+            "explanationDesc": "Gap Score = (leads × tasa pérdida) / tasa conversión. Un score alto indica que el tipo de caso necesita más atención o mejores estrategias de conversión."
+        },
+        "recommendations": {
+            "urgent": "URGENTE",
+            "recommended": "ATENCIÓN",
+            "monitor": "MONITOREAR",
+            "ok": "OK"
+        }
+    },
+    "Subscriptions": {
+        "title": "Suscripción",
+        "subtitle": "Administra tu plan y facturación",
+        "manageBilling": "Gestionar Facturación",
+        "currentPlan": "Plan {plan}",
+        "monthlyBilling": "Facturación mensual",
+        "annualBilling": "Facturación anual",
+        "status": "Estado",
+        "nextBilling": "Próximo cobro",
+        "usage": {
+            "messages": "Mensajes",
+            "voiceMinutes": "Minutos de voz"
+        },
+        "adminBadge": {
+            "title": "Eres Administrador",
+            "description": "Tienes acceso completo a todas las funcionalidades sin límite de uso."
+        },
+        "plans": {
+            "change": "Cambiar de Plan",
+            "select": "Elige tu Plan"
+        },
+        "errors": {
+            "load": "Error al cargar datos de suscripción",
+            "checkout": "Error al iniciar el pago",
+            "checkoutConnection": "Error al conectar con la pasarela de pago",
+            "portal": "Error al abrir el portal de facturación",
+            "portalConnection": "Error al conectar con el portal de facturación"
+        }
+    }
+}

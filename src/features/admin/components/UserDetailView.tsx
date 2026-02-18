@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations, useLocale } from 'next-intl'
 import {
   User,
   Mail,
@@ -32,12 +33,14 @@ interface UserDetailViewProps {
 }
 
 export function UserDetailView({ userId, user }: UserDetailViewProps) {
+  const t = useTranslations('Admin.users')
+  const tDetail = useTranslations('Admin.users.detail')
   const { profile, email, last_sign_in, subscription, businesses, leads_count } = user
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const formatDate = (date: string | null | undefined) => {
-    if (!date) return 'Nunca'
-    return new Date(date).toLocaleDateString('es-MX', {
+    if (!date) return 'Never'
+    return new Date(date).toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -63,7 +66,7 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
         className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-violet-600"
       >
         <ChevronLeft className="h-4 w-4" />
-        Volver al Panel
+        {tDetail('back')}
       </Link>
 
       {/* Header Profile Card */}
@@ -77,15 +80,14 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {profile?.full_name || 'Usuario sin nombre'}
+                  {profile?.full_name || tDetail('noName')}
                 </h1>
-                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
-                  profile?.role === 'admin'
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${profile?.role === 'admin'
                     ? 'bg-violet-100 text-violet-700'
                     : 'bg-gray-100 text-gray-700'
-                }`}>
+                  }`}>
                   {profile?.role === 'admin' ? <Shield className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}
-                  {profile?.role === 'admin' ? 'Administrador' : 'Usuario'}
+                  {profile?.role === 'admin' ? t('roles.admin') : t('roles.user')}
                 </span>
               </div>
               <div className="flex flex-wrap gap-4 text-gray-500">
@@ -95,7 +97,7 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
                 </div>
                 <div className="flex items-center gap-1.5 text-sm">
                   <Clock className="h-4 w-4" />
-                  Registrado el {formatDate(profile?.created_at)}
+                  {tDetail('registeredOn', { date: formatDate(profile?.created_at) })}
                 </div>
               </div>
             </div>
@@ -111,7 +113,7 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
             <div className="mb-6 flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
                 <CreditCard className="h-5 w-5 text-violet-600" />
-                Suscripción y Plan
+                {tDetail('tabs.subscription')}
               </h2>
               {subscription && (
                 <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${getStatusColor(subscription.status)}`}>
@@ -124,23 +126,23 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
               <div className="grid gap-6 rounded-xl bg-gray-50 p-6 md:grid-cols-2">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Plan Actual</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{tDetail('subscription.currentPlan')}</p>
                     <div className="mt-1 flex items-center gap-2">
                       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100">
                         <Crown className="h-4 w-4 text-violet-600" />
                       </div>
-                      <p className="text-lg font-bold text-gray-900">{subscription.plan?.display_name || 'Plan Personalizado'}</p>
+                      <p className="text-lg font-bold text-gray-900">{subscription.plan?.display_name || tDetail('subscription.customPlan')}</p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Ciclo de Facturación</p>
-                    <p className="mt-1 font-medium text-gray-700 capitalize">{subscription.billing_cycle === 'monthly' ? 'Mensual' : 'Anual'}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{tDetail('subscription.billingCycle')}</p>
+                    <p className="mt-1 font-medium text-gray-700 capitalize">{subscription.billing_cycle === 'monthly' ? tDetail('subscription.monthly') : tDetail('subscription.annual')}</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Próximo Pago / Fin de Periodo</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{tDetail('subscription.nextPayment')}</p>
                     <div className="mt-1 flex items-center gap-1.5 text-gray-700">
                       <Calendar className="h-4 w-4 text-gray-400" />
                       <p className="font-medium">{formatDate(subscription.current_period_end)}</p>
@@ -148,7 +150,7 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
                   </div>
                   {subscription.trial_ends_at && (
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Trial Finaliza</p>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{tDetail('subscription.trialEnds')}</p>
                       <p className="mt-1 font-medium text-amber-600">{formatDate(subscription.trial_ends_at)}</p>
                     </div>
                   )}
@@ -159,23 +161,23 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
                 <div className="mb-3 rounded-full bg-gray-100 p-3">
                   <CreditCard className="h-6 w-6 text-gray-400" />
                 </div>
-                <p className="font-medium text-gray-900">Sin suscripción activa</p>
-                <p className="text-sm text-gray-500">Este usuario no tiene un plan asignado actualmente.</p>
+                <p className="font-medium text-gray-900">{tDetail('subscription.noSubscription')}</p>
+                <p className="text-sm text-gray-500">{tDetail('subscription.noSubscriptionDesc')}</p>
               </div>
             )}
 
             {/* Usage Stats Mini Grid */}
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
               <div className="rounded-xl border border-gray-100 bg-white p-4 text-center">
-                <p className="text-sm font-medium text-gray-500">Leads Totales</p>
+                <p className="text-sm font-medium text-gray-500">{tDetail('usage.totalLeads')}</p>
                 <p className="mt-1 text-2xl font-bold text-gray-900">{leads_count}</p>
               </div>
               <div className="rounded-xl border border-gray-100 bg-white p-4 text-center">
-                <p className="text-sm font-medium text-gray-500">Voz (minutos)</p>
+                <p className="text-sm font-medium text-gray-500">{tDetail('usage.voiceMinutes')}</p>
                 <p className="mt-1 text-2xl font-bold text-gray-900">{subscription?.usage?.voice_minutes_used || 0}</p>
               </div>
               <div className="rounded-xl border border-gray-100 bg-white p-4 text-center">
-                <p className="text-sm font-medium text-gray-500">Mensajes</p>
+                <p className="text-sm font-medium text-gray-500">{tDetail('usage.messages')}</p>
                 <p className="mt-1 text-2xl font-bold text-gray-900">{subscription?.usage?.messages_used || 0}</p>
               </div>
             </div>
@@ -186,19 +188,19 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
             <div className="p-6 border-b border-gray-100">
               <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
                 <Building2 className="h-5 w-5 text-violet-600" />
-                Negocios / Empresas
+                {tDetail('tabs.businesses')}
               </h2>
             </div>
-            
+
             <div className="overflow-x-auto">
               {businesses.length > 0 ? (
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Nombre</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Teléfono Retell</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">WhatsApp</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Zona Horaria</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{tDetail('businesses.name')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{tDetail('businesses.phone')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{tDetail('businesses.whatsapp')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{tDetail('businesses.timezone')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 bg-white">
@@ -211,13 +213,13 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="flex items-center gap-1.5 text-sm text-gray-700">
                             <Phone className="h-3.5 w-3.5 text-gray-400" />
-                            {biz.phone || 'No configurado'}
+                            {biz.phone || tDetail('businesses.notConfigured')}
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="flex items-center gap-1.5 text-sm text-gray-700">
                             <MessageSquare className="h-3.5 w-3.5 text-gray-400" />
-                            {biz.whatsapp_phone || 'No configurado'}
+                            {biz.whatsapp_phone || tDetail('businesses.notConfigured')}
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
@@ -232,7 +234,7 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
               ) : (
                 <div className="p-12 text-center">
                   <Building2 className="mx-auto h-12 w-12 text-gray-200" />
-                  <p className="mt-4 text-gray-500 font-medium">No se encontraron negocios para este usuario.</p>
+                  <p className="mt-4 text-gray-500 font-medium">{tDetail('businesses.empty')}</p>
                 </div>
               )}
             </div>
@@ -243,35 +245,35 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
         <div className="space-y-6">
           {/* Quick Stats Card */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-gray-400">Actividad Reciente</h3>
+            <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-gray-400">{tDetail('tabs.activity')}</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Último Acceso</span>
+                <span className="text-sm text-gray-500">{tDetail('activity.lastSignIn')}</span>
                 <span className="text-sm font-semibold text-gray-900">{formatDate(last_sign_in).split(',')[0]}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Total Leads</span>
+                <span className="text-sm text-gray-500">{tDetail('activity.totalLeads')}</span>
                 <span className="text-sm font-semibold text-gray-900">{leads_count}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Empresas</span>
+                <span className="text-sm text-gray-500">{tDetail('activity.businesses')}</span>
                 <span className="text-sm font-semibold text-gray-900">{businesses.length}</span>
               </div>
             </div>
-            
+
             <hr className="my-6 border-gray-100" />
-            
+
             <div className="space-y-3">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Acciones Rápidas</p>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{tDetail('activity.actionsTitle')}</p>
               <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-violet-700 hover:shadow-violet-200 active:scale-95">
-                Enviar Notificación
+                {tDetail('activity.sendNotification')}
               </button>
-              <button 
+              <button
                 onClick={() => setIsEditModalOpen(true)}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 transition-all hover:bg-gray-50"
               >
                 <Settings className="h-4 w-4" />
-                Configurar Agentes
+                {tDetail('activity.configureAgents')}
               </button>
             </div>
           </div>
@@ -290,18 +292,18 @@ export function UserDetailView({ userId, user }: UserDetailViewProps) {
 
           {/* Integration Status */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-gray-400">Sistemas Internos</h3>
+            <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-gray-400">{tDetail('systems.title')}</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold">
-                AUTH SYSTEM - SYNCED
+                {tDetail('systems.auth')}
                 <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
               </div>
               <div className="flex items-center justify-between p-2 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold">
-                RETELL API - READY
+                {tDetail('systems.retell')}
                 <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
               </div>
               <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50 text-gray-500 text-xs font-bold">
-                STRIPE ID: {subscription?.stripe_customer_id ? 'CONNECTED' : 'NOT CONNECTED'}
+                {tDetail('systems.stripe', { status: subscription?.stripe_customer_id ? 'CONNECTED' : 'NOT CONNECTED' })}
               </div>
             </div>
           </div>

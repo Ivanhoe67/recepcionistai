@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { MessageSquare, Clock, User, X, Bot, Send, ArrowRight, Smartphone } from 'lucide-react'
 import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
+import { es, enUS } from 'date-fns/locale'
+import { useTranslations, useLocale } from 'next-intl'
 import { SmsWithLead } from '../services/sms.service'
 
 interface SmsGridProps {
@@ -11,6 +12,12 @@ interface SmsGridProps {
 }
 
 export function SmsGrid({ initialConversations }: SmsGridProps) {
+    const t = useTranslations('Sms')
+    const tLeads = useTranslations('Leads.detail.sms')
+    const tDashboard = useTranslations('Dashboard.recentLeads')
+    const locale = useLocale()
+    const dateLocale = locale === 'es' ? es : enUS
+
     const [selectedConv, setSelectedConv] = useState<SmsWithLead | null>(null)
 
     return (
@@ -18,7 +25,7 @@ export function SmsGrid({ initialConversations }: SmsGridProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {initialConversations.length === 0 ? (
                     <div className="col-span-full glass-card p-12 text-center text-sky-600/50">
-                        No hay conversaciones de SMS registradas.
+                        {t('grid.empty')}
                     </div>
                 ) : (
                     initialConversations.map((conv) => {
@@ -30,7 +37,7 @@ export function SmsGrid({ initialConversations }: SmsGridProps) {
                             <div
                                 key={conv.id}
                                 onClick={() => setSelectedConv(conv)}
-                                className="glass-card p-6 h-full flex flex-col hover:border-sky-300 transition-all group cursor-pointer hover:shadow-lg hover:shadow-sky-500/5 animate-fade-in"
+                                className="glass-card p-6 h-full flex flex-col hover:border-sky-300 transition-all group cursor-pointer hover:shadow-lg hover:shadow-sky-50/5 animate-fade-in"
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
@@ -40,7 +47,7 @@ export function SmsGrid({ initialConversations }: SmsGridProps) {
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-sky-900 group-hover:text-sky-600 transition-colors">
-                                                {conv.leads.name || 'Desconocido'}
+                                                {conv.leads.name || tDashboard('noCaseType')}
                                             </h3>
                                             <div className="flex items-center gap-1">
                                                 <Smartphone className="h-3 w-3 text-sky-400" />
@@ -54,14 +61,14 @@ export function SmsGrid({ initialConversations }: SmsGridProps) {
                                 </div>
 
                                 <div className="flex-1 bg-sky-50/50 rounded-xl p-4 mb-4 line-clamp-3 text-sm text-sky-800 italic group-hover:bg-sky-50 transition-colors">
-                                    {lastMessage?.content || 'Sin mensajes registrados'}
+                                    {lastMessage?.content || tLeads('noTranscript')}
                                 </div>
 
                                 <div className="flex items-center justify-between mt-auto">
                                     <span className={`text-xs font-medium flex items-center gap-1 ${isWhatsApp ? 'text-green-600' : 'text-sky-600'
                                         }`}>
                                         <MessageSquare className="h-3 w-3" />
-                                        {messages.length} mensajes {isWhatsApp ? '· WhatsApp' : '· SMS'}
+                                        {messages.length} {tLeads('title')} {isWhatsApp ? '· WhatsApp' : '· SMS'}
                                     </span>
                                     <div className={`p-2 rounded-lg text-white transition-all transform group-hover:translate-x-1 ${isWhatsApp ? 'bg-green-500 group-hover:bg-green-600' : 'bg-sky-500 group-hover:bg-sky-600'
                                         }`}>
@@ -91,7 +98,7 @@ export function SmsGrid({ initialConversations }: SmsGridProps) {
                                 </div>
                                 <div>
                                     <h2 className="text-xl font-bold text-sky-900">
-                                        {selectedConv.leads.name || 'Conversación'}
+                                        {selectedConv.leads.name || tLeads('title')}
                                     </h2>
                                     <p className="text-sm text-sky-600/70 flex items-center gap-2">
                                         <Smartphone className="h-3 w-3" />
@@ -118,14 +125,14 @@ export function SmsGrid({ initialConversations }: SmsGridProps) {
                                     >
                                         <div className={`max-w-[85%] space-y-1 ${isAI ? '' : 'flex flex-col items-end'}`}>
                                             <div className={`p-4 rounded-2xl text-sm shadow-sm ${isAI
-                                                    ? 'bg-white text-sky-900 rounded-tl-none border border-sky-100'
-                                                    : 'bg-sky-500 text-white rounded-tr-none'
+                                                ? 'bg-white text-sky-900 rounded-tl-none border border-sky-100'
+                                                : 'bg-sky-500 text-white rounded-tr-none'
                                                 }`}>
                                                 {msg.content}
                                             </div>
                                             <span className="text-[10px] text-sky-600/50 px-2">
-                                                {msg.timestamp ? format(new Date(msg.timestamp), "HH:mm") : ''}
-                                                {isAI ? ' · Asistente IA' : ' · Lead'}
+                                                {msg.timestamp ? format(new Date(msg.timestamp), "HH:mm", { locale: dateLocale }) : ''}
+                                                {msg.role === 'assistant' || msg.role === 'agent' ? tDashboard('roles.assistant', { defaultValue: 'Asistente' }) : tDashboard('roles.customer', { defaultValue: 'Cliente' })}
                                             </span>
                                         </div>
                                     </div>
@@ -137,7 +144,7 @@ export function SmsGrid({ initialConversations }: SmsGridProps) {
                         <div className="p-4 bg-white/60 border-t border-sky-100 flex justify-center">
                             <div className="flex items-center gap-2 text-xs font-medium text-sky-600 bg-sky-100/50 px-4 py-2 rounded-full">
                                 <Bot className="h-3 w-3" />
-                                Esta conversación es gestionada automáticamente por la IA
+                                {tLeads('transcriptTitle')}
                             </div>
                         </div>
                     </div>

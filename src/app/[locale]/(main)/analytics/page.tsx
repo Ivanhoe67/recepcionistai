@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   BarChart3,
   TrendingUp,
@@ -82,6 +83,7 @@ interface Analytics {
 }
 
 export default function AnalyticsPage() {
+  const t = useTranslations('Analytics')
   const [analytics, setAnalytics] = useState<Analytics | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -157,34 +159,34 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div className="animate-fade-in">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
-          Analíticas
+          {t('title')}
         </h1>
-        <p className="text-sky-600/70 mt-1">Métricas detalladas del rendimiento de tu asistente</p>
+        <p className="text-sky-600/70 mt-1">{t('subtitle')}</p>
       </div>
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {[
           {
-            label: 'Total Leads',
+            label: t('overview.totalLeads'),
             value: analytics.overview.totalLeads,
             icon: Users,
             color: 'from-sky-400 to-sky-500',
           },
           {
-            label: 'Últimos 7 días',
+            label: t('overview.last7Days'),
             value: analytics.overview.leadsLast7Days,
             icon: TrendingUp,
             color: 'from-emerald-400 to-emerald-500',
           },
           {
-            label: 'Últimos 30 días',
+            label: t('overview.last30Days'),
             value: analytics.overview.leadsLast30Days,
             icon: BarChart3,
             color: 'from-violet-400 to-violet-500',
           },
           {
-            label: 'Tasa Conversión',
+            label: t('overview.conversionRate'),
             value: `${analytics.overview.conversionRate}%`,
             icon: CheckCircle,
             color: 'from-green-400 to-green-500',
@@ -192,7 +194,7 @@ export default function AnalyticsPage() {
             rate: analytics.overview.conversionRate,
           },
           {
-            label: 'Citas Completadas',
+            label: t('overview.appointmentsCompleted'),
             value: `${analytics.overview.appointmentCompletionRate}%`,
             icon: Calendar,
             color: 'from-amber-400 to-amber-500',
@@ -208,12 +210,12 @@ export default function AnalyticsPage() {
               <div>
                 <p className="text-sm text-sky-600/70 font-medium">{card.label}</p>
                 <p className={`text-2xl font-bold mt-2 ${card.isRate
-                    ? card.rate >= 70
-                      ? 'text-green-500'
-                      : card.rate >= 40
-                        ? 'text-amber-500'
-                        : 'text-red-500'
-                    : 'text-sky-900'
+                  ? card.rate >= 70
+                    ? 'text-green-500'
+                    : card.rate >= 40
+                      ? 'text-amber-500'
+                      : 'text-red-500'
+                  : 'text-sky-900'
                   }`}>
                   {card.value}
                 </p>
@@ -230,10 +232,10 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quality Distribution - Donut */}
         <div className="glass-card p-6 animate-fade-in">
-          <h3 className="text-lg font-semibold text-sky-900 mb-6">Distribución de Calidad</h3>
+          <h3 className="text-lg font-semibold text-sky-900 mb-6">{t('quality.title')}</h3>
 
           {totalQuality === 0 ? (
-            <p className="text-sky-600/60 text-center py-8">No hay datos todavía</p>
+            <p className="text-sky-600/60 text-center py-8">{t('noData')}</p>
           ) : (
             <div className="flex items-center gap-8">
               {/* Donut Chart */}
@@ -290,28 +292,28 @@ export default function AnalyticsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-green-500" />
-                    <span className="text-sm text-sky-700">Alta Calidad</span>
+                    <span className="text-sm text-sky-700">{t('quality.high')}</span>
                   </div>
                   <span className="text-sm font-medium text-sky-900">{analytics.qualityDistribution.high}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-yellow-500" />
-                    <span className="text-sm text-sky-700">Media</span>
+                    <span className="text-sm text-sky-700">{t('quality.medium')}</span>
                   </div>
                   <span className="text-sm font-medium text-sky-900">{analytics.qualityDistribution.medium}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-orange-500" />
-                    <span className="text-sm text-sky-700">Baja</span>
+                    <span className="text-sm text-sky-700">{t('quality.low')}</span>
                   </div>
                   <span className="text-sm font-medium text-sky-900">{analytics.qualityDistribution.low}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-red-500" />
-                    <span className="text-sm text-sky-700">Perdidos</span>
+                    <span className="text-sm text-sky-700">{t('quality.lost')}</span>
                   </div>
                   <span className="text-sm font-medium text-sky-900">{analytics.qualityDistribution.lost}</span>
                 </div>
@@ -322,16 +324,16 @@ export default function AnalyticsPage() {
 
         {/* Source Distribution */}
         <div className="glass-card p-6 animate-fade-in">
-          <h3 className="text-lg font-semibold text-sky-900 mb-6">Distribución por Fuente</h3>
+          <h3 className="text-lg font-semibold text-sky-900 mb-6">{t('source.title')}</h3>
 
           {totalSource === 0 ? (
             <p className="text-sky-600/60 text-center py-8">No hay datos todavía</p>
           ) : (
             <div className="space-y-4">
               {[
-                { label: 'Llamadas', value: analytics.sourceDistribution.call, icon: Phone, color: 'bg-sky-500' },
-                { label: 'SMS', value: analytics.sourceDistribution.sms, icon: MessageSquare, color: 'bg-emerald-500' },
-                { label: 'WhatsApp', value: analytics.sourceDistribution.whatsapp, icon: MessageSquare, color: 'bg-green-500' },
+                { label: t('source.calls'), value: analytics.sourceDistribution.call, icon: Phone, color: 'bg-sky-500' },
+                { label: t('source.sms'), value: analytics.sourceDistribution.sms, icon: MessageSquare, color: 'bg-emerald-500' },
+                { label: t('source.whatsapp'), value: analytics.sourceDistribution.whatsapp, icon: MessageSquare, color: 'bg-green-500' },
               ].map((source) => {
                 const percentage = totalSource > 0 ? Math.round((source.value / totalSource) * 100) : 0
                 return (
@@ -361,14 +363,14 @@ export default function AnalyticsPage() {
 
       {/* Status Distribution */}
       <div className="glass-card p-6 animate-fade-in">
-        <h3 className="text-lg font-semibold text-sky-900 mb-6">Estado de Leads</h3>
+        <h3 className="text-lg font-semibold text-sky-900 mb-6">{t('status.title')}</h3>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {[
-            { label: 'Nuevos', value: analytics.statusDistribution.new, color: 'glass-badge-sky', icon: Users },
-            { label: 'Calificados', value: analytics.statusDistribution.qualified, color: 'glass-badge-purple', icon: CheckCircle },
-            { label: 'Con Cita', value: analytics.statusDistribution.scheduled, color: 'glass-badge-warning', icon: Calendar },
-            { label: 'Convertidos', value: analytics.statusDistribution.converted, color: 'glass-badge-success', icon: TrendingUp },
-            { label: 'Perdidos', value: analytics.statusDistribution.lost, color: 'glass-badge-danger', icon: XCircle },
+            { label: t('status.new'), value: analytics.statusDistribution.new, color: 'glass-badge-sky', icon: Users },
+            { label: t('status.qualified'), value: analytics.statusDistribution.qualified, color: 'glass-badge-purple', icon: CheckCircle },
+            { label: t('status.scheduled'), value: analytics.statusDistribution.scheduled, color: 'glass-badge-warning', icon: Calendar },
+            { label: t('status.converted'), value: analytics.statusDistribution.converted, color: 'glass-badge-success', icon: TrendingUp },
+            { label: t('status.lost'), value: analytics.statusDistribution.lost, color: 'glass-badge-danger', icon: XCircle },
           ].map((status) => (
             <div key={status.label} className="glass-card glass-card-light p-4 text-center">
               <status.icon className="h-6 w-6 text-sky-500 mx-auto mb-2" />
@@ -387,22 +389,22 @@ export default function AnalyticsPage() {
             <div className="glass-metric-icon bg-gradient-to-br from-sky-400 to-sky-500">
               <Phone className="h-5 w-5 text-white" />
             </div>
-            <h3 className="text-lg font-semibold text-sky-900">Métricas de Llamadas</h3>
+            <h3 className="text-lg font-semibold text-sky-900">{t('calls.title')}</h3>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
               <p className="text-3xl font-bold text-sky-900">{analytics.callMetrics.totalCalls}</p>
-              <p className="text-xs text-sky-600/70 mt-1">Total Llamadas</p>
+              <p className="text-xs text-sky-600/70 mt-1">{t('calls.total')}</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-sky-900">
                 {Math.floor(analytics.callMetrics.avgDuration / 60)}:{String(analytics.callMetrics.avgDuration % 60).padStart(2, '0')}
               </p>
-              <p className="text-xs text-sky-600/70 mt-1">Duración Promedio</p>
+              <p className="text-xs text-sky-600/70 mt-1">{t('calls.avgDuration')}</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-sky-900">{analytics.callMetrics.callsWithTranscripts}</p>
-              <p className="text-xs text-sky-600/70 mt-1">Con Transcripción</p>
+              <p className="text-xs text-sky-600/70 mt-1">{t('calls.transcripts')}</p>
             </div>
           </div>
         </div>
@@ -413,24 +415,24 @@ export default function AnalyticsPage() {
             <div className="glass-metric-icon bg-gradient-to-br from-violet-400 to-violet-500">
               <Calendar className="h-5 w-5 text-white" />
             </div>
-            <h3 className="text-lg font-semibold text-sky-900">Métricas de Citas</h3>
+            <h3 className="text-lg font-semibold text-sky-900">{t('appointments.title')}</h3>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <p className="text-2xl font-bold text-sky-900">{analytics.appointmentMetrics.total}</p>
-              <p className="text-xs text-sky-600/70">Total</p>
+              <p className="text-xs text-sky-600/70">{t('appointments.total')}</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-green-500">{analytics.appointmentMetrics.completed}</p>
-              <p className="text-xs text-sky-600/70">Completadas</p>
+              <p className="text-xs text-sky-600/70">{t('appointments.completed')}</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-red-500">{analytics.appointmentMetrics.cancelled}</p>
-              <p className="text-xs text-sky-600/70">Canceladas</p>
+              <p className="text-xs text-sky-600/70">{t('appointments.cancelled')}</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-amber-500">{analytics.appointmentMetrics.noShow}</p>
-              <p className="text-xs text-sky-600/70">No Asistieron</p>
+              <p className="text-xs text-sky-600/70">{t('appointments.noShow')}</p>
             </div>
           </div>
         </div>
@@ -467,18 +469,18 @@ export default function AnalyticsPage() {
       {/* Pain Points Table */}
       {analytics.painPoints.length > 0 && (
         <div className="glass-card p-6 animate-fade-in">
-          <h3 className="text-lg font-semibold text-sky-900 mb-2">Análisis por Tipo de Caso</h3>
-          <p className="text-sm text-sky-600/70 mb-6">Identificación de áreas de mejora</p>
+          <h3 className="text-lg font-semibold text-sky-900 mb-2">{t('caseType.title')}</h3>
+          <p className="text-sm text-sky-600/70 mb-6">{t('caseType.subtitle')}</p>
 
           <div className="overflow-x-auto">
             <table className="glass-table">
               <thead>
                 <tr>
-                  <th>Tipo de Caso</th>
-                  <th>Leads</th>
-                  <th>Tasa Pérdida</th>
-                  <th>Tasa Conversión</th>
-                  <th>% Urgentes</th>
+                  <th>{t('caseType.table.type')}</th>
+                  <th>{t('caseType.table.leads')}</th>
+                  <th>{t('caseType.table.lostRate')}</th>
+                  <th>{t('caseType.table.conversionRate')}</th>
+                  <th>{t('caseType.table.urgentRate')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -488,24 +490,24 @@ export default function AnalyticsPage() {
                     <td>{pp.sessionCount}</td>
                     <td>
                       <span className={`${pp.lostRate >= 50 ? 'text-red-500' :
-                          pp.lostRate >= 25 ? 'text-orange-500' :
-                            'text-green-500'
+                        pp.lostRate >= 25 ? 'text-orange-500' :
+                          'text-green-500'
                         } font-medium`}>
                         {pp.lostRate}%
                       </span>
                     </td>
                     <td>
                       <span className={`${pp.conversionRate >= 50 ? 'text-green-500' :
-                          pp.conversionRate >= 25 ? 'text-yellow-500' :
-                            'text-red-500'
+                        pp.conversionRate >= 25 ? 'text-yellow-500' :
+                          'text-red-500'
                         } font-medium`}>
                         {pp.conversionRate}%
                       </span>
                     </td>
                     <td>
                       <span className={`${pp.urgentRate >= 50 ? 'text-red-500' :
-                          pp.urgentRate >= 25 ? 'text-orange-500' :
-                            'text-sky-600'
+                        pp.urgentRate >= 25 ? 'text-orange-500' :
+                          'text-sky-600'
                         }`}>
                         {pp.urgentRate}%
                       </span>
@@ -521,9 +523,9 @@ export default function AnalyticsPage() {
       {/* Content Gaps / Recommendations */}
       {analytics.contentGaps.length > 0 && (
         <div className="glass-card p-6 animate-fade-in">
-          <h3 className="text-lg font-semibold text-sky-900 mb-2">Áreas de Atención</h3>
+          <h3 className="text-lg font-semibold text-sky-900 mb-2">{t('contentGaps.title')}</h3>
           <p className="text-sm text-sky-600/70 mb-6">
-            Priorización basada en tasa de pérdida vs conversión
+            {t('contentGaps.subtitle')}
           </p>
 
           <div className="space-y-3">
@@ -537,12 +539,12 @@ export default function AnalyticsPage() {
                   <div>
                     <p className="font-medium text-sky-900">{gap.caseType}</p>
                     <p className="text-sm text-sky-600/70">
-                      {gap.sessionCount} leads · {gap.lostRate}% perdidos · {gap.conversionRate}% convertidos
+                      {gap.sessionCount} {t('contentGaps.leads')} · {gap.lostRate}% {t('contentGaps.lost')} · {gap.conversionRate}% {t('contentGaps.converted')}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-sky-600/70">Gap Score</p>
+                  <p className="text-xs text-sky-600/70">{t('contentGaps.scoreLabel')}</p>
                   <p className="text-xl font-bold text-sky-900">{gap.gapScore}</p>
                 </div>
               </div>
@@ -550,10 +552,9 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="mt-6 p-4 glass-card glass-card-sky">
-            <p className="text-sm font-medium text-sky-800 mb-1">¿Cómo se calcula el Gap Score?</p>
+            <p className="text-sm font-medium text-sky-800 mb-1">{t('contentGaps.explanationTitle')}</p>
             <p className="text-xs text-sky-700">
-              Gap Score = (leads × tasa pérdida) / tasa conversión. Un score alto indica que el tipo de caso
-              necesita más atención o mejores estrategias de conversión.
+              {t('contentGaps.explanationDesc')}
             </p>
           </div>
         </div>
@@ -567,11 +568,12 @@ function RecommendationBadge({
 }: {
   recommendation: 'urgent' | 'recommended' | 'monitor' | 'ok'
 }) {
+  const t = useTranslations('Analytics.recommendations')
   const config = {
-    urgent: { bg: 'bg-red-500', text: 'URGENTE' },
-    recommended: { bg: 'bg-orange-500', text: 'ATENCIÓN' },
-    monitor: { bg: 'bg-yellow-500', text: 'MONITOREAR' },
-    ok: { bg: 'bg-green-500', text: 'OK' },
+    urgent: { bg: 'bg-red-500', text: t('urgent') },
+    recommended: { bg: 'bg-orange-500', text: t('recommended') },
+    monitor: { bg: 'bg-yellow-500', text: t('monitor') },
+    ok: { bg: 'bg-green-500', text: t('ok') },
   }
 
   const { bg, text } = config[recommendation]

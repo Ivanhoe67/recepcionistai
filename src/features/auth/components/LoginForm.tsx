@@ -3,13 +3,15 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
-import { Loader2, Sparkles, Mail, Lock } from 'lucide-react'
+import { Link } from '@/lib/navigation'
+import { Loader2, Mail, Lock } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { loginSchema, LoginInput } from '../types'
 import { signIn } from '../services/auth.service'
 
 export function LoginForm() {
+  const t = useTranslations('Auth')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -41,10 +43,10 @@ export function LoginForm() {
           <img src="/logo.svg" alt="RecepcionistAI" className="w-full h-full" />
         </div>
         <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
-          Bienvenido a RecepcionistAI
+          {t('welcome')}
         </h1>
         <p className="text-sky-600/70 mt-2">
-          Ingresa tus credenciales para acceder
+          {t('credentials')}
         </p>
       </div>
 
@@ -57,14 +59,14 @@ export function LoginForm() {
 
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium text-sky-800">
-            Email
+            {t('email')}
           </label>
           <div className="relative">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-sky-400" />
             <input
               id="email"
               type="email"
-              placeholder="tu@email.com"
+              placeholder={t('emailPlaceholder')}
               className="glass-input w-full pl-12"
               {...form.register('email')}
             />
@@ -78,7 +80,7 @@ export function LoginForm() {
 
         <div className="space-y-2">
           <label htmlFor="password" className="text-sm font-medium text-sky-800">
-            Contraseña
+            {t('password')}
           </label>
           <div className="relative">
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-sky-400" />
@@ -105,20 +107,20 @@ export function LoginForm() {
           {isLoading ? (
             <>
               <Loader2 className="h-5 w-5 animate-spin" />
-              <span>Ingresando...</span>
+              <span>{t('loggingIn')}</span>
             </>
           ) : (
-            <span>Ingresar</span>
+            <span>{t('submit')}</span>
           )}
         </button>
 
         <p className="text-center text-sm text-sky-700">
-          ¿No tienes cuenta?{' '}
+          {t('noAccount')}
           <Link
             href="/signup"
             className="font-semibold text-sky-600 hover:text-sky-800 transition-colors"
           >
-            Regístrate
+            {t('noAccountAction')}
           </Link>
         </p>
       </form>

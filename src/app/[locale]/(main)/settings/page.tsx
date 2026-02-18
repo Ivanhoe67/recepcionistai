@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react'
 import { Settings, Save, Building2, Phone, Globe, FileText, Bot, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 import { getBusiness, upsertBusiness } from '@/features/business/services/business.service'
 import { Business } from '@/lib/database.types'
 
 export default function SettingsPage() {
+    const t = useTranslations('Settings')
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [business, setBusiness] = useState<Partial<Business>>({
@@ -29,7 +31,7 @@ export default function SettingsPage() {
             }
         } catch (error) {
             console.error('Failed to load business:', error)
-            toast.error('Error al cargar los datos del negocio')
+            toast.error(t('loadError'))
         } finally {
             setLoading(false)
         }
@@ -46,10 +48,10 @@ export default function SettingsPage() {
                 assistant_script: business.assistant_script,
                 retell_agent_id: business.retell_agent_id,
             })
-            toast.success('Configuración guardada correctamente')
+            toast.success(t('success'))
         } catch (error) {
             console.error('Failed to save business:', error)
-            toast.error('Error al guardar la configuración')
+            toast.error(t('error'))
         } finally {
             setSaving(false)
         }
@@ -68,10 +70,10 @@ export default function SettingsPage() {
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
-                    Configuración
+                    {t('title')}
                 </h1>
                 <p className="text-sky-600/70 mt-1">
-                    Gestiona el perfil y la personalidad de tu asistente virtual
+                    {t('subtitle')}
                 </p>
             </div>
 
@@ -82,13 +84,13 @@ export default function SettingsPage() {
                         <div className="glass-metric-icon bg-gradient-to-br from-sky-400 to-sky-500">
                             <Building2 className="h-5 w-5 text-white" />
                         </div>
-                        <h2 className="text-xl font-semibold text-sky-900">Perfil del Negocio</h2>
+                        <h2 className="text-xl font-semibold text-sky-900">{t('businessProfile')}</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-sky-700 flex items-center gap-2">
-                                Nombre del Negocio
+                                {t('businessName')}
                             </label>
                             <div className="relative">
                                 <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-sky-400" />
@@ -97,7 +99,7 @@ export default function SettingsPage() {
                                     required
                                     value={business.name}
                                     onChange={(e) => setBusiness({ ...business, name: e.target.value })}
-                                    placeholder="Ej. Clínica Dental Sonrisa"
+                                    placeholder={t('businessNamePlaceholder')}
                                     className="w-full pl-10 pr-4 py-2 bg-white/50 border border-sky-100 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all"
                                 />
                             </div>
@@ -105,7 +107,7 @@ export default function SettingsPage() {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-sky-700 flex items-center gap-2">
-                                Teléfono
+                                {t('phone')}
                             </label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-sky-400" />
@@ -113,7 +115,7 @@ export default function SettingsPage() {
                                     type="text"
                                     value={business.phone || ''}
                                     onChange={(e) => setBusiness({ ...business, phone: e.target.value })}
-                                    placeholder="+1 234 567 890"
+                                    placeholder={t('phonePlaceholder')}
                                     className="w-full pl-10 pr-4 py-2 bg-white/50 border border-sky-100 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all"
                                 />
                             </div>
@@ -121,7 +123,7 @@ export default function SettingsPage() {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-sky-700 flex items-center gap-2">
-                                Zona Horaria
+                                {t('timezone')}
                             </label>
                             <div className="relative">
                                 <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-sky-400" />
@@ -148,30 +150,30 @@ export default function SettingsPage() {
                         <div className="glass-metric-icon bg-gradient-to-br from-violet-400 to-violet-500">
                             <Bot className="h-5 w-5 text-white" />
                         </div>
-                        <h2 className="text-xl font-semibold text-sky-900">Configuración de IA</h2>
+                        <h2 className="text-xl font-semibold text-sky-900">{t('aiConfig')}</h2>
                     </div>
 
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-sky-700 flex items-center gap-2">
                                 <FileText className="h-4 w-4" />
-                                Script del Asistente
+                                {t('assistantScript')}
                             </label>
                             <textarea
                                 rows={6}
                                 value={business.assistant_script || ''}
                                 onChange={(e) => setBusiness({ ...business, assistant_script: e.target.value })}
-                                placeholder="Describe cómo quieres que actúe tu asistente, qué servicios ofreces, etc."
+                                placeholder={t('assistantScriptPlaceholder')}
                                 className="w-full px-4 py-3 bg-white/50 border border-sky-100 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all resize-none"
                             />
                             <p className="text-xs text-sky-600/60">
-                                Este script define el comportamiento básico y el conocimiento de tu asistente virtual.
+                                {t('assistantScriptDesc')}
                             </p>
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-sky-700 flex items-center gap-2">
-                                Retell Agent ID
+                                {t('retellAgentId')}
                             </label>
                             <div className="relative">
                                 <Bot className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-sky-400" />
@@ -184,7 +186,7 @@ export default function SettingsPage() {
                                 />
                             </div>
                             <p className="text-xs text-sky-600/60">
-                                ID del agente configurado en su panel de Retell.ai para la integración de voz.
+                                {t('retellAgentIdDesc')}
                             </p>
                         </div>
                     </div>
@@ -200,12 +202,12 @@ export default function SettingsPage() {
                         {saving ? (
                             <>
                                 <Loader2 className="h-5 w-5 animate-spin" />
-                                Guardando...
+                                {t('saving')}
                             </>
                         ) : (
                             <>
                                 <Save className="h-5 w-5" />
-                                Guardar Configuración
+                                {t('saveSettings')}
                             </>
                         )}
                     </button>

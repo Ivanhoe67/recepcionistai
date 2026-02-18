@@ -6,8 +6,8 @@ import {
   Calendar,
   TrendingUp,
   Phone,
-  MessageSquare,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface Metrics {
   total_leads: number
@@ -28,50 +28,55 @@ interface MetricsCardsProps {
 }
 
 export function MetricsCards({ metrics }: MetricsCardsProps) {
+  const t = useTranslations('Dashboard.metrics')
+
   const conversionRate = metrics.total_leads > 0
     ? Math.round((metrics.converted_leads / metrics.total_leads) * 100)
     : 0
 
   const cards = [
     {
-      title: 'Total Leads',
+      title: t('total_leads'),
       value: metrics.total_leads,
-      description: `${metrics.leads_last_7_days} últimos 7 días`,
+      description: t('last7Days', { count: metrics.leads_last_7_days }),
       icon: Users,
       gradient: 'from-sky-400 to-sky-600',
     },
     {
-      title: 'Nuevos',
+      title: t('new'),
       value: metrics.new_leads,
-      description: 'Pendientes de calificar',
+      description: t('pendingQualification'),
       icon: Users,
       gradient: 'from-amber-400 to-orange-500',
     },
     {
-      title: 'Calificados',
+      title: t('qualified'),
       value: metrics.qualified_leads,
-      description: 'Listos para seguimiento',
+      description: t('readyForFollowup'),
       icon: UserCheck,
       gradient: 'from-emerald-400 to-green-600',
     },
     {
-      title: 'Citas Agendadas',
+      title: t('appointments'),
       value: metrics.scheduled_leads,
-      description: 'Pendientes de atender',
+      description: t('pendingAttendance'),
       icon: Calendar,
       gradient: 'from-violet-400 to-purple-600',
     },
     {
-      title: 'Conversión',
+      title: t('conversion'),
       value: `${conversionRate}%`,
-      description: `${metrics.converted_leads} convertidos`,
+      description: t('convertedCount', { count: metrics.converted_leads }),
       icon: TrendingUp,
       gradient: 'from-cyan-400 to-teal-600',
     },
     {
-      title: 'Por Canal',
+      title: t('byChannel'),
       value: (metrics.call_leads || 0) + (metrics.sms_leads || 0) + (metrics.whatsapp_leads || 0),
-      description: `${metrics.call_leads || 0} llamadas, ${(metrics.sms_leads || 0) + (metrics.whatsapp_leads || 0)} mensajes`,
+      description: t('callsMessages', {
+        calls: metrics.call_leads || 0,
+        messages: (metrics.sms_leads || 0) + (metrics.whatsapp_leads || 0)
+      }),
       icon: Phone,
       gradient: 'from-indigo-400 to-blue-600',
     },

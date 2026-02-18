@@ -1,23 +1,16 @@
-import Link from 'next/link'
-import {
-  Phone,
-  MessageSquare,
-  Calendar,
-  Clock,
-  TrendingUp,
-  CheckCircle2,
-  Play,
-  Star,
-  Zap,
-  Users,
-  BarChart3,
-  Bot,
-  ChevronDown,
-} from 'lucide-react'
+import { Phone, MessageSquare, Calendar, Clock, TrendingUp, CheckCircle2, Play, Star, Zap, Users, BarChart3, Bot, ChevronDown } from 'lucide-react'
 import { FloatingContactButtons } from '@/components/landing/FloatingContactButtons'
 import { HeroCTAButtons, FinalCTAButtons } from '@/components/landing/HeroCTAButtons'
+import { Link } from '@/lib/navigation'
+import { useTranslations } from 'next-intl'
+import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher'
 
 export default function LandingPage() {
+  const t = useTranslations('Landing')
+  const authT = useTranslations('Auth')
+  const tPricing = useTranslations('Pricing')
+  const tFooter = useTranslations('Footer')
+
   return (
     <div className="liquid-bg min-h-screen">
       {/* Navigation */}
@@ -32,27 +25,28 @@ export default function LandingPage() {
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-sky-700 hover:text-sky-900 font-medium transition-colors">
-                Características
+                {t('features.title')}
               </a>
               <a href="#pricing" className="text-sky-700 hover:text-sky-900 font-medium transition-colors">
-                Precios
+                {tPricing('title')}
               </a>
               <a href="#faq" className="text-sky-700 hover:text-sky-900 font-medium transition-colors">
                 FAQ
               </a>
             </div>
             <div className="flex items-center gap-3">
+              <LanguageSwitcher />
               <Link
                 href="/login"
                 className="hidden sm:block text-sky-700 hover:text-sky-900 font-medium transition-colors"
               >
-                Iniciar Sesión
+                {authT('login')}
               </Link>
               <Link
                 href="/signup"
                 className="glass-button text-sm px-4 py-2"
               >
-                Crear Cuenta
+                {authT('signup')}
               </Link>
             </div>
           </div>
@@ -69,22 +63,21 @@ export default function LandingPage() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 glass-badge-sky px-4 py-2 rounded-full">
               <Zap className="w-4 h-4" />
-              <span>Potenciado por Inteligencia Artificial</span>
+              <span>{t('hero.badge')}</span>
             </div>
 
             {/* Main Headline */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-sky-900 leading-tight">
-              Tu Recepcionista AI
+              {t('hero.title')}
               <br />
               <span className="bg-gradient-to-r from-sky-500 to-sky-700 bg-clip-text text-transparent">
-                Que Nunca Descansa
+                {t('hero.subtitle')}
               </span>
             </h1>
 
             {/* Subheadline */}
             <p className="text-xl md:text-2xl text-sky-700 max-w-3xl mx-auto leading-relaxed">
-              Atiende llamadas, responde mensajes y agenda citas <strong>24/7</strong>.
-              Sin contratar personal. Sin perder clientes.
+              {t('hero.subheadline')}
             </p>
 
             {/* CTA Buttons */}
@@ -96,22 +89,22 @@ export default function LandingPage() {
               className="inline-flex items-center gap-2 text-sky-600 hover:text-sky-800 font-medium transition-colors"
             >
               <Play className="w-4 h-4" />
-              O mira el video demo
+              {t('hero.demoVideo')}
             </a>
 
             {/* Trust Indicators */}
             <div className="flex flex-wrap items-center justify-center gap-6 pt-8 text-sky-600">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                <span>7 días de prueba gratis</span>
+                <span>{t('hero.trust.trial')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                <span>Configuración incluida</span>
+                <span>{t('hero.trust.setup')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                <span>Cancela cuando quieras</span>
+                <span>{t('hero.trust.cancel')}</span>
               </div>
             </div>
           </div>
@@ -138,7 +131,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-sky-900">98%</p>
-                  <p className="text-xs text-sky-600">Llamadas atendidas</p>
+                  <p className="text-xs text-sky-600">{t('hero.stats.callsAttended')}</p>
                 </div>
               </div>
             </div>
@@ -151,10 +144,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
-              ¿Te suena familiar?
+              {t('problems.title')}
             </h2>
             <p className="text-xl text-sky-700">
-              Estos problemas le cuestan dinero a tu negocio todos los días
+              {t('problems.subtitle')}
             </p>
           </div>
 
@@ -162,24 +155,24 @@ export default function LandingPage() {
             {[
               {
                 icon: Phone,
-                title: "Llamadas perdidas",
-                description: "Clientes que llaman fuera de horario o cuando estás ocupado. Cada llamada perdida es dinero que se va.",
-                stat: "67%",
-                statLabel: "de clientes no vuelven a llamar"
+                title: t('problems.p1.title'),
+                description: t('problems.p1.desc'),
+                stat: t('problems.p1.stat'),
+                statLabel: t('problems.p1.statLabel')
               },
               {
                 icon: Clock,
-                title: "Tiempo desperdiciado",
-                description: "Horas contestando las mismas preguntas: horarios, precios, ubicación. Tiempo que podrías usar para vender.",
-                stat: "4hrs",
-                statLabel: "diarias en tareas repetitivas"
+                title: t('problems.p2.title'),
+                description: t('problems.p2.desc'),
+                stat: t('problems.p2.stat'),
+                statLabel: t('problems.p2.statLabel')
               },
               {
                 icon: Users,
-                title: "Personal costoso",
-                description: "Una recepcionista cuesta $800-1,500/mes, solo trabaja 8 horas, se enferma y toma vacaciones.",
-                stat: "$1,200",
-                statLabel: "costo mensual promedio"
+                title: t('problems.p3.title'),
+                description: t('problems.p3.desc'),
+                stat: t('problems.p3.stat'),
+                statLabel: t('problems.p3.statLabel')
               }
             ].map((problem, index) => (
               <div
@@ -207,14 +200,13 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 glass-badge-success px-4 py-2 rounded-full mb-4">
               <CheckCircle2 className="w-4 h-4" />
-              <span>La Solución</span>
+              <span>{t('solution.badge')}</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
-              RecepcionistAI trabaja por ti 24/7
+              {t('solution.title')}
             </h2>
             <p className="text-xl text-sky-700 max-w-2xl mx-auto">
-              Por menos de <strong>$7 al día</strong>, tienes una recepcionista que nunca descansa,
-              nunca se enferma y siempre está de buen humor.
+              {t('solution.subtitle')}
             </p>
           </div>
 
@@ -223,23 +215,23 @@ export default function LandingPage() {
               {[
                 {
                   icon: Phone,
-                  title: "Atiende llamadas con voz natural",
-                  description: "IA conversacional que suena humana. Responde preguntas, toma mensajes y transfiere llamadas importantes."
+                  title: t('solution.f1.title'),
+                  description: t('solution.f1.desc')
                 },
                 {
                   icon: MessageSquare,
-                  title: "Responde WhatsApp y SMS",
-                  description: "Contesta automáticamente en segundos. Califica leads y responde las preguntas frecuentes."
+                  title: t('solution.f2.title'),
+                  description: t('solution.f2.desc')
                 },
                 {
                   icon: Calendar,
-                  title: "Agenda citas automáticamente",
-                  description: "Sincroniza con tu calendario y permite a los clientes reservar sin tu intervención."
+                  title: t('solution.f3.title'),
+                  description: t('solution.f3.desc')
                 },
                 {
                   icon: BarChart3,
-                  title: "Dashboard con métricas",
-                  description: "Ve todas las interacciones, leads capturados y oportunidades en un solo lugar."
+                  title: t('solution.f4.title'),
+                  description: t('solution.f4.desc')
                 }
               ].map((feature, index) => (
                 <div key={index} className="flex gap-4 items-start">
@@ -268,10 +260,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
-              Empieza en 3 simples pasos
+              {t('steps.title')}
             </h2>
             <p className="text-xl text-sky-700">
-              Nosotros nos encargamos de todo
+              {t('steps.subtitle')}
             </p>
           </div>
 
@@ -279,20 +271,20 @@ export default function LandingPage() {
             {[
               {
                 step: "1",
-                title: "Agenda tu demo",
-                description: "Habla con nuestro agente AI por WhatsApp y agenda una llamada de demostración gratuita.",
+                title: t('steps.s1.title'),
+                description: t('steps.s1.desc'),
                 icon: MessageSquare
               },
               {
                 step: "2",
-                title: "Elige tu plan",
-                description: "Selecciona el plan que mejor se adapte a tu negocio. Incluye 7 días de prueba gratis.",
+                title: t('steps.s2.title'),
+                description: t('steps.s2.desc'),
                 icon: CheckCircle2
               },
               {
                 step: "3",
-                title: "Listo para atender",
-                description: "Configuramos tu agente personalizado y empiezas a recibir clientes 24/7.",
+                title: t('steps.s3.title'),
+                description: t('steps.s3.desc'),
                 icon: Zap
               }
             ].map((step, index) => (
@@ -321,28 +313,28 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
-              Lo que dicen nuestros clientes
+              {t('testimonials.title')}
             </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                name: "Dr. Carlos Méndez",
-                role: "Clínica Dental Sonrisa",
-                quote: "Antes perdía 5-6 llamadas diarias. Ahora RecepcionistAI las atiende todas y hasta agenda las citas. Recuperé mi inversión en la primera semana.",
+                name: t('testimonials.c1.name'),
+                role: t('testimonials.c1.role'),
+                quote: t('testimonials.c1.quote'),
                 rating: 5
               },
               {
-                name: "María González",
-                role: "Inmobiliaria MG",
-                quote: "Mis agentes ya no pierden tiempo contestando preguntas básicas. La IA califica los leads y solo nos pasa los interesados reales.",
+                name: t('testimonials.c2.name'),
+                role: t('testimonials.c2.role'),
+                quote: t('testimonials.c2.quote'),
                 rating: 5
               },
               {
-                name: "Roberto Sánchez",
-                role: "Taller Automotriz RS",
-                quote: "El equipo de RecepcionistAI configuró todo por mí. Ahora atiendo clientes hasta los domingos sin trabajar.",
+                name: t('testimonials.c3.name'),
+                role: t('testimonials.c3.role'),
+                quote: t('testimonials.c3.quote'),
                 rating: 5
               }
             ].map((testimonial, index) => (
@@ -373,59 +365,59 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
-              Planes simples, sin sorpresas
+              {tPricing('title')}
             </h2>
             <p className="text-xl text-sky-700">
-              Elige el plan que mejor se adapte a tu negocio
+              {tPricing('subtitle')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                name: "Básico",
+                name: tPricing('starter.name'),
                 price: 199,
-                description: "Perfecto para pequeños negocios",
+                description: tPricing('starter.desc'),
                 features: [
-                  "500 mensajes/mes",
-                  "1 número de teléfono",
-                  "Respuestas automáticas",
-                  "Dashboard básico",
-                  "Soporte por email"
+                  tPricing('features.messages', { count: 500 }),
+                  tPricing('features.phone', { count: 1 }),
+                  tPricing('features.autoReply'),
+                  tPricing('features.dashboard'),
+                  tPricing('features.support')
                 ],
-                cta: "Empezar con 7 días gratis",
+                cta: tPricing('cta'),
                 popular: false
               },
               {
-                name: "Pro",
+                name: tPricing('pro.name'),
                 price: 299,
-                description: "Para negocios en crecimiento",
+                description: tPricing('pro.desc'),
                 features: [
-                  "2,000 mensajes/mes",
-                  "100 minutos de voz",
-                  "3 números de teléfono",
-                  "Agenda de citas",
-                  "Analíticas avanzadas",
-                  "Integraciones",
-                  "Soporte prioritario"
+                  tPricing('features.messages', { count: 2000 }),
+                  tPricing('features.minutes', { count: 100 }),
+                  tPricing('features.phone', { count: 3 }),
+                  tPricing('features.appointments'),
+                  tPricing('features.analytics'),
+                  tPricing('features.integrations'),
+                  tPricing('features.priority')
                 ],
-                cta: "Empezar con 7 días gratis",
+                cta: tPricing('cta'),
                 popular: true
               },
               {
-                name: "Enterprise",
+                name: tPricing('enterprise.name'),
                 price: 499,
-                description: "Para equipos y franquicias",
+                description: tPricing('enterprise.desc'),
                 features: [
-                  "Mensajes ilimitados",
-                  "500 minutos de voz",
-                  "Números ilimitados",
-                  "API completa",
-                  "Múltiples usuarios",
-                  "Reportes personalizados",
-                  "Gerente de cuenta dedicado"
+                  tPricing('features.unlimited'),
+                  tPricing('features.minutes', { count: 500 }),
+                  tPricing('features.phoneUnlimited'),
+                  tPricing('features.api'),
+                  tPricing('features.users'),
+                  tPricing('features.reports'),
+                  tPricing('features.manager')
                 ],
-                cta: "Contactar Ventas",
+                cta: tPricing('enterprise.cta'),
                 popular: false
               }
             ].map((plan, index) => (
@@ -435,7 +427,7 @@ export default function LandingPage() {
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="glass-badge-sky px-4 py-1">Más Popular</span>
+                    <span className="glass-badge-sky px-4 py-1">{tPricing('popular')}</span>
                   </div>
                 )}
                 <div className="text-center mb-8">
@@ -456,11 +448,10 @@ export default function LandingPage() {
                 </ul>
                 <Link
                   href="/signup"
-                  className={`block text-center py-3 px-6 rounded-xl font-semibold transition-all ${
-                    plan.popular
-                      ? 'glass-button w-full'
-                      : 'glass-button-secondary w-full'
-                  }`}
+                  className={`block text-center py-3 px-6 rounded-xl font-semibold transition-all ${plan.popular
+                    ? 'glass-button w-full'
+                    : 'glass-button-secondary w-full'
+                    }`}
                 >
                   {plan.cta}
                 </Link>
@@ -469,7 +460,7 @@ export default function LandingPage() {
           </div>
 
           <p className="text-center text-sky-600 mt-8">
-            Todos los planes incluyen 7 días de prueba gratis y configuración personalizada.
+            {tPricing('trial')}
           </p>
         </div>
       </section>
@@ -479,48 +470,27 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
-              Preguntas Frecuentes
+              {t('faq.title')}
             </h2>
           </div>
 
           <div className="space-y-4">
             {[
-              {
-                question: "¿Cómo funciona la prueba de 7 días?",
-                answer: "Al elegir tu plan, tienes 7 días completos para probar el servicio. Si no estás satisfecho, cancelas antes de que termine el periodo y no se te cobra nada."
-              },
-              {
-                question: "¿Necesito cambiar mi número de teléfono?",
-                answer: "No. Puedes mantener tu número actual y redirigir las llamadas a RecepcionistAI, o podemos darte un número nuevo dedicado."
-              },
-              {
-                question: "¿La IA suena como un robot?",
-                answer: "No. Usamos la tecnología de voz más avanzada disponible. Nuestros clientes reportan que sus usuarios no notan la diferencia con una persona real."
-              },
-              {
-                question: "¿Qué pasa si la IA no puede responder algo?",
-                answer: "Puedes configurar reglas para transferir llamadas a un humano en casos específicos, o la IA puede tomar un mensaje y notificarte inmediatamente."
-              },
-              {
-                question: "¿Quién configura el agente de IA?",
-                answer: "Nosotros nos encargamos de toda la configuración. Solo necesitamos la información de tu negocio (horarios, servicios, precios) y configuramos tu agente personalizado."
-              },
-              {
-                question: "¿Puedo cancelar en cualquier momento?",
-                answer: "Sí. No hay contratos ni compromisos. Puedes cancelar tu suscripción cuando quieras desde tu panel de control."
-              },
-              {
-                question: "¿Funciona en mi país?",
-                answer: "RecepcionistAI funciona en toda Latinoamérica, Estados Unidos y España. Soportamos números locales en múltiples países."
-              }
+              { q: t('faq.q1.q'), a: t('faq.q1.a') },
+              { q: t('faq.q2.q'), a: t('faq.q2.a') },
+              { q: t('faq.q3.q'), a: t('faq.q3.a') },
+              { q: t('faq.q4.q'), a: t('faq.q4.a') },
+              { q: t('faq.q5.q'), a: t('faq.q5.a') },
+              { q: t('faq.q6.q'), a: t('faq.q6.a') },
+              { q: t('faq.q7.q'), a: t('faq.q7.a') }
             ].map((faq, index) => (
               <details key={index} className="glass-card group">
                 <summary className="p-6 cursor-pointer list-none flex items-center justify-between">
-                  <span className="font-semibold text-sky-900 pr-4">{faq.question}</span>
+                  <span className="font-semibold text-sky-900 pr-4">{faq.q}</span>
                   <ChevronDown className="w-5 h-5 text-sky-600 group-open:rotate-180 transition-transform flex-shrink-0" />
                 </summary>
                 <div className="px-6 pb-6 text-sky-700">
-                  {faq.answer}
+                  {faq.a}
                 </div>
               </details>
             ))}
@@ -535,14 +505,14 @@ export default function LandingPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-sky-600/20" />
             <div className="relative">
               <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
-                ¿Listo para no perder más clientes?
+                {t('finalCta.title')}
               </h2>
               <p className="text-xl text-sky-700 mb-8 max-w-2xl mx-auto">
-                Habla con nuestro agente AI y descubre cómo podemos ayudar a tu negocio
+                {t('finalCta.subtitle')}
               </p>
               <FinalCTAButtons />
               <p className="text-sky-600 mt-6">
-                7 días gratis • Configuración incluida • Cancela cuando quieras
+                {t('finalCta.footer')}
               </p>
             </div>
           </div>
@@ -561,35 +531,35 @@ export default function LandingPage() {
                 </span>
               </div>
               <p className="text-sky-600">
-                Tu recepcionista AI que trabaja 24/7 para que tú no tengas que hacerlo.
+                {tFooter('description')}
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-sky-900 mb-4">Producto</h4>
+              <h4 className="font-bold text-sky-900 mb-4">{t('footer.product')}</h4>
               <ul className="space-y-2 text-sky-600">
-                <li><a href="#features" className="hover:text-sky-800">Características</a></li>
-                <li><a href="#pricing" className="hover:text-sky-800">Precios</a></li>
+                <li><a href="#features" className="hover:text-sky-800">{t('features.title')}</a></li>
+                <li><a href="#pricing" className="hover:text-sky-800">{tPricing('title')}</a></li>
                 <li><a href="#faq" className="hover:text-sky-800">FAQ</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-sky-900 mb-4">Empresa</h4>
+              <h4 className="font-bold text-sky-900 mb-4">{t('footer.company')}</h4>
               <ul className="space-y-2 text-sky-600">
-                <li><a href="#" className="hover:text-sky-800">Sobre Nosotros</a></li>
-                <li><a href="#" className="hover:text-sky-800">Blog</a></li>
-                <li><a href="#" className="hover:text-sky-800">Contacto</a></li>
+                <li><a href="#" className="hover:text-sky-800">{t('footer.about')}</a></li>
+                <li><a href="#" className="hover:text-sky-800">{t('footer.blog')}</a></li>
+                <li><a href="#" className="hover:text-sky-800">{t('footer.contact')}</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-sky-900 mb-4">Legal</h4>
+              <h4 className="font-bold text-sky-900 mb-4">{t('footer.legal')}</h4>
               <ul className="space-y-2 text-sky-600">
-                <li><a href="#" className="hover:text-sky-800">Términos de Servicio</a></li>
-                <li><a href="#" className="hover:text-sky-800">Política de Privacidad</a></li>
+                <li><a href="#" className="hover:text-sky-800">{t('footer.terms')}</a></li>
+                <li><a href="#" className="hover:text-sky-800">{t('footer.privacy')}</a></li>
               </ul>
             </div>
           </div>
           <div className="pt-8 border-t border-sky-200 text-center text-sky-600">
-            <p>© {new Date().getFullYear()} RecepcionistAI. Todos los derechos reservados.</p>
+            <p>© {new Date().getFullYear()} RecepcionistAI. {tFooter('rights')}</p>
           </div>
         </div>
       </footer>

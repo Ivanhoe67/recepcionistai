@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react'
 import { Phone, MessageSquare, PhoneOff, Loader2 } from 'lucide-react'
 import { RetellWebClient } from 'retell-client-js-sdk'
+import { useTranslations } from 'next-intl'
 
 const WHATSAPP_NUMBER = "15179302149"
-const WHATSAPP_MESSAGE = "Hola! Me interesa RecepcionistAI, quiero agendar una demo."
 
 export function HeroCTAButtons() {
+  const t = useTranslations('Landing')
   const [isCallActive, setIsCallActive] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [retellClient, setRetellClient] = useState<RetellWebClient | null>(null)
@@ -70,6 +71,8 @@ export function HeroCTAButtons() {
     }
   }
 
+  const WHATSAPP_MESSAGE = t('hero.whatsappMsg')
+
   return (
     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
       {isCallActive ? (
@@ -78,7 +81,7 @@ export function HeroCTAButtons() {
           className="glass-button text-lg px-8 py-4 flex items-center gap-2 w-full sm:w-auto justify-center bg-red-500 hover:bg-red-600"
         >
           <PhoneOff className="w-5 h-5 animate-pulse" />
-          Terminar Llamada
+          {t('hero.endCall')}
         </button>
       ) : (
         <button
@@ -91,7 +94,7 @@ export function HeroCTAButtons() {
           ) : (
             <Phone className="w-5 h-5" />
           )}
-          {isLoading ? 'Conectando...' : 'Llamar al AI Ahora'}
+          {isLoading ? t('hero.connecting') : t('hero.callAI')}
         </button>
       )}
       <a
@@ -101,13 +104,14 @@ export function HeroCTAButtons() {
         className="glass-button text-lg px-8 py-4 flex items-center gap-2 w-full sm:w-auto justify-center bg-[#25D366] hover:bg-[#128C7E]"
       >
         <MessageSquare className="w-5 h-5" />
-        WhatsApp Demo
+        {t('hero.whatsapp')}
       </a>
     </div>
   )
 }
 
 export function FinalCTAButtons() {
+  const t = useTranslations('Landing')
   const [isCallActive, setIsCallActive] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [retellClient, setRetellClient] = useState<RetellWebClient | null>(null)
@@ -161,6 +165,8 @@ export function FinalCTAButtons() {
     retellClient?.stopCall()
   }
 
+  const WHATSAPP_MESSAGE = t('hero.whatsappMsg')
+
   return (
     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
       {isCallActive ? (
@@ -169,7 +175,7 @@ export function FinalCTAButtons() {
           className="glass-button text-lg px-8 py-4 flex items-center gap-2 bg-red-500 hover:bg-red-600"
         >
           <PhoneOff className="w-5 h-5 animate-pulse" />
-          Terminar Llamada
+          {t('hero.endCall')}
         </button>
       ) : (
         <button
@@ -182,7 +188,7 @@ export function FinalCTAButtons() {
           ) : (
             <Phone className="w-5 h-5" />
           )}
-          {isLoading ? 'Conectando...' : 'Llamar al AI'}
+          {isLoading ? t('hero.connecting') : t('hero.callAI')}
         </button>
       )}
       <a
@@ -192,7 +198,7 @@ export function FinalCTAButtons() {
         className="glass-button text-lg px-8 py-4 flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E]"
       >
         <MessageSquare className="w-5 h-5" />
-        WhatsApp AI
+        {t('hero.whatsapp')}
       </a>
     </div>
   )

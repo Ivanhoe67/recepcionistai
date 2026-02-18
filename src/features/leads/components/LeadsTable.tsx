@@ -1,16 +1,15 @@
 'use client'
 
+import { Link } from '@/lib/navigation'
 import { Lead } from '@/lib/database.types'
 import { formatDistanceToNow } from 'date-fns'
-import { es } from 'date-fns/locale'
-import Link from 'next/link'
+import { es, enUS } from 'date-fns/locale'
 import { useState } from 'react'
 import { Phone, MessageSquare, MoreHorizontal, Inbox, Eye, CheckCircle, XCircle, Trash2 } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
 
 import {
   LeadStatus,
-  STATUS_LABELS,
-  URGENCY_LABELS,
 } from '../types'
 import { updateLeadStatus, deleteLead } from '../services/leads.service'
 
@@ -34,6 +33,11 @@ const urgencyBadgeClasses: Record<string, string> = {
 }
 
 export function LeadsTable({ leads }: LeadsTableProps) {
+  const t = useTranslations('Leads')
+  const tDashboard = useTranslations('Dashboard.recentLeads')
+  const locale = useLocale()
+  const dateLocale = locale === 'es' ? es : enUS
+
   const [openMenu, setOpenMenu] = useState<string | null>(null)
 
   if (leads.length === 0) {
@@ -43,9 +47,9 @@ export function LeadsTable({ leads }: LeadsTableProps) {
           <div className="glass-metric-icon w-16 h-16 mb-4">
             <Inbox className="h-8 w-8 text-sky-400" />
           </div>
-          <h3 className="text-lg font-semibold text-sky-900">No hay leads aún</h3>
+          <h3 className="text-lg font-semibold text-sky-900">{tDashboard('empty')}</h3>
           <p className="mt-2 text-sm text-sky-600/70 max-w-sm">
-            Los leads aparecerán aquí cuando recibas llamadas o mensajes.
+            {tDashboard('emptyDesc')}
           </p>
         </div>
       </div>
@@ -58,12 +62,12 @@ export function LeadsTable({ leads }: LeadsTableProps) {
         <table className="glass-table">
           <thead>
             <tr>
-              <th>Contacto</th>
-              <th>Fuente</th>
-              <th>Tipo de Caso</th>
-              <th>Urgencia</th>
-              <th>Estado</th>
-              <th>Fecha</th>
+              <th>{t('table.contact')}</th>
+              <th>{t('table.source')}</th>
+              <th>{t('table.caseType')}</th>
+              <th>{t('table.urgency')}</th>
+              <th>{t('table.status')}</th>
+              <th>{t('table.date')}</th>
               <th className="w-[50px]"></th>
             </tr>
           </thead>
@@ -76,7 +80,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                     className="block hover:text-sky-600 transition-colors"
                   >
                     <div className="font-medium text-sky-900">
-                      {lead.name || 'Sin nombre'}
+                      {lead.name || t('table.noName')}
                     </div>
                     <div className="text-sm text-sky-600/60">{lead.phone}</div>
                   </Link>
@@ -90,7 +94,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                         <MessageSquare className="h-4 w-4 text-sky-500" />
                       )}
                     </div>
-                    <span className="capitalize text-sky-700">{lead.source}</span>
+                    <span className="capitalize text-sky-700">{t(`source.${lead.source}`)}</span>
                   </div>
                 </td>
                 <td className="text-sky-800">
@@ -101,7 +105,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                 <td>
                   {lead.urgency ? (
                     <span className={`glass-badge ${urgencyBadgeClasses[lead.urgency]}`}>
-                      {URGENCY_LABELS[lead.urgency]}
+                      {t(`urgency.${lead.urgency}`)}
                     </span>
                   ) : (
                     <span className="text-sky-400">-</span>
@@ -109,13 +113,13 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                 </td>
                 <td>
                   <span className={`glass-badge ${statusBadgeClasses[(lead.status ?? 'new') as LeadStatus]}`}>
-                    {STATUS_LABELS[(lead.status ?? 'new') as LeadStatus]}
+                    {t(`status.${(lead.status ?? 'new') as LeadStatus}`)}
                   </span>
                 </td>
                 <td className="text-sky-600/60">
                   {lead.created_at ? formatDistanceToNow(new Date(lead.created_at as string), {
                     addSuffix: true,
-                    locale: es,
+                    locale: dateLocale,
                   }) : '-'}
                 </td>
                 <td>
@@ -139,7 +143,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                             onClick={() => setOpenMenu(null)}
                           >
                             <Eye className="h-4 w-4" />
-                            Ver detalles
+                            {t('table.actions.viewDetails')}
                           </Link>
                           <button
                             onClick={() => {
@@ -149,7 +153,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-sky-700 hover:bg-glass-sky transition-colors"
                           >
                             <CheckCircle className="h-4 w-4" />
-                            Marcar calificado
+                            {t('table.actions.markQualified')}
                           </button>
                           <button
                             onClick={() => {
@@ -159,7 +163,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-emerald-600 hover:bg-glass-sky transition-colors"
                           >
                             <CheckCircle className="h-4 w-4" />
-                            Marcar convertido
+                            {t('table.actions.markConverted')}
                           </button>
                           <button
                             onClick={() => {
@@ -169,7 +173,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
                           >
                             <XCircle className="h-4 w-4" />
-                            Marcar perdido
+                            {t('table.actions.markLost')}
                           </button>
                           <hr className="my-2 border-sky-200/50" />
                           <button
@@ -180,7 +184,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
                           >
                             <Trash2 className="h-4 w-4" />
-                            Eliminar
+                            {t('table.actions.delete')}
                           </button>
                         </div>
                       </>

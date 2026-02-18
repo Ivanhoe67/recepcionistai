@@ -1,6 +1,7 @@
 'use client'
 
 import { Menu, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface MobileHeaderProps {
   isOpen: boolean
@@ -8,6 +9,7 @@ interface MobileHeaderProps {
 }
 
 export function MobileHeader({ isOpen, onToggle }: MobileHeaderProps) {
+  const t = useTranslations('Sidebar')
   return (
     <div className="fixed top-0 left-0 right-0 z-40 md:hidden">
       <div className="glass-card border-b border-white/20 px-4 py-3 flex items-center justify-between">
@@ -22,7 +24,7 @@ export function MobileHeader({ isOpen, onToggle }: MobileHeaderProps) {
         <button
           onClick={onToggle}
           className="p-2 rounded-lg bg-white/50 hover:bg-white/80 transition-colors"
-          aria-label={isOpen ? 'Cerrar menu' : 'Abrir menu'}
+          aria-label={isOpen ? t('closeMenu') : t('openMenu')}
         >
           {isOpen ? (
             <X className="h-6 w-6 text-sky-700" />

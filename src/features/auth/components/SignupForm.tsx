@@ -3,13 +3,15 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
-import { Loader2, Sparkles, Mail, Lock, User } from 'lucide-react'
+import { Link } from '@/lib/navigation'
+import { Loader2, Mail, Lock, User } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { signupSchema, SignupInput } from '../types'
 import { signUp } from '../services/auth.service'
 
 export function SignupForm() {
+  const t = useTranslations('Auth')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -42,10 +44,10 @@ export function SignupForm() {
           <img src="/logo.svg" alt="RecepcionistAI" className="w-full h-full" />
         </div>
         <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
-          Únete a RecepcionistAI
+          {t('signupTitle')}
         </h1>
         <p className="text-sky-600/70 mt-2">
-          Crea tu cuenta y empieza a capturar leads 24/7
+          {t('signupSubtitle')}
         </p>
       </div>
 
@@ -58,14 +60,14 @@ export function SignupForm() {
 
         <div className="space-y-2">
           <label htmlFor="fullName" className="text-sm font-medium text-sky-800">
-            Nombre Completo
+            {t('fullName')}
           </label>
           <div className="relative">
             <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-sky-400" />
             <input
               id="fullName"
               type="text"
-              placeholder="Juan Pérez"
+              placeholder={t('fullNamePlaceholder')}
               className="glass-input w-full pl-12"
               {...form.register('fullName')}
             />
@@ -79,14 +81,14 @@ export function SignupForm() {
 
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium text-sky-800">
-            Email
+            {t('email')}
           </label>
           <div className="relative">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-sky-400" />
             <input
               id="email"
               type="email"
-              placeholder="tu@email.com"
+              placeholder={t('emailPlaceholder')}
               className="glass-input w-full pl-12"
               {...form.register('email')}
             />
@@ -100,7 +102,7 @@ export function SignupForm() {
 
         <div className="space-y-2">
           <label htmlFor="password" className="text-sm font-medium text-sky-800">
-            Contraseña
+            {t('password')}
           </label>
           <div className="relative">
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-sky-400" />
@@ -127,20 +129,20 @@ export function SignupForm() {
           {isLoading ? (
             <>
               <Loader2 className="h-5 w-5 animate-spin" />
-              <span>Creando cuenta...</span>
+              <span>{t('creatingAccount')}</span>
             </>
           ) : (
-            <span>Crear Cuenta</span>
+            <span>{t('createAccount')}</span>
           )}
         </button>
 
         <p className="text-center text-sm text-sky-700">
-          ¿Ya tienes cuenta?{' '}
+          {t('hasAccount')}
           <Link
             href="/login"
             className="font-semibold text-sky-600 hover:text-sky-800 transition-colors"
           >
-            Inicia sesión
+            {t('hasAccountAction')}
           </Link>
         </p>
       </form>

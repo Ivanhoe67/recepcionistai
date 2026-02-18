@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Users,
   Shield,
@@ -38,6 +39,7 @@ interface UsersTableProps {
 }
 
 export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProps) {
+  const t = useTranslations('Admin')
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
 
   const getStatusColor = (status?: string) => {
@@ -55,7 +57,7 @@ export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProp
   }
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('es-MX', {
+    return new Date(date).toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -70,8 +72,8 @@ export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProp
             <Users className="h-5 w-5 text-violet-600" />
           </div>
           <div>
-            <h2 className="font-semibold text-gray-900">Usuarios</h2>
-            <p className="text-sm text-gray-500">{users.length} usuarios registrados</p>
+            <h2 className="font-semibold text-gray-900">{t('users.title')}</h2>
+            <p className="text-sm text-gray-500">{t('users.registeredCount', { count: users.length })}</p>
           </div>
         </div>
       </div>
@@ -81,19 +83,19 @@ export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProp
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/50">
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Usuario
+                {t('users.table.user')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Rol
+                {t('users.table.role')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Plan
+                {t('users.table.plan')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Registro
+                {t('users.table.registration')}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                Acciones
+                {t('users.table.actions')}
               </th>
             </tr>
           </thead>
@@ -112,7 +114,7 @@ export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProp
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">
-                          {user.full_name || 'Sin nombre'}
+                          {user.full_name || t('users.noName')}
                         </p>
                         <p className="flex items-center gap-1 text-sm text-gray-500">
                           <Mail className="h-3 w-3" />
@@ -122,13 +124,12 @@ export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProp
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-                      user.role === 'admin'
-                        ? 'bg-violet-100 text-violet-700'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${user.role === 'admin'
+                      ? 'bg-violet-100 text-violet-700'
+                      : 'bg-gray-100 text-gray-700'
+                      }`}>
                       <RoleIcon className="h-3 w-3" />
-                      {user.role === 'admin' ? 'Administrador' : 'Usuario'}
+                      {user.role === 'admin' ? t('users.roles.admin') : t('users.roles.user')}
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
@@ -143,7 +144,7 @@ export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProp
                         </span>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">Sin plan</span>
+                      <span className="text-sm text-gray-400">{t('users.noPlan')}</span>
                     )}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
@@ -173,7 +174,7 @@ export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProp
                               className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
                             >
                               <Eye className="h-4 w-4" />
-                              Ver Perfil
+                              {t('users.actions.viewProfile')}
                             </Link>
                             <button
                               onClick={() => {
@@ -185,12 +186,12 @@ export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProp
                               {user.role === 'admin' ? (
                                 <>
                                   <User className="h-4 w-4" />
-                                  Convertir a Usuario
+                                  {t('users.actions.toUser')}
                                 </>
                               ) : (
                                 <>
                                   <Shield className="h-4 w-4" />
-                                  Convertir a Admin
+                                  {t('users.actions.toAdmin')}
                                 </>
                               )}
                             </button>
@@ -202,7 +203,7 @@ export function UsersTable({ users, onUpdateRole, onAssignPlan }: UsersTableProp
                               className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
                             >
                               <CreditCard className="h-4 w-4" />
-                              Asignar Plan
+                              {t('users.actions.assignPlan')}
                             </button>
                           </div>
                         </>

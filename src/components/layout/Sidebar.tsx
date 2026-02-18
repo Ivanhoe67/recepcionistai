@@ -1,7 +1,6 @@
-'use client'
-
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { Link } from '@/lib/navigation'
+import { usePathname } from '@/lib/navigation'
+import { useTranslations } from 'next-intl'
 import {
   LayoutDashboard,
   Users,
@@ -29,6 +28,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ planFeatures, isOpen = false, onClose }: SidebarProps) {
+  const t = useTranslations('Sidebar')
   const pathname = usePathname()
 
   const isAdmin = planFeatures?.is_admin ?? false
@@ -40,40 +40,40 @@ export function Sidebar({ planFeatures, isOpen = false, onClose }: SidebarProps)
   // Base navigation items
   const navigation = [
     {
-      name: 'Dashboard',
+      name: t('dashboard'),
       href: '/dashboard',
       icon: LayoutDashboard,
       available: true,
     },
     {
-      name: 'Analiticas',
+      name: t('analytics'),
       href: '/analytics',
       icon: BarChart3,
       available: isAdmin || hasAnalytics,
       requiredFeature: 'analytics',
     },
     {
-      name: 'Leads',
+      name: t('leads'),
       href: '/leads',
       icon: Users,
       available: true,
     },
     {
-      name: 'Llamadas',
+      name: t('calls'),
       href: '/calls',
       icon: Phone,
       available: isAdmin || hasVoice,
       requiredFeature: 'voice',
     },
     {
-      name: 'Mensajes',
-      href: '/sms',
+      name: t('messages'),
+      href: '/messages',
       icon: MessageSquare,
       available: isAdmin || hasMessaging,
       requiredFeature: 'messaging',
     },
     {
-      name: 'Citas',
+      name: t('appointments'),
       href: '/appointments',
       icon: Calendar,
       available: true,
@@ -83,13 +83,13 @@ export function Sidebar({ planFeatures, isOpen = false, onClose }: SidebarProps)
   // Settings navigation
   const settingsNav = [
     {
-      name: 'Configuracion',
+      name: t('settings'),
       href: '/settings',
       icon: Settings,
       available: true,
     },
     {
-      name: 'Suscripcion',
+      name: t('subscription'),
       href: '/settings/subscription',
       icon: CreditCard,
       available: !isAdmin, // Admins don't need subscription page
@@ -99,7 +99,7 @@ export function Sidebar({ planFeatures, isOpen = false, onClose }: SidebarProps)
   // Admin-only navigation
   const adminNav = [
     {
-      name: 'Admin Panel',
+      name: t('adminPanel'),
       href: '/admin',
       icon: Shield,
       available: isAdmin,
@@ -142,136 +142,136 @@ export function Sidebar({ planFeatures, isOpen = false, onClose }: SidebarProps)
             <h1 className="text-lg font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
               RecepcionistAI
             </h1>
-            <p className="text-xs text-sky-600/70">Tu recepcionista 24/7</p>
+            <p className="text-xs text-sky-600/70">{t('tagline')}</p>
           </div>
           {/* Close button - mobile only */}
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-white/50 transition-colors md:hidden"
-            aria-label="Cerrar menu"
+            aria-label={t('closeMenu')}
           >
             <X className="h-5 w-5 text-sky-700" />
           </button>
         </div>
 
-      {/* Plan badge */}
-      {planFeatures && (
-        <div className="mx-4 mt-4 rounded-lg bg-gradient-to-r from-violet-500/10 to-purple-500/10 px-3 py-2">
-          <div className="flex items-center gap-2">
-            {isAdmin ? (
-              <Shield className="h-4 w-4 text-violet-600" />
-            ) : (
-              <Crown className="h-4 w-4 text-violet-600" />
-            )}
-            <span className="text-sm font-medium text-violet-700">
-              {isAdmin ? 'Administrador' : `Plan ${planName === 'none' ? 'Gratis' : planName.charAt(0).toUpperCase() + planName.slice(1)}`}
-            </span>
+        {/* Plan badge */}
+        {planFeatures && (
+          <div className="mx-4 mt-4 rounded-lg bg-gradient-to-r from-violet-500/10 to-purple-500/10 px-3 py-2">
+            <div className="flex items-center gap-2">
+              {isAdmin ? (
+                <Shield className="h-4 w-4 text-violet-600" />
+              ) : (
+                <Crown className="h-4 w-4 text-violet-600" />
+              )}
+              <span className="text-sm font-medium text-violet-700">
+                {isAdmin ? t('admin') : t('plan', { plan: planName === 'none' ? t('freePlan') : planName.charAt(0).toUpperCase() + planName.slice(1) })}
+              </span>
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Main Navigation */}
-      <nav className="flex-1 min-h-0 space-y-1 px-4 py-6 overflow-y-auto">
-        <p className="px-3 text-xs font-semibold uppercase tracking-wider text-sky-600/60 mb-2">
-          Menu Principal
-        </p>
-        {navigation.map((item, index) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-          const isLocked = !item.available
-
-          return (
-            <Link
-              key={item.name}
-              href={isLocked ? '/settings/subscription' : item.href}
-              onClick={handleLinkClick}
-              className={cn(
-                'glass-nav-item opacity-0 animate-fade-in relative group',
-                isActive && 'active',
-                isLocked && 'opacity-50',
-                `stagger-${index + 1}`
-              )}
-            >
-              <item.icon className="h-5 w-5" />
-              <span className="flex-1">{item.name}</span>
-              {isLocked && (
-                <Lock className="h-4 w-4 text-gray-400" />
-              )}
-              {isLocked && (
-                <div className="absolute left-full ml-2 hidden group-hover:block">
-                  <div className="rounded-lg bg-gray-900 px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap">
-                    Disponible en plan {item.requiredFeature === 'voice' ? 'Pro' : 'Basico'}
-                  </div>
-                </div>
-              )}
-            </Link>
-          )
-        })}
-
-        {/* Admin section */}
-        {isAdmin && (
-          <>
-            <div className="my-4 border-t border-white/20" />
-            <p className="px-3 text-xs font-semibold uppercase tracking-wider text-violet-600/60 mb-2">
-              Administracion
-            </p>
-            {adminNav.filter(i => i.available).map((item, index) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={handleLinkClick}
-                  className={cn(
-                    'glass-nav-item opacity-0 animate-fade-in',
-                    isActive && 'active bg-violet-500/20',
-                    `stagger-${navigation.length + index + 1}`
-                  )}
-                >
-                  <item.icon className="h-5 w-5 text-violet-600" />
-                  <span>{item.name}</span>
-                </Link>
-              )
-            })}
-          </>
         )}
 
-        {/* Settings section */}
-        <div className="my-4 border-t border-white/20" />
-        <p className="px-3 text-xs font-semibold uppercase tracking-wider text-sky-600/60 mb-2">
-          Configuracion
-        </p>
-        {settingsNav.filter(i => i.available).map((item, index) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={handleLinkClick}
-              className={cn(
-                'glass-nav-item opacity-0 animate-fade-in',
-                isActive && 'active',
-                `stagger-${navigation.length + adminNav.length + index + 1}`
-              )}
-            >
-              <item.icon className="h-5 w-5" />
-              <span>{item.name}</span>
-            </Link>
-          )
-        })}
-      </nav>
+        {/* Main Navigation */}
+        <nav className="flex-1 min-h-0 space-y-1 px-4 py-6 overflow-y-auto">
+          <p className="px-3 text-xs font-semibold uppercase tracking-wider text-sky-600/60 mb-2">
+            {t('mainMenu')}
+          </p>
+          {navigation.map((item, index) => {
+            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+            const isLocked = !item.available
 
-      {/* User Section */}
-      <div className="border-t border-white/30 p-4">
-        <form action={signOut}>
-          <button
-            type="submit"
-            className="glass-nav-item w-full text-sky-600 hover:text-sky-800"
-          >
-            <LogOut className="h-5 w-5" />
-            <span>Cerrar Sesion</span>
-          </button>
-        </form>
-      </div>
+            return (
+              <Link
+                key={item.name}
+                href={isLocked ? '/settings/subscription' : item.href}
+                onClick={handleLinkClick}
+                className={cn(
+                  'glass-nav-item opacity-0 animate-fade-in relative group',
+                  isActive && 'active',
+                  isLocked && 'opacity-50',
+                  `stagger-${index + 1}`
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                <span className="flex-1">{item.name}</span>
+                {isLocked && (
+                  <Lock className="h-4 w-4 text-gray-400" />
+                )}
+                {isLocked && (
+                  <div className="absolute left-full ml-2 hidden group-hover:block">
+                    <div className="rounded-lg bg-gray-900 px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap">
+                      {t('availableIn', { plan: item.requiredFeature === 'voice' ? 'Pro' : t('starter.name', { defaultValue: 'Basico' }) })}
+                    </div>
+                  </div>
+                )}
+              </Link>
+            )
+          })}
+
+          {/* Admin section */}
+          {isAdmin && (
+            <>
+              <div className="my-4 border-t border-white/20" />
+              <p className="px-3 text-xs font-semibold uppercase tracking-wider text-violet-600/60 mb-2">
+                {t('administration')}
+              </p>
+              {adminNav.filter(i => i.available).map((item, index) => {
+                const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={handleLinkClick}
+                    className={cn(
+                      'glass-nav-item opacity-0 animate-fade-in',
+                      isActive && 'active bg-violet-500/20',
+                      `stagger-${navigation.length + index + 1}`
+                    )}
+                  >
+                    <item.icon className="h-5 w-5 text-violet-600" />
+                    <span>{item.name}</span>
+                  </Link>
+                )
+              })}
+            </>
+          )}
+
+          {/* Settings section */}
+          <div className="my-4 border-t border-white/20" />
+          <p className="px-3 text-xs font-semibold uppercase tracking-wider text-sky-600/60 mb-2">
+            {t('configuration')}
+          </p>
+          {settingsNav.filter(i => i.available).map((item, index) => {
+            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={handleLinkClick}
+                className={cn(
+                  'glass-nav-item opacity-0 animate-fade-in',
+                  isActive && 'active',
+                  `stagger-${navigation.length + adminNav.length + index + 1}`
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                <span>{item.name}</span>
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* User Section */}
+        <div className="border-t border-white/30 p-4">
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="glass-nav-item w-full text-sky-600 hover:text-sky-800"
+            >
+              <LogOut className="h-5 w-5" />
+              <span>{t('logout')}</span>
+            </button>
+          </form>
+        </div>
       </div>
     </>
   )

@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { Phone, Clock, FileText, Download, X, Bot, User, MessageSquare } from 'lucide-react'
 import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
+import { es, enUS } from 'date-fns/locale'
+import { useTranslations, useLocale } from 'next-intl'
 import { CallWithLead } from '../services/calls.service'
 
 interface CallsTableProps {
@@ -11,6 +12,12 @@ interface CallsTableProps {
 }
 
 export function CallsTable({ initialCalls }: CallsTableProps) {
+    const t = useTranslations('Calls')
+    const tDashboard = useTranslations('Dashboard.recentLeads')
+    const tLeads = useTranslations('Leads.detail.call')
+    const locale = useLocale()
+    const dateLocale = locale === 'es' ? es : enUS
+
     const [selectedCall, setSelectedCall] = useState<CallWithLead | null>(null)
 
     return (
@@ -20,18 +27,18 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                     <table className="glass-table">
                         <thead>
                             <tr>
-                                <th>Lead / Teléfono</th>
-                                <th>Fecha y Hora</th>
-                                <th>Duración</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
+                                <th>{t('table.contact')}</th>
+                                <th>{t('table.date')}</th>
+                                <th>{t('table.duration')}</th>
+                                <th>{t('table.status')}</th>
+                                <th>{tLeads('summary')}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {initialCalls.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="text-center py-12 text-sky-600/50">
-                                        No se han registrado llamadas todavía.
+                                        {tDashboard('empty')}
                                     </td>
                                 </tr>
                             ) : (
@@ -39,14 +46,14 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                                     <tr key={call.id} className="hover:bg-sky-50/30 transition-colors">
                                         <td>
                                             <div className="flex flex-col">
-                                                <span className="font-medium text-sky-900">{call.leads.name || 'Desconocido'}</span>
+                                                <span className="font-medium text-sky-900">{call.leads.name || tDashboard('noCaseType')}</span>
                                                 <span className="text-xs text-sky-600/70">{call.leads.phone}</span>
                                             </div>
                                         </td>
                                         <td>
                                             <div className="flex items-center gap-2 text-sky-900">
                                                 <Clock className="h-4 w-4 text-sky-400" />
-                                                {call.created_at ? format(new Date(call.created_at as string), "d 'de' MMMM, HH:mm", { locale: es }) : '-'}
+                                                {call.created_at ? format(new Date(call.created_at as string), "d MMM, HH:mm", { locale: dateLocale }) : '-'}
                                             </div>
                                         </td>
                                         <td>
@@ -59,7 +66,7 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                                         <td>
                                             <span className={`glass-badge ${call.call_status === 'completed' ? 'glass-badge-success' : 'glass-badge-sky'
                                                 }`}>
-                                                {call.call_status || 'desconocido'}
+                                                {call.call_status || t('status.unknown', { defaultValue: 'unknown' })}
                                             </span>
                                         </td>
                                         <td>
@@ -70,7 +77,7 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="p-2 hover:bg-sky-100 rounded-lg transition-colors text-sky-500"
-                                                        title="Escuchar grabación"
+                                                        title={t('table.viewTranscript')}
                                                     >
                                                         <Download className="h-4 w-4" />
                                                     </a>
@@ -78,7 +85,7 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                                                 <button
                                                     onClick={() => setSelectedCall(call)}
                                                     className="p-2 hover:bg-sky-100 rounded-lg transition-colors text-sky-500"
-                                                    title="Ver detalles y transcripción"
+                                                    title={t('table.viewTranscript')}
                                                 >
                                                     <FileText className="h-4 w-4" />
                                                 </button>
@@ -109,10 +116,10 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                                 </div>
                                 <div>
                                     <h2 className="text-xl font-bold text-sky-900">
-                                        Detalles de la Llamada: {selectedCall.leads.name || selectedCall.leads.phone}
+                                        {tLeads('transcriptTitle')}: {selectedCall.leads.name || selectedCall.leads.phone}
                                     </h2>
                                     <p className="text-sm text-sky-600/70">
-                                        {selectedCall.created_at ? format(new Date(selectedCall.created_at as string), "PPPP 'a las' HH:mm", { locale: es }) : '-'}
+                                        {selectedCall.created_at ? format(new Date(selectedCall.created_at as string), "PPp", { locale: dateLocale }) : '-'}
                                     </p>
                                 </div>
                             </div>
@@ -128,20 +135,20 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                         <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
                             {/* Summary Side */}
                             <div className="w-full md:w-80 p-6 border-b md:border-b-0 md:border-r border-sky-100 bg-sky-50/30 overflow-y-auto">
-                                <h3 className="text-sm font-bold text-sky-900 uppercase tracking-wider mb-4">Resumen de la IA</h3>
+                                <h3 className="text-sm font-bold text-sky-900 uppercase tracking-wider mb-4">{tLeads('summary')}</h3>
                                 {selectedCall.summary ? (
                                     <p className="text-sm text-sky-800 leading-relaxed bg-white/50 p-4 rounded-xl border border-sky-100 italic">
                                         "{selectedCall.summary}"
                                     </p>
                                 ) : (
-                                    <p className="text-sm text-sky-600/50 italic">No hay resumen disponible para esta llamada.</p>
+                                    <p className="text-sm text-sky-600/50 italic">{tLeads('noTranscript')}</p>
                                 )}
 
                                 <div className="mt-8 space-y-4">
-                                    <h3 className="text-sm font-bold text-sky-900 uppercase tracking-wider">Métricas</h3>
+                                    <h3 className="text-sm font-bold text-sky-900 uppercase tracking-wider">{t('table.status')}</h3>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-white/50 p-3 rounded-xl border border-sky-100 text-center">
-                                            <p className="text-[10px] text-sky-600 uppercase">Duración</p>
+                                            <p className="text-[10px] text-sky-600 uppercase">{t('table.duration')}</p>
                                             <p className="text-sm font-bold text-sky-900">
                                                 {selectedCall.duration_seconds
                                                     ? `${Math.floor(selectedCall.duration_seconds / 60)}m ${selectedCall.duration_seconds % 60}s`
@@ -149,7 +156,7 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                                             </p>
                                         </div>
                                         <div className="bg-white/50 p-3 rounded-xl border border-sky-100 text-center">
-                                            <p className="text-[10px] text-sky-600 uppercase">Estado</p>
+                                            <p className="text-[10px] text-sky-600 uppercase">{t('table.status')}</p>
                                             <p className="text-sm font-bold text-sky-900 capitalize">{selectedCall.call_status}</p>
                                         </div>
                                     </div>
@@ -160,7 +167,7 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                             <div className="flex-1 flex flex-col overflow-hidden bg-white/40">
                                 <div className="p-4 border-b border-sky-100 flex items-center gap-2">
                                     <MessageSquare className="h-4 w-4 text-sky-400" />
-                                    <span className="text-sm font-semibold text-sky-900">Transcripción Interactiva</span>
+                                    <span className="text-sm font-semibold text-sky-900">{tLeads('transcriptTitle')}</span>
                                 </div>
 
                                 <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -180,11 +187,11 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                                                 </div>
                                                 <div className={`max-w-[80%] space-y-1`}>
                                                     <p className="text-[10px] font-bold text-sky-600 uppercase">
-                                                        {msg.role === 'assistant' || msg.role === 'agent' ? 'Asistente IA' : 'Lead'}
+                                                        {msg.role === 'assistant' || msg.role === 'agent' ? tLeads('role.agent') : tLeads('role.customer')}
                                                     </p>
                                                     <div className={`p-4 rounded-2xl text-sm ${msg.role === 'assistant' || msg.role === 'agent'
-                                                            ? 'bg-sky-100 text-sky-900 rounded-tl-none border border-sky-200'
-                                                            : 'bg-emerald-100 text-emerald-900 rounded-tr-none border border-emerald-200'
+                                                        ? 'bg-sky-100 text-sky-900 rounded-tl-none border border-sky-200'
+                                                        : 'bg-emerald-100 text-emerald-900 rounded-tr-none border border-emerald-200'
                                                         }`}>
                                                         {msg.content}
                                                     </div>
@@ -198,7 +205,7 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                                     ) : (
                                         <div className="flex flex-col items-center justify-center h-full text-sky-600/50 space-y-2">
                                             <FileText className="h-12 w-12 opacity-20" />
-                                            <p>No hay transcripción disponible para esta llamada.</p>
+                                            <p>{tLeads('noTranscript')}</p>
                                         </div>
                                     )}
                                 </div>
@@ -210,7 +217,7 @@ export function CallsTable({ initialCalls }: CallsTableProps) {
                             <div className="p-4 border-t border-sky-100 bg-sky-50/50 flex justify-center">
                                 <audio controls className="w-full max-w-2xl h-10 accent-sky-500">
                                     <source src={selectedCall.recording_url} type="audio/mpeg" />
-                                    Tu navegador no soporta el elemento de audio.
+                                    Your browser does not support the audio element.
                                 </audio>
                             </div>
                         )}
