@@ -156,13 +156,14 @@ async function pollAndProcessMessages(): Promise<string> {
         continue
       }
 
-      // Check cooldown - don't respond to same phone more than once per 30 seconds
-      const thirtySecondsAgo = Math.floor(Date.now() / 1000) - 30
+      // Check cooldown - don't respond to same phone more than once per 60 seconds
+      // Use created_at (when WE processed) not message timestamp
+      const oneMinuteAgo = new Date(Date.now() - 60000).toISOString()
       const { data: recentMessage } = await supabase
         .from('processed_whatsapp_messages')
         .select('id')
         .eq('remote_jid', msg.key.remoteJid)
-        .gt('timestamp', thirtySecondsAgo)
+        .gt('created_at', oneMinuteAgo)
         .limit(1)
         .maybeSingle()
 
