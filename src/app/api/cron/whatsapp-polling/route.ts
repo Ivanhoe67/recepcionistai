@@ -1,36 +1,23 @@
 // @ts-nocheck
 /**
- * WhatsApp Polling Cron Job
- * Polls Evolution API for new messages and processes them with AI
- * Runs every minute via Vercel Cron, polls multiple times within the minute
+ * WhatsApp Polling Cron Job - NUCLEAR VERSION
+ * Has GLOBAL cooldown to absolutely prevent infinite loops
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { sendWhatsAppText } from '@/lib/evolution-api'
 import { processAgentMessage, formatConversationHistory } from '@/features/whatsapp-agent/services/agent.service'
-import { createAppointmentFromWebhook } from '@/features/appointments/services/appointments.service'
 
 const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || ''
 const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || ''
 const EVOLUTION_INSTANCE = process.env.EVOLUTION_INSTANCE || ''
-const BUSINESS_PHONE = process.env.BUSINESS_PHONE || ''
 const CRON_SECRET = process.env.CRON_SECRET || ''
 
-// How many times to poll within a single cron execution (1 minute)
-const POLLS_PER_MINUTE = 1 // Just once per call for now
-const POLL_INTERVAL_MS = 10000 // 10 seconds
-
-// Known bot responses to filter out (in case fromMe filter doesn't work)
-const BOT_RESPONSE_PATTERNS = [
-  'Gracias por tu mensaje',
-  'Disculpa, estoy teniendo problemas',
-  'Un representante te contactará',
-  'Te responderemos pronto'
-]
+// GLOBAL cooldown in milliseconds (2 minutes)
+const GLOBAL_COOLDOWN_MS = 120000
 
 interface EvolutionMessage {
-  id: string
   key: {
     id: string
     fromMe: boolean
@@ -39,58 +26,60 @@ interface EvolutionMessage {
   pushName?: string
   message?: {
     conversation?: string
-    extendedTextMessage?: {
-      text: string
-    }
+    extendedTextMessage?: { text: string }
   }
   messageType: string
   messageTimestamp: number
 }
 
 export async function GET(request: NextRequest) {
-  // Verify cron secret (optional but recommended)
   const authHeader = request.headers.get('authorization')
   if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const results: string[] = []
-
-  // Poll multiple times within this cron execution
-  for (let i = 0; i < POLLS_PER_MINUTE; i++) {
-    try {
-      const pollResult = await pollAndProcessMessages()
-      results.push(`Poll ${i + 1}: ${pollResult}`)
-
-      // Wait before next poll (except for last iteration)
-      if (i < POLLS_PER_MINUTE - 1) {
-        await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS))
-      }
-    } catch (error) {
-      results.push(`Poll ${i + 1}: Error - ${error}`)
-    }
+  try {
+    const result = await pollAndProcessMessages()
+    return NextResponse.json({
+      status: 'completed',
+      result,
+      timestamp: new Date().toISOString()
+    })
+  } catch (error) {
+    return NextResponse.json({
+      status: 'error',
+      error: String(error),
+      timestamp: new Date().toISOString()
+    })
   }
-
-  return NextResponse.json({
-    status: 'completed',
-    polls: results,
-    timestamp: new Date().toISOString()
-  })
 }
 
 async function pollAndProcessMessages(): Promise<string> {
   const supabase = createAdminClient()
 
-  // Get last processed timestamp from database
-  const { data: config } = await supabase
+  // ============================================
+  // STEP 1: CHECK GLOBAL COOLDOWN
+  // Only allow 1 response every 2 minutes TOTAL
+  // ============================================
+  const { data: lastSent } = await supabase
     .from('system_config')
     .select('value')
-    .eq('key', 'last_whatsapp_poll_timestamp')
+    .eq('key', 'last_whatsapp_response_time')
     .maybeSingle()
 
-  const lastTimestamp = config?.value ? parseInt(config.value) : Math.floor(Date.now() / 1000) - 60
+  if (lastSent?.value) {
+    const lastSentTime = parseInt(lastSent.value)
+    const timeSinceLastResponse = Date.now() - lastSentTime
 
-  // Fetch recent messages from Evolution API
+    if (timeSinceLastResponse < GLOBAL_COOLDOWN_MS) {
+      const secondsRemaining = Math.ceil((GLOBAL_COOLDOWN_MS - timeSinceLastResponse) / 1000)
+      return `GLOBAL COOLDOWN ACTIVE - ${secondsRemaining}s remaining`
+    }
+  }
+
+  // ============================================
+  // STEP 2: FETCH MESSAGES FROM EVOLUTION API
+  // ============================================
   const response = await fetch(
     `${EVOLUTION_API_URL}/chat/findMessages/${encodeURIComponent(EVOLUTION_INSTANCE)}`,
     {
@@ -100,10 +89,8 @@ async function pollAndProcessMessages(): Promise<string> {
         'apikey': EVOLUTION_API_KEY
       },
       body: JSON.stringify({
-        where: {
-          key: { fromMe: false }
-        },
-        limit: 20
+        where: { key: { fromMe: false } },
+        limit: 10
       })
     }
   )
@@ -115,142 +102,116 @@ async function pollAndProcessMessages(): Promise<string> {
   const data = await response.json()
   const messages: EvolutionMessage[] = data.messages?.records || []
 
-  // Filter messages newer than last processed AND not from the bot
-  const botPhone = BUSINESS_PHONE.replace(/^\+/, '')
-  const newMessages = messages.filter(m => {
+  if (messages.length === 0) {
+    return 'No messages found'
+  }
+
+  // ============================================
+  // STEP 3: GET LAST PROCESSED TIMESTAMP
+  // ============================================
+  const { data: config } = await supabase
+    .from('system_config')
+    .select('value')
+    .eq('key', 'last_whatsapp_poll_timestamp')
+    .maybeSingle()
+
+  const lastTimestamp = config?.value ? parseInt(config.value) : Math.floor(Date.now() / 1000) - 300
+
+  // ============================================
+  // STEP 4: FIND ONE NEW MESSAGE TO PROCESS
+  // ============================================
+  let messageToProcess: EvolutionMessage | null = null
+
+  for (const msg of messages) {
     // Skip old messages
-    if (m.messageTimestamp <= lastTimestamp) return false
-    // Skip messages from our own number (bot responses)
-    const senderPhone = m.key.remoteJid.split('@')[0]
-    if (senderPhone === botPhone) return false
-    // Skip messages marked as fromMe (shouldn't happen due to API filter, but double-check)
-    if (m.key.fromMe) return false
-    return true
-  })
+    if (msg.messageTimestamp <= lastTimestamp) continue
 
-  if (newMessages.length === 0) {
-    return 'No new messages'
+    // Skip if fromMe is true
+    if (msg.key.fromMe === true) continue
+
+    // Extract text
+    let text = ''
+    if (msg.messageType === 'conversation') {
+      text = msg.message?.conversation || ''
+    } else if (msg.messageType === 'extendedTextMessage') {
+      text = msg.message?.extendedTextMessage?.text || ''
+    }
+
+    if (!text.trim()) continue
+
+    // Skip messages that look like AI responses
+    const aiPatterns = [
+      'Gracias por',
+      'Disculpa',
+      'representante',
+      'responderemos',
+      'problemas',
+      'Hola!',
+      'Bienvenido',
+      '?Podr',
+      'ayudarte'
+    ]
+
+    const looksLikeAI = aiPatterns.some(p => text.includes(p))
+    if (looksLikeAI) continue
+
+    // Check if already processed
+    const { data: existing } = await supabase
+      .from('processed_whatsapp_messages')
+      .select('id')
+      .eq('message_id', msg.key.id)
+      .maybeSingle()
+
+    if (existing) continue
+
+    // Found a valid message!
+    messageToProcess = msg
+    break
   }
 
-  let processedCount = 0
-  let newestTimestamp = lastTimestamp
-  const MAX_RESPONSES_PER_POLL = 1 // Only respond to 1 message per poll to prevent spam
-
-  for (const msg of newMessages) {
-    // Stop if we've already sent enough responses this poll
-    if (processedCount >= MAX_RESPONSES_PER_POLL) {
-      console.log('Max responses reached, stopping')
-      break
-    }
-    try {
-      // Extract message text first
-      let messageText = ''
-      if (msg.messageType === 'conversation') {
-        messageText = msg.message?.conversation || ''
-      } else if (msg.messageType === 'extendedTextMessage') {
-        messageText = msg.message?.extendedTextMessage?.text || ''
-      }
-
-      if (!messageText.trim()) continue
-
-      // Skip messages that look like bot responses (safety check)
-      const looksLikeBotMessage = BOT_RESPONSE_PATTERNS.some(pattern =>
-        messageText.includes(pattern)
-      )
-      if (looksLikeBotMessage) {
-        console.log('Skipping bot-like message:', msg.key.id)
-        continue
-      }
-
-      // Check cooldown - don't respond to same phone more than once per 60 seconds
-      // Use created_at (when WE processed) not message timestamp
-      const oneMinuteAgo = new Date(Date.now() - 60000).toISOString()
-      const { data: recentMessage } = await supabase
-        .from('processed_whatsapp_messages')
-        .select('id')
-        .eq('remote_jid', msg.key.remoteJid)
-        .gt('created_at', oneMinuteAgo)
-        .limit(1)
-        .maybeSingle()
-
-      if (recentMessage) {
-        console.log('Cooldown active for:', msg.key.remoteJid)
-        continue
-      }
-
-      // Try to insert FIRST (this will fail if already exists due to UNIQUE constraint)
-      const { error: insertError } = await supabase.from('processed_whatsapp_messages').insert({
-        message_id: msg.key.id,
-        remote_jid: msg.key.remoteJid,
-        timestamp: msg.messageTimestamp
-      })
-
-      // If insert failed (duplicate), skip this message
-      if (insertError) {
-        console.log('Message already processed:', msg.key.id)
-        continue
-      }
-
-      console.log('Processing NEW message:', msg.key.id, messageText)
-
-      // Process with AI agent and send response
-      await processIncomingMessage(
-        msg.key.remoteJid,
-        messageText,
-        msg.pushName || 'Usuario'
-      )
-
-      processedCount++
-      newestTimestamp = Math.max(newestTimestamp, msg.messageTimestamp)
-    } catch (error) {
-      console.error('Error processing message:', msg.key.id, error)
-    }
+  if (!messageToProcess) {
+    return 'No new messages to process'
   }
 
-  // Update last processed timestamp
-  await supabase.from('system_config').upsert({
-    key: 'last_whatsapp_poll_timestamp',
-    value: newestTimestamp.toString(),
-    updated_at: new Date().toISOString()
-  })
+  // ============================================
+  // STEP 5: MARK AS PROCESSING (LOCK)
+  // ============================================
+  const { error: insertError } = await supabase
+    .from('processed_whatsapp_messages')
+    .insert({
+      message_id: messageToProcess.key.id,
+      remote_jid: messageToProcess.key.remoteJid,
+      timestamp: messageToProcess.messageTimestamp
+    })
 
-  return `Processed ${processedCount} messages`
-}
+  if (insertError) {
+    return 'Message already being processed'
+  }
 
-async function processIncomingMessage(
-  remoteJid: string,
-  message: string,
-  senderName: string
-) {
-  const supabase = createAdminClient()
-  const phoneNumber = remoteJid.split('@')[0]
+  // ============================================
+  // STEP 6: PROCESS THE MESSAGE
+  // ============================================
+  const text = messageToProcess.message?.conversation ||
+               messageToProcess.message?.extendedTextMessage?.text || ''
 
-  // Get the first business (simplified)
-  const { data: business, error: bizError } = await supabase
+  const phoneNumber = messageToProcess.key.remoteJid.split('@')[0]
+
+  // Get business
+  const { data: business } = await supabase
     .from('businesses')
     .select('id, user_id, name')
     .limit(1)
     .single()
 
-  if (!business || bizError) {
-    console.error('No business found:', bizError)
-    // Send fallback response
-    await sendWhatsAppText({
-      to: remoteJid,
-      text: 'Gracias por tu mensaje. Un representante te contactará pronto.',
-      instance: EVOLUTION_INSTANCE
-    })
-    return
+  if (!business) {
+    return 'No business configured'
   }
 
-  const businessId = business.id
-  const userId = business.user_id
-
-  // Find or create lead
+  // Get or create lead
   let { data: lead } = await supabase
     .from('leads')
-    .select('id, name')
-    .eq('business_id', businessId)
+    .select('id')
+    .eq('business_id', business.id)
     .eq('phone', phoneNumber)
     .maybeSingle()
 
@@ -258,28 +219,25 @@ async function processIncomingMessage(
     const { data: newLead } = await supabase
       .from('leads')
       .insert({
-        business_id: businessId,
+        business_id: business.id,
         phone: phoneNumber,
-        name: senderName,
+        name: messageToProcess.pushName || 'WhatsApp User',
         source: 'whatsapp',
         status: 'new'
       })
-      .select()
+      .select('id')
       .single()
     lead = newLead
-  } else if (senderName && senderName !== 'Usuario' && !lead.name) {
-    await supabase.from('leads').update({ name: senderName }).eq('id', lead.id)
   }
 
   if (!lead) {
-    console.error('Failed to create/find lead')
-    return
+    return 'Failed to create lead'
   }
 
   // Get or create conversation
   let { data: conversation } = await supabase
     .from('sms_conversations')
-    .select('*')
+    .select('id, messages')
     .eq('lead_id', lead.id)
     .maybeSingle()
 
@@ -287,89 +245,80 @@ async function processIncomingMessage(
     const { data: newConv } = await supabase
       .from('sms_conversations')
       .insert({ lead_id: lead.id, messages: [] })
-      .select()
+      .select('id, messages')
       .single()
     conversation = newConv
   }
 
   if (!conversation) {
-    console.error('Failed to create/find conversation')
-    await sendWhatsAppText({
-      to: remoteJid,
-      text: 'Gracias por tu mensaje. Te responderemos pronto.',
-      instance: EVOLUTION_INSTANCE
-    })
-    return
+    return 'Failed to create conversation'
   }
 
-  // Add user message to history
-  const messages = (conversation.messages as Array<{ role: string; content: string; timestamp: string }>) || []
-  messages.push({
-    role: 'user',
-    content: message,
-    timestamp: new Date().toISOString()
-  })
+  // Build conversation history
+  const msgHistory = (conversation.messages as Array<{ role: string; content: string }>) || []
+  msgHistory.push({ role: 'user', content: text })
 
-  // Get AI response with error handling
-  let agentResponse: { text: string; bookingData?: unknown }
+  // ============================================
+  // STEP 7: GET AI RESPONSE
+  // ============================================
+  let aiResponse: string
   try {
-    const conversationHistory = formatConversationHistory(messages)
-    agentResponse = await processAgentMessage(
-      conversationHistory,
-      message,
+    const result = await processAgentMessage(
+      formatConversationHistory(msgHistory),
+      text,
       {
         businessName: business.name || 'Nuestro Negocio',
         agentName: 'Asistente Virtual',
         timezone: process.env.CAL_TIMEZONE || 'America/Detroit'
       }
     )
-  } catch (aiError) {
-    console.error('AI processing error:', aiError)
-    agentResponse = { text: 'Gracias por tu mensaje. Un representante te contactará pronto.' }
+    aiResponse = result.text
+  } catch (err) {
+    console.error('AI Error:', err)
+    return 'AI processing failed - no response sent'
   }
 
-  // Add assistant message to history
-  messages.push({
-    role: 'assistant',
-    content: agentResponse.text,
-    timestamp: new Date().toISOString()
+  if (!aiResponse || aiResponse.length < 5) {
+    return 'AI returned empty response - no message sent'
+  }
+
+  // ============================================
+  // STEP 8: SET GLOBAL COOLDOWN BEFORE SENDING
+  // ============================================
+  await supabase.from('system_config').upsert({
+    key: 'last_whatsapp_response_time',
+    value: Date.now().toString(),
+    updated_at: new Date().toISOString()
   })
 
-  // Update conversation
+  // ============================================
+  // STEP 9: SEND RESPONSE
+  // ============================================
+  await sendWhatsAppText({
+    to: messageToProcess.key.remoteJid,
+    text: aiResponse,
+    instance: EVOLUTION_INSTANCE
+  })
+
+  // ============================================
+  // STEP 10: UPDATE CONVERSATION
+  // ============================================
+  msgHistory.push({ role: 'assistant', content: aiResponse })
+
   await supabase
     .from('sms_conversations')
     .update({
-      messages,
+      messages: msgHistory,
       last_message_at: new Date().toISOString()
     })
     .eq('id', conversation.id)
 
-  // Create appointment if booking was made
-  if (agentResponse.bookingData) {
-    await createAppointmentFromWebhook({
-      leadId: lead.id,
-      businessId,
-      scheduledAt: agentResponse.bookingData.scheduledAt,
-      durationMinutes: 30,
-      source: 'whatsapp',
-      notes: `Agendado por WhatsApp. ${agentResponse.bookingData.notes || ''}`
-    })
-  }
-
-  // Send response via WhatsApp
-  await sendWhatsAppText({
-    to: remoteJid,
-    text: agentResponse.text,
-    instance: EVOLUTION_INSTANCE
+  // Update last processed timestamp
+  await supabase.from('system_config').upsert({
+    key: 'last_whatsapp_poll_timestamp',
+    value: messageToProcess.messageTimestamp.toString(),
+    updated_at: new Date().toISOString()
   })
 
-  // Create notification
-  await supabase.from('notifications').insert({
-    user_id: userId,
-    lead_id: lead.id,
-    type: 'sms_received',
-    channel: 'email',
-    title: 'Conversación WhatsApp',
-    body: `Mensaje de ${senderName}: "${message.substring(0, 100)}..."`
-  })
+  return `SUCCESS: Responded to ${phoneNumber}`
 }
