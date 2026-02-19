@@ -1,7 +1,8 @@
 // @ts-nocheck
 /**
- * WhatsApp Polling - ATOMIC LOCK VERSION
+ * WhatsApp Polling - ATOMIC LOCK VERSION v2
  * Uses database lock to ensure only ONE request processes at a time
+ * Deployed: 2026-02-19
  */
 
 import { NextRequest, NextResponse } from 'next/server'
