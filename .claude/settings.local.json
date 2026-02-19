@@ -31,7 +31,10 @@
       "Bash(ping:*)",
       "WebFetch(domain:www.npmjs.com)",
       "Bash(dir:*)",
-      "WebFetch(domain:gist.github.com)"
+      "WebFetch(domain:gist.github.com)",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__execute_sql"
     ]
   }
 }

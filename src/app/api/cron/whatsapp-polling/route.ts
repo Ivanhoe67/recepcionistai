@@ -21,6 +21,14 @@ const CRON_SECRET = process.env.CRON_SECRET || ''
 const POLLS_PER_MINUTE = 1 // Just once per call for now
 const POLL_INTERVAL_MS = 10000 // 10 seconds
 
+// Known bot responses to filter out (in case fromMe filter doesn't work)
+const BOT_RESPONSE_PATTERNS = [
+  'Gracias por tu mensaje',
+  'Disculpa, estoy teniendo problemas',
+  'Un representante te contactará',
+  'Te responderemos pronto'
+]
+
 interface EvolutionMessage {
   id: string
   key: {
@@ -138,6 +146,30 @@ async function pollAndProcessMessages(): Promise<string> {
       }
 
       if (!messageText.trim()) continue
+
+      // Skip messages that look like bot responses (safety check)
+      const looksLikeBotMessage = BOT_RESPONSE_PATTERNS.some(pattern =>
+        messageText.includes(pattern)
+      )
+      if (looksLikeBotMessage) {
+        console.log('Skipping bot-like message:', msg.key.id)
+        continue
+      }
+
+      // Check cooldown - don't respond to same phone more than once per 30 seconds
+      const thirtySecondsAgo = Math.floor(Date.now() / 1000) - 30
+      const { data: recentMessage } = await supabase
+        .from('processed_whatsapp_messages')
+        .select('id')
+        .eq('remote_jid', msg.key.remoteJid)
+        .gt('timestamp', thirtySecondsAgo)
+        .limit(1)
+        .maybeSingle()
+
+      if (recentMessage) {
+        console.log('Cooldown active for:', msg.key.remoteJid)
+        continue
+      }
 
       // Try to insert FIRST (this will fail if already exists due to UNIQUE constraint)
       const { error: insertError } = await supabase.from('processed_whatsapp_messages').insert({

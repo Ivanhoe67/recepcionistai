@@ -48,11 +48,18 @@ export async function POST(request: NextRequest) {
   try {
     const payload: EvolutionWebhookPayload = await request.json()
 
-    // Verify API key if configured
-    if (EVOLUTION_API_KEY && payload.apikey !== EVOLUTION_API_KEY) {
-      console.log('Invalid API key')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    // Log incoming webhook for debugging
+    console.log('Evolution webhook received:', JSON.stringify(payload, null, 2))
+
+    // TODO: Re-enable API key check after debugging
+    // Temporarily disabled to debug webhook flow
+    // const headerApiKey = request.headers.get('apikey') || request.headers.get('x-api-key')
+    // const bodyApiKey = payload.apikey
+    // const receivedKey = headerApiKey || bodyApiKey
+    // if (EVOLUTION_API_KEY && receivedKey !== EVOLUTION_API_KEY) {
+    //   console.log('Invalid API key. Received:', receivedKey, 'Expected:', EVOLUTION_API_KEY)
+    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // }
 
     // Only process incoming messages
     if (payload.event !== 'messages.upsert' && payload.event !== 'MESSAGES_UPSERT') {

@@ -28,9 +28,9 @@ export async function sendWhatsAppText({ to, text, instance }: SendTextOptions):
   }
 
   try {
-    // Format phone number (remove @ suffix if present)
-    const phone = to.includes('@') ? to.split('@')[0] : to
-    const formattedPhone = phone.startsWith('+') ? phone : `+${phone}`
+    // Format phone number (remove @ suffix if present, remove + prefix)
+    let phone = to.includes('@') ? to.split('@')[0] : to
+    phone = phone.replace(/^\+/, '') // Remove + prefix if present
 
     const response = await fetch(
       `${EVOLUTION_API_URL}/message/sendText/${encodeURIComponent(instanceName)}`,
@@ -41,7 +41,7 @@ export async function sendWhatsAppText({ to, text, instance }: SendTextOptions):
           'apikey': EVOLUTION_API_KEY
         },
         body: JSON.stringify({
-          number: formattedPhone,
+          number: phone,
           text: text
         })
       }
@@ -69,8 +69,8 @@ export async function sendWhatsAppAudio({ to, audioUrl, instance }: SendAudioOpt
   }
 
   try {
-    const phone = to.includes('@') ? to.split('@')[0] : to
-    const formattedPhone = phone.startsWith('+') ? phone : `+${phone}`
+    let phone = to.includes('@') ? to.split('@')[0] : to
+    phone = phone.replace(/^\+/, '') // Remove + prefix if present
 
     const response = await fetch(
       `${EVOLUTION_API_URL}/message/sendWhatsAppAudio/${encodeURIComponent(instanceName)}`,
@@ -81,7 +81,7 @@ export async function sendWhatsAppAudio({ to, audioUrl, instance }: SendAudioOpt
           'apikey': EVOLUTION_API_KEY
         },
         body: JSON.stringify({
-          number: formattedPhone,
+          number: phone,
           audio: audioUrl
         })
       }
