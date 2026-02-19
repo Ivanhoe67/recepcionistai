@@ -134,8 +134,14 @@ async function pollAndProcessMessages(): Promise<string> {
 
   let processedCount = 0
   let newestTimestamp = lastTimestamp
+  const MAX_RESPONSES_PER_POLL = 1 // Only respond to 1 message per poll to prevent spam
 
   for (const msg of newMessages) {
+    // Stop if we've already sent enough responses this poll
+    if (processedCount >= MAX_RESPONSES_PER_POLL) {
+      console.log('Max responses reached, stopping')
+      break
+    }
     try {
       // Extract message text first
       let messageText = ''
