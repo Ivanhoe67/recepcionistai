@@ -4,8 +4,7 @@
  * Integration with Cal.com or similar calendar service
  */
 
-import { z } from 'zod'
-import { tool } from 'ai'
+import { tool, jsonSchema } from 'ai'
 
 const CAL_API_KEY = process.env.CAL_API_KEY || ''
 const CAL_API_URL = process.env.CAL_API_URL || 'https://api.cal.com/v1'
@@ -17,10 +16,17 @@ const CAL_TIMEZONE = process.env.CAL_TIMEZONE || 'America/Detroit'
  */
 export const getAvailabilityTool = tool({
   description: 'Obtiene la disponibilidad del calendario para los próximos días. Usa esta herramienta cuando el usuario quiera agendar una cita.',
-  parameters: z.object({
-    daysAhead: z.number().optional().describe('Número de días a consultar (1-14). Por defecto 3.')
+  parameters: jsonSchema({
+    type: 'object',
+    properties: {
+      daysAhead: {
+        type: 'number',
+        description: 'Número de días a consultar (1-14). Por defecto 3.'
+      }
+    },
+    required: []
   }),
-  execute: async ({ daysAhead }) => {
+  execute: async ({ daysAhead }: { daysAhead?: number }) => {
     const days = daysAhead ?? 3
     try {
       const startDate = new Date()
@@ -72,15 +78,19 @@ export const getAvailabilityTool = tool({
  */
 export const bookAppointmentTool = tool({
   description: 'Agenda una cita en el calendario. Solo usar cuando tengas todos los datos confirmados: nombre, email, teléfono, fecha y hora.',
-  parameters: z.object({
-    name: z.string().describe('Nombre completo del cliente'),
-    email: z.string().email().describe('Email del cliente'),
-    phone: z.string().describe('Teléfono del cliente'),
-    date: z.string().describe('Fecha de la cita en formato YYYY-MM-DD'),
-    time: z.string().describe('Hora de la cita en formato HH:MM (24h) o HH:MM AM/PM'),
-    notes: z.string().optional().describe('Notas adicionales sobre la cita')
+  parameters: jsonSchema({
+    type: 'object',
+    properties: {
+      name: { type: 'string', description: 'Nombre completo del cliente' },
+      email: { type: 'string', description: 'Email del cliente' },
+      phone: { type: 'string', description: 'Teléfono del cliente' },
+      date: { type: 'string', description: 'Fecha de la cita en formato YYYY-MM-DD' },
+      time: { type: 'string', description: 'Hora de la cita en formato HH:MM (24h) o HH:MM AM/PM' },
+      notes: { type: 'string', description: 'Notas adicionales sobre la cita' }
+    },
+    required: ['name', 'email', 'phone', 'date', 'time']
   }),
-  execute: async ({ name, email, phone, date, time, notes }) => {
+  execute: async ({ name, email, phone, date, time, notes }: { name: string; email: string; phone: string; date: string; time: string; notes?: string }) => {
     try {
       // Parse time to 24h format
       const scheduledAt = parseDateTime(date, time)
@@ -153,10 +163,14 @@ export const bookAppointmentTool = tool({
  */
 export const searchAppointmentsTool = tool({
   description: 'Busca las citas existentes de un cliente por su email. Usar cuando el cliente quiera ver, cambiar o cancelar sus citas.',
-  parameters: z.object({
-    email: z.string().email().describe('Email del cliente')
+  parameters: jsonSchema({
+    type: 'object',
+    properties: {
+      email: { type: 'string', description: 'Email del cliente' }
+    },
+    required: ['email']
   }),
-  execute: async ({ email }) => {
+  execute: async ({ email }: { email: string }) => {
     try {
       if (CAL_API_KEY) {
         const response = await fetch(
@@ -197,12 +211,16 @@ export const searchAppointmentsTool = tool({
  */
 export const cancelAppointmentTool = tool({
   description: 'Cancela una cita existente. Siempre preguntar el motivo antes de cancelar.',
-  parameters: z.object({
-    email: z.string().email().describe('Email del cliente'),
-    appointmentDate: z.string().describe('Fecha de la cita a cancelar'),
-    reason: z.string().describe('Motivo de la cancelación')
+  parameters: jsonSchema({
+    type: 'object',
+    properties: {
+      email: { type: 'string', description: 'Email del cliente' },
+      appointmentDate: { type: 'string', description: 'Fecha de la cita a cancelar' },
+      reason: { type: 'string', description: 'Motivo de la cancelación' }
+    },
+    required: ['email', 'appointmentDate', 'reason']
   }),
-  execute: async ({ email, appointmentDate, reason }) => {
+  execute: async ({ email, appointmentDate, reason }: { email: string; appointmentDate: string; reason: string }) => {
     try {
       // In production, would call Cal.com API to cancel
       return {
