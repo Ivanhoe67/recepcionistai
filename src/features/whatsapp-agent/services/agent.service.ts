@@ -174,9 +174,15 @@ export async function processAgentMessage(
       bookingData
     }
   } catch (error) {
-    console.error('Agent processing error:', error)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorStack = error instanceof Error ? error.stack : ''
+    console.error('Agent processing error:', errorMessage)
+    console.error('Error stack:', errorStack)
+    console.error('Full error:', JSON.stringify(error, null, 2))
+
+    // Return more descriptive error for debugging
     return {
-      text: 'Disculpa, estoy teniendo problemas técnicos. ¿Podrías repetir tu mensaje?'
+      text: `Error técnico: ${errorMessage.substring(0, 100)}. Por favor intenta de nuevo.`
     }
   }
 }
