@@ -1,16 +1,20 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Settings, Save, Building2, Phone, Globe, FileText, Bot, Loader2 } from 'lucide-react'
+import { Settings, Save, Building2, Phone, Globe, FileText, Bot, Loader2, ShieldX } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import { getBusiness, upsertBusiness } from '@/features/business/services/business.service'
 import { Business } from '@/lib/database.types'
+import { isAdmin } from '@/features/subscriptions/services/subscription.service'
+import { useRouter } from 'next/navigation'
 
 export default function SettingsPage() {
     const t = useTranslations('Settings')
+    const router = useRouter()
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
+    const [hasAccess, setHasAccess] = useState(false)
     const [business, setBusiness] = useState<Partial<Business>>({
         name: '',
         phone: '',
@@ -20,8 +24,25 @@ export default function SettingsPage() {
     })
 
     useEffect(() => {
-        loadBusiness()
+        checkAccessAndLoad()
     }, [])
+
+    async function checkAccessAndLoad() {
+        try {
+            const adminCheck = await isAdmin()
+            if (!adminCheck) {
+                setHasAccess(false)
+                setLoading(false)
+                return
+            }
+            setHasAccess(true)
+            await loadBusiness()
+        } catch (error) {
+            console.error('Access check failed:', error)
+            setHasAccess(false)
+            setLoading(false)
+        }
+    }
 
     async function loadBusiness() {
         try {
@@ -61,6 +82,27 @@ export default function SettingsPage() {
         return (
             <div className="flex items-center justify-center h-96">
                 <div className="w-10 h-10 border-3 border-sky-200 border-t-sky-500 rounded-full animate-spin" />
+            </div>
+        )
+    }
+
+    // Access denied for non-admins
+    if (!hasAccess) {
+        return (
+            <div className="flex flex-col items-center justify-center h-96 space-y-4">
+                <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center">
+                    <ShieldX className="w-10 h-10 text-red-500" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">{t('accessDenied') || 'Acceso Denegado'}</h2>
+                <p className="text-gray-600 text-center max-w-md">
+                    {t('adminOnly') || 'Esta sección solo está disponible para administradores.'}
+                </p>
+                <button
+                    onClick={() => router.push('/dashboard')}
+                    className="px-6 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors"
+                >
+                    {t('backToDashboard') || 'Volver al Dashboard'}
+                </button>
             </div>
         )
     }

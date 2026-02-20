@@ -11,6 +11,7 @@ const intlMiddleware = createIntlMiddleware({
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const host = request.headers.get('host') || ''
 
   // Handle i18n first
   const response = intlMiddleware(request)
@@ -24,7 +25,12 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
+  // Domain-based routing
+  const isLandingDomain = host.includes('recepcionistai.vercel.app') && !host.includes('recepcionistai-app')
+  const isAppDomain = host.includes('recepcionistai-app.vercel.app')
+
   const isAuthPage = pathname.includes('/login') || pathname.includes('/signup')
+  const isLandingPage = pathname === '/' || pathname === '/es' || pathname === '/en'
   const isProtectedPage = pathname.includes('/dashboard') ||
     pathname.includes('/leads') ||
     pathname.includes('/calls') ||
@@ -33,6 +39,21 @@ export async function middleware(request: NextRequest) {
     pathname.includes('/settings') ||
     pathname.includes('/admin') ||
     pathname.includes('/analytics')
+
+  // Landing domain: redirect protected pages to app domain
+  if (isLandingDomain && isProtectedPage) {
+    const appUrl = new URL(request.url)
+    appUrl.host = 'recepcionistai-app.vercel.app'
+    return NextResponse.redirect(appUrl)
+  }
+
+  // App domain: redirect landing page to login (then to dashboard after auth)
+  if (isAppDomain && isLandingPage) {
+    const url = request.nextUrl.clone()
+    const locale = pathname.split('/')[1] || 'es'
+    url.pathname = `/${locale}/login`
+    return NextResponse.redirect(url)
+  }
 
   if (!isAuthPage && !isProtectedPage) {
     return response
