@@ -18,13 +18,14 @@ const CAL_TIMEZONE = process.env.CAL_TIMEZONE || 'America/Detroit'
 export const getAvailabilityTool = tool({
   description: 'Obtiene la disponibilidad del calendario para los próximos días. Usa esta herramienta cuando el usuario quiera agendar una cita.',
   parameters: z.object({
-    daysAhead: z.number().min(1).max(14).default(3).describe('Número de días a consultar (1-14)')
+    daysAhead: z.number().min(1).max(14).describe('Número de días a consultar (1-14). Por defecto 3.')
   }),
-  execute: async ({ daysAhead = 3 }) => {
+  execute: async ({ daysAhead }) => {
+    const days = daysAhead || 3
     try {
       const startDate = new Date()
       const endDate = new Date()
-      endDate.setDate(endDate.getDate() + daysAhead)
+      endDate.setDate(endDate.getDate() + days)
 
       // If using Cal.com API
       if (CAL_API_KEY && CAL_CALENDAR_ID) {
@@ -49,7 +50,7 @@ export const getAvailabilityTool = tool({
       }
 
       // Fallback: Generate mock availability for demo
-      const slots = generateMockAvailability(startDate, daysAhead)
+      const slots = generateMockAvailability(startDate, days)
       return {
         success: true,
         slots,
