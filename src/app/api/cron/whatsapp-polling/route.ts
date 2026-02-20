@@ -15,8 +15,8 @@ const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || ''
 const EVOLUTION_INSTANCE = process.env.EVOLUTION_INSTANCE || ''
 const CRON_SECRET = process.env.CRON_SECRET || ''
 
-// Lock duration: 60 seconds (prevents rapid loops while allowing responsive conversations)
-const LOCK_DURATION_MS = 60000
+// Lock duration: 25 seconds for faster response times
+const LOCK_DURATION_MS = 25000
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')

@@ -116,7 +116,14 @@ Gestión de agenda:
 - Falta un solo dato: solicita únicamente ese dato antes de avanzar.
 - Datos sensibles (email, teléfono): confirma antes de buscar, cambiar o cancelar.
 - Sin disponibilidad: informa, ofrece alternativas o contacto directo con el equipo humano.
-- Desviaciones de tema: corrige con cortesía y retoma la conversación.`
+- Desviaciones de tema: corrige con cortesía y retoma la conversación.
+
+9. ESTILO DE RESPUESTA
+
+- **SIEMPRE termina tu mensaje con una pregunta** que invite al cliente a continuar la conversación.
+- Después de agendar una cita o resolver la necesidad del cliente, pregunta: "¿Hay algo más en lo que pueda ayudarte?"
+- Si el cliente indica que no necesita nada más, despídete amablemente y da por terminada la conversación.
+- Ejemplo de despedida: "¡Perfecto! Fue un placer atenderte. ¡Que tengas un excelente día! 👋"`
 
 export async function processAgentMessage(
   conversationHistory: Message[],
@@ -145,17 +152,16 @@ export async function processAgentMessage(
   ]
 
   try {
-    // Tools temporarily disabled - will fix schema issue
     const result = await generateText({
       model: openai('gpt-4o-mini'),
       messages,
-      // tools: {
-      //   getAvailability: getAvailabilityTool,
-      //   bookAppointment: bookAppointmentTool,
-      //   searchAppointments: searchAppointmentsTool,
-      //   cancelAppointment: cancelAppointmentTool
-      // },
-      // maxSteps: 5,
+      tools: {
+        getAvailability: getAvailabilityTool,
+        bookAppointment: bookAppointmentTool,
+        searchAppointments: searchAppointmentsTool,
+        cancelAppointment: cancelAppointmentTool
+      },
+      maxSteps: 5,
       temperature: 0.7
     })
 
