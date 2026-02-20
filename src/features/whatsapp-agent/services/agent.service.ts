@@ -162,16 +162,21 @@ export async function processAgentMessage(
     // Extract booking data if a booking was made
     let bookingData: AgentResponse['bookingData'] = undefined
 
-    for (const step of result.steps) {
-      for (const toolResult of step.toolResults) {
-        if (toolResult.toolName === 'bookAppointment' && toolResult.result?.success) {
-          bookingData = toolResult.result.bookingData
+    // Only check steps if they exist (when tools are enabled)
+    if (result.steps && Array.isArray(result.steps)) {
+      for (const step of result.steps) {
+        if (step.toolResults && Array.isArray(step.toolResults)) {
+          for (const toolResult of step.toolResults) {
+            if (toolResult.toolName === 'bookAppointment' && toolResult.result?.success) {
+              bookingData = toolResult.result.bookingData
+            }
+          }
         }
       }
     }
 
     return {
-      text: result.text,
+      text: result.text || '',
       bookingData
     }
   } catch (error) {

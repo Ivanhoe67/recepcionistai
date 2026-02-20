@@ -161,17 +161,11 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
     if (!text.trim()) continue
     if (text.length < 2) continue
 
-    // Skip AI-like messages (expanded list)
+    // Skip only obvious bot responses (minimal list)
     const skipPatterns = [
-      'Gracias', 'gracias', 'Disculpa', 'disculpa',
-      'representante', 'responder', 'ayudar', 'Ayudar',
-      'Hola!', 'Bienvenido', 'bienvenido',
-      'problema', 'Problema', 'asistente', 'Asistente',
-      'negocio', 'Negocio', 'servicio', 'Servicio',
-      'cita', 'Cita', 'agendar', 'Agendar',
-      'horario', 'Horario', 'disponible', 'Disponible',
-      'confirmar', 'Confirmar', 'cancelar', 'Cancelar',
-      '?En qu', 'en qu', 'puedo ayudar'
+      'Error técnico:',
+      'puedo ayudar?',
+      '¿En qué puedo ayudarte?'
     ]
 
     if (skipPatterns.some(p => text.includes(p))) continue
@@ -267,8 +261,8 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
         formatConversationHistory(history),
         text,
         {
-          businessName: business.name || 'Negocio',
-          agentName: 'Asistente',
+          businessName: 'Quick & Quality Services (Q&Q)',
+          agentName: 'Yusi',
           timezone: 'America/Detroit'
         }
       )
