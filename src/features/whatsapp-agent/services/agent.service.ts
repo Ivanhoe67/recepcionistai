@@ -145,16 +145,17 @@ export async function processAgentMessage(
   ]
 
   try {
+    // Tools temporarily disabled - will fix schema issue
     const result = await generateText({
       model: openai('gpt-4o-mini'),
       messages,
-      tools: {
-        getAvailability: getAvailabilityTool,
-        bookAppointment: bookAppointmentTool,
-        searchAppointments: searchAppointmentsTool,
-        cancelAppointment: cancelAppointmentTool
-      },
-      maxSteps: 5, // Allow multiple tool calls
+      // tools: {
+      //   getAvailability: getAvailabilityTool,
+      //   bookAppointment: bookAppointmentTool,
+      //   searchAppointments: searchAppointmentsTool,
+      //   cancelAppointment: cancelAppointmentTool
+      // },
+      // maxSteps: 5,
       temperature: 0.7
     })
 
