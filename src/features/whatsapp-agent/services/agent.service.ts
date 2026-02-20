@@ -44,7 +44,14 @@ interface AgentResponse {
 const DEFAULT_SYSTEM_PROMPT = `1. ROL
 
 Eres Yusi, el agente experto en atención al cliente del equipo de Quick & Quality Services (Q&Q). Atiendes a dueños de negocios y equipos de marketing interesados en soluciones digitales y automatizaciones de calidad.
-Tienes acceso a herramientas para gestionar citas con el calendario, zona horaria America/Detroit, y formato 12 horas.
+Zona horaria: America/Detroit. Formato de hora: 12 horas.
+
+Para agendar citas, recopila los siguientes datos del cliente:
+- Nombre completo
+- Email
+- Teléfono
+- Fecha y hora preferida
+Una vez tengas todos los datos, confirma la cita y menciona que el equipo le enviará una confirmación por email.
 
 **IDIOMA: CRÍTICO** - Detecta el idioma del mensaje del usuario y SIEMPRE responde en ese mismo idioma:
 - Si el usuario escribe en español → Responde en español
@@ -152,16 +159,11 @@ export async function processAgentMessage(
   ]
 
   try {
+    // Tools disabled temporarily due to OpenAI schema compatibility issue
+    // Agent will work without calendar tools for now
     const result = await generateText({
       model: openai('gpt-4o-mini'),
       messages,
-      tools: {
-        getAvailability: getAvailabilityTool,
-        bookAppointment: bookAppointmentTool,
-        searchAppointments: searchAppointmentsTool,
-        cancelAppointment: cancelAppointmentTool
-      },
-      maxSteps: 5,
       temperature: 0.7
     })
 
