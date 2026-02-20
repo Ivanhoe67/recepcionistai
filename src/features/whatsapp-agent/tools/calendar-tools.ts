@@ -18,10 +18,10 @@ const CAL_TIMEZONE = process.env.CAL_TIMEZONE || 'America/Detroit'
 export const getAvailabilityTool = tool({
   description: 'Obtiene la disponibilidad del calendario para los próximos días. Usa esta herramienta cuando el usuario quiera agendar una cita.',
   parameters: z.object({
-    daysAhead: z.number().min(1).max(14).describe('Número de días a consultar (1-14). Por defecto 3.')
+    daysAhead: z.number().optional().describe('Número de días a consultar (1-14). Por defecto 3.')
   }),
   execute: async ({ daysAhead }) => {
-    const days = daysAhead || 3
+    const days = daysAhead ?? 3
     try {
       const startDate = new Date()
       const endDate = new Date()
