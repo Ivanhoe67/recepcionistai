@@ -1,7 +1,7 @@
 // @ts-nocheck
 /**
  * WhatsApp AI Agent Service
- * Handles conversation with AI and tool execution
+ * Simple conversational agent without tools (more reliable)
  */
 
 import { generateText } from 'ai'
@@ -16,27 +16,12 @@ interface AgentConfig {
   businessName: string
   agentName: string
   systemPrompt?: string
-  calendarId?: string
   timezone?: string
 }
 
 interface AgentResponse {
   text: string
-  followUpText?: string // Second message to send (e.g., availability after "wait")
-  bookingData?: {
-    nombre_completo: string
-    email: string
-    telefono: string
-    fecha_seleccionada: string
-    hora_seleccionada: string
-    scheduledAt: string
-    calendarId: string
-    timezone: string
-    notes?: string
-  }
 }
-
-const CAL_TIMEZONE = process.env.CAL_TIMEZONE || 'America/Detroit'
 
 const DEFAULT_SYSTEM_PROMPT = `1. ROL
 
@@ -94,25 +79,27 @@ Q&Q ofrece soluciones digitales para negocios:
 
 8. FLUJO DE AGENDAMIENTO
 
-**FLUJO NATURAL DE CONSULTA**:
-- Cuando el cliente quiera agendar, puedes decir algo como "Déjame verificar la disponibilidad..." para sonar natural
-- El sistema enviará automáticamente los horarios disponibles en un mensaje de seguimiento
-- SIEMPRE termina con una pregunta para continuar la conversación
+**IMPORTANTE - TIENES ACCESO AL HISTORIAL COMPLETO DE LA CONVERSACIÓN**
+- SIEMPRE revisa los mensajes anteriores para ver qué datos ya te dio el cliente
+- NUNCA pidas información que el cliente ya proporcionó
+- Si ya tienes el nombre, email, teléfono y horario, CONFIRMA LA CITA directamente
 
 Proceso de agendamiento:
-1. Pregunta qué día/horario prefiere el cliente
-2. Muestra opciones disponibles (usa getAvailability internamente)
-3. Recopila: nombre completo, email, teléfono
-4. Confirma la cita con bookAppointment
+1. Cuando el cliente quiera agendar, menciona que hay disponibilidad de lunes a viernes de 9AM a 5PM
+2. Recopila UNO POR UNO (no pidas todo junto):
+   - Nombre completo
+   - Email
+   - Teléfono (si no lo tienes ya del WhatsApp)
+   - Fecha y hora preferida
+3. Cuando tengas TODOS los datos, confirma: "¡Perfecto! Tu cita está agendada para [fecha] a las [hora]. Recibirás una confirmación por email a [email]. ¿Hay algo más en lo que pueda ayudarte?"
 
 9. ESTILO DE RESPUESTA
 
 - **SIEMPRE termina tu mensaje con una pregunta** que invite al cliente a continuar la conversación
 - **NUNCA des por terminada la conversación** hasta que:
-  1. La cita haya sido agendada exitosamente, O
+  1. La cita haya sido confirmada, O
   2. El cliente diga explícitamente que NO quiere agendar
 - Mientras no ocurra ninguna de estas dos cosas, sigue ofreciendo ayuda y haciendo preguntas
-- Solo después de agendar la cita o que el cliente rechace, pregunta: "¿Hay algo más en lo que pueda ayudarte?"
 - Si el cliente indica que no necesita nada más, despídete: "¡Perfecto! Fue un placer atenderte. ¡Que tengas un excelente día! 👋"
 
 10. PROTOCOLO DE ERRORES
@@ -120,63 +107,6 @@ Proceso de agendamiento:
 - Mensaje confuso: pide amablemente que reformulen
 - Falta un dato: solicita únicamente ese dato antes de avanzar
 - Desviaciones de tema: redirige con cortesía hacia los servicios de Q&Q`
-
-// Generate mock availability
-function generateMockAvailability(days: number) {
-  const slots: Array<{ date: string; times: string[] }> = []
-  const workHours = ['09:00 AM', '10:00 AM', '11:00 AM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM']
-  const startDate = new Date()
-
-  for (let i = 0; i < days; i++) {
-    const date = new Date(startDate)
-    date.setDate(date.getDate() + i)
-
-    // Skip weekends
-    if (date.getDay() === 0 || date.getDay() === 6) continue
-
-    // Randomly remove some slots to simulate bookings
-    const availableTimes = workHours.filter(() => Math.random() > 0.3)
-
-    if (availableTimes.length > 0) {
-      slots.push({
-        date: date.toISOString().split('T')[0],
-        times: availableTimes
-      })
-    }
-  }
-
-  return slots
-}
-
-function parseDateTime(date: string, time: string): Date | null {
-  try {
-    const timeMatch = time.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i)
-    if (!timeMatch) return null
-
-    let hours = parseInt(timeMatch[1])
-    const minutes = parseInt(timeMatch[2])
-    const period = timeMatch[3]?.toUpperCase()
-
-    if (period === 'PM' && hours < 12) hours += 12
-    if (period === 'AM' && hours === 12) hours = 0
-
-    const dateTime = new Date(`${date}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`)
-    return isNaN(dateTime.getTime()) ? null : dateTime
-  } catch {
-    return null
-  }
-}
-
-function formatDateSpanish(date: Date): string {
-  return date.toLocaleDateString('es-ES', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
 
 export async function processAgentMessage(
   conversationHistory: Message[],
@@ -196,7 +126,9 @@ export async function processAgentMessage(
 **Nombre del agente:** ${config.agentName}
 **Negocio:** ${config.businessName}
 **Fecha actual:** ${currentDate}
-**Zona horaria:** ${config.timezone || 'America/Detroit'}`
+**Zona horaria:** ${config.timezone || 'America/Detroit'}
+
+**RECORDATORIO CRÍTICO**: Revisa el historial de conversación antes de responder. NO pidas datos que el cliente ya proporcionó.`
 
   const messages: Message[] = [
     { role: 'system', content: fullSystemPrompt },
@@ -208,206 +140,23 @@ export async function processAgentMessage(
     const result = await generateText({
       model: openai('gpt-4o-mini'),
       messages,
-      temperature: 0.7,
-      tools: {
-        getAvailability: {
-          description: 'Obtiene la disponibilidad del calendario para los próximos días. Usa esta herramienta cuando el usuario quiera agendar una cita.',
-          parameters: {
-            type: 'object' as const,
-            properties: {
-              daysAhead: {
-                type: 'number',
-                description: 'Número de días a consultar (1-14). Por defecto 3.'
-              }
-            },
-            required: [] as string[]
-          },
-          execute: async ({ daysAhead }: { daysAhead?: number }) => {
-            const days = daysAhead ?? 3
-            const slots = generateMockAvailability(days)
-            return {
-              success: true,
-              slots,
-              timezone: CAL_TIMEZONE,
-              note: 'Horarios disponibles para los próximos días'
-            }
-          }
-        },
-        bookAppointment: {
-          description: 'Agenda una cita en el calendario. Solo usar cuando tengas todos los datos confirmados: nombre, email, teléfono, fecha y hora.',
-          parameters: {
-            type: 'object' as const,
-            properties: {
-              name: { type: 'string', description: 'Nombre completo del cliente' },
-              email: { type: 'string', description: 'Email del cliente' },
-              phone: { type: 'string', description: 'Teléfono del cliente' },
-              date: { type: 'string', description: 'Fecha de la cita en formato YYYY-MM-DD' },
-              time: { type: 'string', description: 'Hora de la cita en formato HH:MM AM/PM' },
-              notes: { type: 'string', description: 'Notas adicionales sobre la cita' }
-            },
-            required: ['name', 'email', 'phone', 'date', 'time'] as string[]
-          },
-          execute: async ({ name, email, phone, date, time, notes }: {
-            name: string
-            email: string
-            phone: string
-            date: string
-            time: string
-            notes?: string
-          }) => {
-            const scheduledAt = parseDateTime(date, time)
-
-            if (!scheduledAt) {
-              return {
-                success: false,
-                error: 'Formato de fecha/hora inválido'
-              }
-            }
-
-            return {
-              success: true,
-              bookingData: {
-                nombre_completo: name,
-                email,
-                telefono: phone,
-                fecha_seleccionada: date,
-                hora_seleccionada: time,
-                scheduledAt: scheduledAt.toISOString(),
-                calendarId: process.env.CAL_CALENDAR_ID || '',
-                timezone: CAL_TIMEZONE,
-                notes
-              },
-              message: `Cita agendada exitosamente para ${formatDateSpanish(scheduledAt)}`
-            }
-          }
-        }
-      },
-      maxSteps: 5
+      temperature: 0.7
     })
 
-    // Extract booking data and tool results
-    let bookingData: AgentResponse['bookingData'] = undefined
-    let toolResultsData: any[] = []
-
-    if (result.steps && Array.isArray(result.steps)) {
-      for (const step of result.steps) {
-        if (step.toolResults && Array.isArray(step.toolResults)) {
-          for (const toolResult of step.toolResults) {
-            toolResultsData.push(toolResult)
-            if (toolResult.toolName === 'bookAppointment' && toolResult.result?.success) {
-              bookingData = toolResult.result.bookingData
-            }
-          }
-        }
-      }
-    }
-
     let finalText = result.text || ''
-    let followUpText: string | undefined = undefined
-
-    // Check if agent said "wait" and we have tool results - send two messages
-    const saidWait = finalText.toLowerCase().includes('momento') ||
-                     finalText.toLowerCase().includes('verificar') ||
-                     finalText.toLowerCase().includes('déjame') ||
-                     finalText.toLowerCase().includes('dejame') ||
-                     finalText.toLowerCase().includes('espera')
-
-    if (toolResultsData.length > 0 && saidWait) {
-      console.log('Agent said wait + tool called, generating follow-up message...')
-
-      // Build context from tool results
-      const toolContext = toolResultsData.map(tr => {
-        if (tr.toolName === 'getAvailability' && tr.result?.success) {
-          const slots = tr.result.slots || []
-          if (slots.length === 0) {
-            return 'No hay horarios disponibles en los próximos días.'
-          }
-          const formatted = slots.slice(0, 3).map((s: any) =>
-            `${s.date}: ${s.times.slice(0, 4).join(', ')}`
-          ).join('\n')
-          return `Horarios disponibles:\n${formatted}`
-        }
-        if (tr.toolName === 'bookAppointment' && tr.result?.success) {
-          return `Cita confirmada: ${tr.result.message}`
-        }
-        return ''
-      }).filter(Boolean).join('\n')
-
-      if (toolContext) {
-        // Generate a natural follow-up message with the results
-        const followUp = await generateText({
-          model: openai('gpt-4o-mini'),
-          messages: [
-            { role: 'system', content: 'Eres Yusi de Q&Q. Responde de forma breve y natural. SIEMPRE termina con una pregunta.' },
-            { role: 'user', content: `Presenta esta información al cliente de forma amigable:\n${toolContext}` }
-          ],
-          temperature: 0.7
-        })
-        followUpText = followUp.text || toolContext
-      }
-    } else if (toolResultsData.length > 0 && (!finalText || finalText.length < 20)) {
-      // Tool was called but no text - generate response with results
-      const toolContext = toolResultsData.map(tr => {
-        if (tr.toolName === 'getAvailability' && tr.result?.success) {
-          const slots = tr.result.slots || []
-          if (slots.length === 0) {
-            return 'No hay horarios disponibles en los próximos días.'
-          }
-          const formatted = slots.slice(0, 3).map((s: any) =>
-            `${s.date}: ${s.times.slice(0, 4).join(', ')}`
-          ).join('\n')
-          return `Horarios disponibles:\n${formatted}`
-        }
-        if (tr.toolName === 'bookAppointment' && tr.result?.success) {
-          return `Cita confirmada: ${tr.result.message}`
-        }
-        return ''
-      }).filter(Boolean).join('\n')
-
-      if (toolContext) {
-        const followUp = await generateText({
-          model: openai('gpt-4o-mini'),
-          messages: [
-            { role: 'system', content: 'Eres Yusi de Q&Q. Responde de forma breve y natural. SIEMPRE termina con una pregunta.' },
-            { role: 'user', content: `Presenta esta información al cliente de forma amigable:\n${toolContext}` }
-          ],
-          temperature: 0.7
-        })
-        finalText = followUp.text || toolContext
-      }
-    }
 
     // Ensure we always have a response
     if (!finalText || finalText.length < 5) {
       finalText = '¿En qué puedo ayudarte hoy?'
     }
 
-    return {
-      text: finalText,
-      followUpText,
-      bookingData
-    }
+    return { text: finalText }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     console.error('Agent processing error:', errorMessage)
 
-    // If tools cause an error, try without tools
-    if (errorMessage.includes('schema') || errorMessage.includes('function')) {
-      console.log('Retrying without tools...')
-      try {
-        const result = await generateText({
-          model: openai('gpt-4o-mini'),
-          messages,
-          temperature: 0.7
-        })
-        return { text: result.text || '' }
-      } catch (retryError) {
-        console.error('Retry also failed:', retryError)
-      }
-    }
-
     return {
-      text: `Error técnico: ${errorMessage.substring(0, 100)}. Por favor intenta de nuevo.`
+      text: 'Disculpa, tuve un problema técnico. ¿Podrías repetir tu mensaje?'
     }
   }
 }

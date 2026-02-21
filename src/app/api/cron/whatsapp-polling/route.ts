@@ -256,7 +256,6 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
     history.push({ role: 'user', content: text })
 
     let aiText: string
-    let followUpText: string | undefined
     try {
       const result = await processAgentMessage(
         formatConversationHistory(history),
@@ -268,7 +267,6 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
         }
       )
       aiText = result.text
-      followUpText = result.followUpText
     } catch (e) {
       return `AI error: ${e}`
     }
@@ -277,28 +275,15 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
       return 'AI returned empty response'
     }
 
-    // Send first response
+    // Send response
     await sendWhatsAppText({
       to: msg.key.remoteJid,
       text: aiText,
       instance: EVOLUTION_INSTANCE
     })
 
-    // Send follow-up if exists (e.g., availability after "wait" message)
-    if (followUpText && followUpText.length > 5) {
-      // Small delay to make it feel natural
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      await sendWhatsAppText({
-        to: msg.key.remoteJid,
-        text: followUpText,
-        instance: EVOLUTION_INSTANCE
-      })
-      // Add both messages to history
-      history.push({ role: 'assistant', content: aiText })
-      history.push({ role: 'assistant', content: followUpText })
-    } else {
-      history.push({ role: 'assistant', content: aiText })
-    }
+    // Add to history
+    history.push({ role: 'assistant', content: aiText })
 
     // Update conversation
     await supabase

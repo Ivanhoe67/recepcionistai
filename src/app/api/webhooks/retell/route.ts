@@ -62,8 +62,51 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleCallStarted(data: RetellCallStartedEvent) {
-  console.log('Call started:', data.call.call_id)
-  // Could log call start time if needed
+  const supabase = createAdminClient()
+  const { call } = data
+  console.log('Call started:', call.call_id)
+
+  // Find business by Retell agent ID or phone number
+  const { data: business } = await supabase
+    .from('businesses')
+    .select('id')
+    .or(`retell_agent_id.eq.${call.agent_id},phone.eq.${call.to_number}`)
+    .maybeSingle()
+
+  if (!business) {
+    console.error('No business found for call start:', call.agent_id, call.to_number)
+    return
+  }
+
+  // Check if lead already exists by phone
+  const { data: existingLead } = await supabase
+    .from('leads')
+    .select('id')
+    .eq('business_id', business.id)
+    .eq('phone', call.from_number || 'anonymous')
+    .maybeSingle()
+
+  if (existingLead) {
+    // Update existing lead with current call_id
+    await supabase
+      .from('leads')
+      .update({
+        retell_call_id: call.call_id,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', existingLead.id)
+  } else {
+    // Create new lead so custom functions can find it during the call
+    await supabase
+      .from('leads')
+      .insert({
+        business_id: business.id,
+        phone: call.from_number || 'anonymous',
+        source: 'call',
+        status: 'new',
+        retell_call_id: call.call_id,
+      })
+  }
 }
 
 async function handleCallEnded(data: RetellCallEndedEvent) {
