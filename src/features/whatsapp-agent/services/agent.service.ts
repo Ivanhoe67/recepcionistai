@@ -144,12 +144,17 @@ export async function processAgentMessage(
   ]
 
   try {
-    // Tools disabled temporarily due to OpenAI schema compatibility issue
-    // Agent will work without calendar tools for now
     const result = await generateText({
       model: openai('gpt-4o-mini'),
       messages,
-      temperature: 0.7
+      temperature: 0.7,
+      tools: {
+        getAvailability: getAvailabilityTool,
+        bookAppointment: bookAppointmentTool,
+        searchAppointments: searchAppointmentsTool,
+        cancelAppointment: cancelAppointmentTool
+      },
+      maxSteps: 5 // Allow up to 5 tool calls per conversation turn
     })
 
     // Extract booking data if a booking was made
