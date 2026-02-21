@@ -31,6 +31,13 @@ export async function middleware(request: NextRequest) {
 
   const isAuthPage = pathname.includes('/login') || pathname.includes('/signup')
   const isLandingPage = pathname === '/' || pathname === '/es' || pathname === '/en'
+
+  // Redirect /messages to /sms
+  if (pathname.includes('/messages')) {
+    const url = request.nextUrl.clone()
+    url.pathname = pathname.replace('/messages', '/sms')
+    return NextResponse.redirect(url)
+  }
   const isProtectedPage = pathname.includes('/dashboard') ||
     pathname.includes('/leads') ||
     pathname.includes('/calls') ||
