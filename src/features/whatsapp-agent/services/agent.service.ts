@@ -93,11 +93,17 @@ Q&Q ofrece soluciones digitales para negocios:
 
 8. FLUJO DE AGENDAMIENTO
 
-**IMPORTANTE**: Tienes acceso a herramientas de calendario. Cuando el cliente quiera agendar una cita:
-1. Usa la herramienta getAvailability para ver los horarios disponibles
-2. Muestra las opciones al cliente
+**IMPORTANTE - NUNCA DEJES AL CLIENTE ESPERANDO**:
+- NUNCA digas "un momento", "déjame verificar", "espera" o frases similares
+- Cuando uses herramientas, SIEMPRE incluye el resultado en tu respuesta inmediatamente
+- Si consultas disponibilidad, muestra los horarios EN EL MISMO MENSAJE
+- SIEMPRE termina con una pregunta para continuar la conversación
+
+Proceso de agendamiento:
+1. Pregunta qué día/horario prefiere el cliente
+2. Muestra opciones disponibles (usa getAvailability internamente)
 3. Recopila: nombre completo, email, teléfono
-4. Usa la herramienta bookAppointment para confirmar la cita
+4. Confirma la cita con bookAppointment
 
 9. ESTILO DE RESPUESTA
 
@@ -275,13 +281,15 @@ export async function processAgentMessage(
       maxSteps: 5
     })
 
-    // Extract booking data if a booking was made
+    // Extract booking data and tool results
     let bookingData: AgentResponse['bookingData'] = undefined
+    let toolResultsData: any[] = []
 
     if (result.steps && Array.isArray(result.steps)) {
       for (const step of result.steps) {
         if (step.toolResults && Array.isArray(step.toolResults)) {
           for (const toolResult of step.toolResults) {
+            toolResultsData.push(toolResult)
             if (toolResult.toolName === 'bookAppointment' && toolResult.result?.success) {
               bookingData = toolResult.result.bookingData
             }
@@ -290,8 +298,52 @@ export async function processAgentMessage(
       }
     }
 
+    let finalText = result.text || ''
+
+    // If we have tool results but no good text response, force a follow-up
+    if (toolResultsData.length > 0 && (!finalText || finalText.length < 20 || finalText.includes('momento') || finalText.includes('verificar'))) {
+      console.log('Tool was called but response incomplete, generating follow-up...')
+
+      // Build context from tool results
+      const toolContext = toolResultsData.map(tr => {
+        if (tr.toolName === 'getAvailability' && tr.result?.success) {
+          const slots = tr.result.slots || []
+          if (slots.length === 0) {
+            return 'No hay horarios disponibles en los próximos días.'
+          }
+          const formatted = slots.slice(0, 3).map((s: any) =>
+            `${s.date}: ${s.times.slice(0, 4).join(', ')}`
+          ).join('\n')
+          return `Horarios disponibles:\n${formatted}`
+        }
+        if (tr.toolName === 'bookAppointment' && tr.result?.success) {
+          return `Cita confirmada: ${tr.result.message}`
+        }
+        return ''
+      }).filter(Boolean).join('\n')
+
+      if (toolContext) {
+        // Make a quick follow-up call to format the response properly
+        const followUp = await generateText({
+          model: openai('gpt-4o-mini'),
+          messages: [
+            ...messages,
+            { role: 'assistant', content: `[Información del sistema: ${toolContext}]` },
+            { role: 'user', content: 'Por favor responde al cliente con esta información de manera natural y termina con una pregunta.' }
+          ],
+          temperature: 0.7
+        })
+        finalText = followUp.text || toolContext
+      }
+    }
+
+    // Ensure we always have a response
+    if (!finalText || finalText.length < 5) {
+      finalText = '¿En qué puedo ayudarte hoy?'
+    }
+
     return {
-      text: result.text || '',
+      text: finalText,
       bookingData
     }
   } catch (error) {
