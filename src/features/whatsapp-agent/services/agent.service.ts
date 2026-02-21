@@ -22,6 +22,7 @@ interface AgentConfig {
 
 interface AgentResponse {
   text: string
+  followUpText?: string // Second message to send (e.g., availability after "wait")
   bookingData?: {
     nombre_completo: string
     email: string
@@ -93,10 +94,9 @@ Q&Q ofrece soluciones digitales para negocios:
 
 8. FLUJO DE AGENDAMIENTO
 
-**IMPORTANTE - NUNCA DEJES AL CLIENTE ESPERANDO**:
-- NUNCA digas "un momento", "déjame verificar", "espera" o frases similares
-- Cuando uses herramientas, SIEMPRE incluye el resultado en tu respuesta inmediatamente
-- Si consultas disponibilidad, muestra los horarios EN EL MISMO MENSAJE
+**FLUJO NATURAL DE CONSULTA**:
+- Cuando el cliente quiera agendar, puedes decir algo como "Déjame verificar la disponibilidad..." para sonar natural
+- El sistema enviará automáticamente los horarios disponibles en un mensaje de seguimiento
 - SIEMPRE termina con una pregunta para continuar la conversación
 
 Proceso de agendamiento:
@@ -303,10 +303,17 @@ export async function processAgentMessage(
     }
 
     let finalText = result.text || ''
+    let followUpText: string | undefined = undefined
 
-    // If we have tool results but no good text response, force a follow-up
-    if (toolResultsData.length > 0 && (!finalText || finalText.length < 20 || finalText.includes('momento') || finalText.includes('verificar'))) {
-      console.log('Tool was called but response incomplete, generating follow-up...')
+    // Check if agent said "wait" and we have tool results - send two messages
+    const saidWait = finalText.toLowerCase().includes('momento') ||
+                     finalText.toLowerCase().includes('verificar') ||
+                     finalText.toLowerCase().includes('déjame') ||
+                     finalText.toLowerCase().includes('dejame') ||
+                     finalText.toLowerCase().includes('espera')
+
+    if (toolResultsData.length > 0 && saidWait) {
+      console.log('Agent said wait + tool called, generating follow-up message...')
 
       // Build context from tool results
       const toolContext = toolResultsData.map(tr => {
@@ -327,13 +334,42 @@ export async function processAgentMessage(
       }).filter(Boolean).join('\n')
 
       if (toolContext) {
-        // Make a quick follow-up call to format the response properly
+        // Generate a natural follow-up message with the results
         const followUp = await generateText({
           model: openai('gpt-4o-mini'),
           messages: [
-            ...messages,
-            { role: 'assistant', content: `[Información del sistema: ${toolContext}]` },
-            { role: 'user', content: 'Por favor responde al cliente con esta información de manera natural y termina con una pregunta.' }
+            { role: 'system', content: 'Eres Yusi de Q&Q. Responde de forma breve y natural. SIEMPRE termina con una pregunta.' },
+            { role: 'user', content: `Presenta esta información al cliente de forma amigable:\n${toolContext}` }
+          ],
+          temperature: 0.7
+        })
+        followUpText = followUp.text || toolContext
+      }
+    } else if (toolResultsData.length > 0 && (!finalText || finalText.length < 20)) {
+      // Tool was called but no text - generate response with results
+      const toolContext = toolResultsData.map(tr => {
+        if (tr.toolName === 'getAvailability' && tr.result?.success) {
+          const slots = tr.result.slots || []
+          if (slots.length === 0) {
+            return 'No hay horarios disponibles en los próximos días.'
+          }
+          const formatted = slots.slice(0, 3).map((s: any) =>
+            `${s.date}: ${s.times.slice(0, 4).join(', ')}`
+          ).join('\n')
+          return `Horarios disponibles:\n${formatted}`
+        }
+        if (tr.toolName === 'bookAppointment' && tr.result?.success) {
+          return `Cita confirmada: ${tr.result.message}`
+        }
+        return ''
+      }).filter(Boolean).join('\n')
+
+      if (toolContext) {
+        const followUp = await generateText({
+          model: openai('gpt-4o-mini'),
+          messages: [
+            { role: 'system', content: 'Eres Yusi de Q&Q. Responde de forma breve y natural. SIEMPRE termina con una pregunta.' },
+            { role: 'user', content: `Presenta esta información al cliente de forma amigable:\n${toolContext}` }
           ],
           temperature: 0.7
         })
@@ -348,6 +384,7 @@ export async function processAgentMessage(
 
     return {
       text: finalText,
+      followUpText,
       bookingData
     }
   } catch (error) {
