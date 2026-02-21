@@ -152,9 +152,17 @@ async function handleBookAppointment(
 async function handleCheckAvailability(args: { date: string }) {
     const supabase = createAdminClient()
 
-    const date = new Date(args.date)
-    const startOfDay = new Date(date.setHours(0, 0, 0, 0))
-    const endOfDay = new Date(date.setHours(23, 59, 59, 999))
+    // Use parseDateTime with a dummy time just to safely extract the date part
+    const parsedDate = parseDateTime(args.date || '', '09:00')
+    if (!parsedDate) {
+        return NextResponse.json({
+            success: false,
+            message: 'No entendí la fecha. ¿Podrías decirme qué día te gustaría agendar?'
+        })
+    }
+
+    const startOfDay = new Date(parsedDate.setHours(0, 0, 0, 0))
+    const endOfDay = new Date(parsedDate.setHours(23, 59, 59, 999))
 
     // Get all appointments for that day
     const { data: appointments } = await supabase

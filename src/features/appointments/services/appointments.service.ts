@@ -80,7 +80,7 @@ export async function createAppointmentFromWebhook(
             .insert({
                 user_id: business.user_id,
                 lead_id: input.leadId,
-                type: 'appointment_booked',
+                type: 'appointment',
                 channel: 'email',
                 title: 'Nueva cita agendada',
                 body: `Se ha agendado una cita para ${new Date(scheduledAt).toLocaleString('es-MX', {
