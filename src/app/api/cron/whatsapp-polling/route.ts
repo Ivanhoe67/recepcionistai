@@ -292,16 +292,20 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
     history.push({ role: 'assistant', content: aiText })
 
     // Check if this looks like a booking completion and try to create real booking
+    console.log('Checking if booking completion... aiText:', aiText.substring(0, 100))
+
     if (looksLikeBookingCompletion(aiText)) {
-      console.log('Booking completion detected, extracting data...')
+      console.log('✅ Booking completion detected, extracting data...')
 
       const bookingData = await extractBookingData(history)
-      console.log('Extracted booking data:', bookingData)
+      console.log('📋 Extracted booking data:', JSON.stringify(bookingData))
 
       if (bookingData.isComplete) {
-        console.log('All booking data complete, creating Cal.com booking...')
+        console.log('✅ All booking data complete, creating Cal.com booking...')
+        console.log('📅 Date:', bookingData.date, 'Time:', bookingData.time)
 
         const calResult = await createCalBooking(bookingData)
+        console.log('📞 Cal.com result:', JSON.stringify(calResult))
 
         if (calResult.success) {
           // Send confirmation with real booking details
@@ -332,10 +336,26 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
 
           console.log('Booking created and saved successfully')
         } else {
-          console.error('Cal.com booking failed:', calResult.error)
-          // Don't send error to customer - the original "registered" message is fine
+          console.error('❌ Cal.com booking failed:', calResult.error)
+
+          // Send honest message about the issue
+          const errorMsg = `⚠️ Hubo un problema al procesar tu reserva automáticamente. ` +
+            `Nuestro equipo te contactará pronto para confirmar los detalles de tu cita. ` +
+            `Disculpa las molestias.`
+
+          await sendWhatsAppText({
+            to: msg.key.remoteJid,
+            text: errorMsg,
+            instance: EVOLUTION_INSTANCE
+          })
+
+          history.push({ role: 'assistant', content: errorMsg })
         }
+      } else {
+        console.log('⚠️ Booking data incomplete:', JSON.stringify(bookingData))
       }
+    } else {
+      console.log('❌ No booking phrase detected')
     }
 
     // Update conversation

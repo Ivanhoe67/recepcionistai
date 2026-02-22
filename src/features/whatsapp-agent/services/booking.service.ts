@@ -64,7 +64,7 @@ INSTRUCCIONES:
 - Extrae: nombre, email, teléfono, fecha (YYYY-MM-DD), hora (HH:MM 24h)
 - isComplete = true SOLO si tienes TODOS los datos
 - Si falta algún dato, pon string vacío "" y isComplete = false
-- Para la fecha, usa el año actual (2024) si no se especifica
+- Para la fecha, usa el año actual (${new Date().getFullYear()}) si no se especifica
 - Convierte hora AM/PM a formato 24h (ej: 2:00 PM = 14:00)
 - Si el cliente dijo "mañana", calcula la fecha real
 - Hora por defecto: 09:00 si no se especifica`
@@ -186,16 +186,38 @@ export function formatBookingDate(isoDate: string): string {
  */
 export function looksLikeBookingCompletion(lastAssistantMessage: string): boolean {
   const bookingPhrases = [
+    // Spanish - main trigger phrase
+    'procesando tu reserva',
+    'estoy procesando',
+    // Spanish - fallback phrases
     'registrado tu solicitud',
-    'registered your',
-    'appointment request',
     'solicitud de cita',
     'he anotado',
     'he registrado',
     'cita para el',
-    'appointment for'
+    'cita agendada',
+    'cita confirmada',
+    'he agendado',
+    'está agendada',
+    'queda agendada',
+    'tu cita es',
+    'tu cita será',
+    'agendé tu cita',
+    // English
+    'registered your',
+    'appointment request',
+    'appointment for',
+    'appointment is scheduled',
+    'appointment confirmed',
+    'booked your appointment'
   ]
 
   const lowerMessage = lastAssistantMessage.toLowerCase()
-  return bookingPhrases.some(phrase => lowerMessage.includes(phrase.toLowerCase()))
+  const matches = bookingPhrases.some(phrase => lowerMessage.includes(phrase.toLowerCase()))
+
+  if (matches) {
+    console.log('Booking phrase detected in:', lastAssistantMessage.substring(0, 100))
+  }
+
+  return matches
 }
