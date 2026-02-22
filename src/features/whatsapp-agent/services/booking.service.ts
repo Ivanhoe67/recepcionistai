@@ -31,6 +31,7 @@ interface CalBookingResult {
   bookingId?: string
   bookingUid?: string
   scheduledAt?: string
+  meetingUrl?: string
   error?: string
 }
 
@@ -96,6 +97,59 @@ HORAS:
 }
 
 /**
+ * Get available slots from Cal.com for a specific date
+ */
+async function getAvailableSlots(date: string): Promise<string[]> {
+  const nextDay = new Date(date)
+  nextDay.setDate(nextDay.getDate() + 1)
+  const endDate = nextDay.toISOString().split('T')[0]
+
+  const url = `https://api.cal.com/v1/slots?apiKey=${CAL_API_KEY}&eventTypeId=${CAL_EVENT_TYPE_ID}&startTime=${date}&endTime=${endDate}&timeZone=${CAL_TIMEZONE}`
+
+  try {
+    const response = await fetch(url)
+    const data = await response.json()
+
+    if (data.slots && data.slots[date]) {
+      return data.slots[date].map((slot: { time: string }) => slot.time)
+    }
+    return []
+  } catch (error) {
+    console.error('Error fetching slots:', error)
+    return []
+  }
+}
+
+/**
+ * Find the nearest available slot to the requested time
+ */
+function findNearestSlot(slots: string[], requestedTime: string, date: string): string | null {
+  if (slots.length === 0) return null
+
+  const [reqHours, reqMinutes] = requestedTime.split(':').map(Number)
+  const requestedMinutes = reqHours * 60 + reqMinutes
+
+  let nearestSlot = slots[0]
+  let minDiff = Infinity
+
+  for (const slot of slots) {
+    // Parse slot time (format: "2026-02-23T16:15:00-05:00")
+    const slotTime = new Date(slot)
+    const slotHours = slotTime.getHours()
+    const slotMins = slotTime.getMinutes()
+    const slotTotalMinutes = slotHours * 60 + slotMins
+
+    const diff = Math.abs(slotTotalMinutes - requestedMinutes)
+    if (diff < minDiff) {
+      minDiff = diff
+      nearestSlot = slot
+    }
+  }
+
+  return nearestSlot
+}
+
+/**
  * Create booking in Cal.com
  */
 export async function createCalBooking(
@@ -112,31 +166,30 @@ export async function createCalBooking(
   }
 
   try {
-    // Parse date and time - the extracted time is in Detroit timezone
-    // We need to convert to UTC for Cal.com API
-    // Detroit is UTC-5 (EST) or UTC-4 (EDT)
+    // First, get available slots for the requested date
+    console.log('Fetching available slots for:', bookingData.date)
+    const availableSlots = await getAvailableSlots(bookingData.date)
+    console.log('Available slots:', availableSlots.length, 'slots found')
 
-    // Create date string with timezone offset
-    // For simplicity, we'll use a fixed offset approach
-    // Detroit is typically -05:00 (EST) or -04:00 (EDT)
-    const [year, month, day] = bookingData.date.split('-').map(Number)
-    const [hours, minutes] = bookingData.time.split(':').map(Number)
-
-    // Create a date in Detroit time by adding 5 hours to get UTC (assuming EST)
-    // TODO: Handle EDT vs EST properly
-    const detroitDate = new Date(Date.UTC(year, month - 1, day, hours + 5, minutes, 0))
-
-    if (isNaN(detroitDate.getTime())) {
-      console.error('Invalid date/time:', bookingData.date, bookingData.time)
-      return { success: false, error: 'Invalid date/time format' }
+    if (availableSlots.length === 0) {
+      return { success: false, error: 'No hay disponibilidad para esa fecha' }
     }
 
-    const startTime = detroitDate.toISOString()
+    // Find the nearest available slot
+    const nearestSlot = findNearestSlot(availableSlots, bookingData.time, bookingData.date)
+    if (!nearestSlot) {
+      return { success: false, error: 'No se encontró un horario disponible cercano' }
+    }
+
+    // Parse the slot time to get UTC format for Cal.com API v2
+    const slotDate = new Date(nearestSlot)
+    const startTime = slotDate.toISOString()
 
     console.log('Creating Cal.com booking:', {
       eventTypeId: CAL_EVENT_TYPE_ID,
-      start: startTime,
-      localTime: `${bookingData.date} ${bookingData.time} Detroit`,
+      requestedTime: `${bookingData.date} ${bookingData.time}`,
+      actualSlot: nearestSlot,
+      startTimeUTC: startTime,
       attendee: bookingData.name,
       email: bookingData.email
     })
@@ -187,7 +240,8 @@ export async function createCalBooking(
       success: true,
       bookingId: data.data?.id?.toString(),
       bookingUid: data.data?.uid,
-      scheduledAt: startTime
+      scheduledAt: startTime,
+      meetingUrl: data.data?.meetingUrl || data.data?.location
     }
   } catch (error) {
     console.error('Error creating Cal.com booking:', error)

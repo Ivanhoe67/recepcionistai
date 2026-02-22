@@ -309,11 +309,16 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
 
         if (calResult.success) {
           // Send confirmation with real booking details
-          const confirmationMsg = `✅ ¡Tu cita ha sido CONFIRMADA!\n\n` +
+          let confirmationMsg = `✅ ¡Tu cita ha sido CONFIRMADA!\n\n` +
             `📅 Fecha: ${formatBookingDate(calResult.scheduledAt!)}\n` +
             `👤 Nombre: ${bookingData.name}\n` +
-            `📧 Email: ${bookingData.email}\n\n` +
-            `Recibirás un email de confirmación de Cal.com. ¡Nos vemos pronto!`
+            `📧 Email: ${bookingData.email}\n`
+
+          if (calResult.meetingUrl) {
+            confirmationMsg += `🔗 Link: ${calResult.meetingUrl}\n`
+          }
+
+          confirmationMsg += `\nRecibirás un email de confirmación de Cal.com. ¡Nos vemos pronto!`
 
           await sendWhatsAppText({
             to: msg.key.remoteJid,
