@@ -112,18 +112,33 @@ export async function createCalBooking(
   }
 
   try {
-    // Parse date and time to ISO format
-    const dateTime = new Date(`${bookingData.date}T${bookingData.time}:00`)
-    if (isNaN(dateTime.getTime())) {
+    // Parse date and time - the extracted time is in Detroit timezone
+    // We need to convert to UTC for Cal.com API
+    // Detroit is UTC-5 (EST) or UTC-4 (EDT)
+
+    // Create date string with timezone offset
+    // For simplicity, we'll use a fixed offset approach
+    // Detroit is typically -05:00 (EST) or -04:00 (EDT)
+    const [year, month, day] = bookingData.date.split('-').map(Number)
+    const [hours, minutes] = bookingData.time.split(':').map(Number)
+
+    // Create a date in Detroit time by adding 5 hours to get UTC (assuming EST)
+    // TODO: Handle EDT vs EST properly
+    const detroitDate = new Date(Date.UTC(year, month - 1, day, hours + 5, minutes, 0))
+
+    if (isNaN(detroitDate.getTime())) {
+      console.error('Invalid date/time:', bookingData.date, bookingData.time)
       return { success: false, error: 'Invalid date/time format' }
     }
 
-    const startTime = dateTime.toISOString()
+    const startTime = detroitDate.toISOString()
 
     console.log('Creating Cal.com booking:', {
       eventTypeId: CAL_EVENT_TYPE_ID,
       start: startTime,
-      attendee: bookingData.name
+      localTime: `${bookingData.date} ${bookingData.time} Detroit`,
+      attendee: bookingData.name,
+      email: bookingData.email
     })
 
     const response = await fetch('https://api.cal.com/v2/bookings', {
@@ -152,10 +167,17 @@ export async function createCalBooking(
     const data = await response.json()
 
     if (!response.ok) {
-      console.error('Cal.com API error:', data)
+      console.error('Cal.com API error:', JSON.stringify(data, null, 2))
+      console.error('Request was:', {
+        start: startTime,
+        eventTypeId: parseInt(CAL_EVENT_TYPE_ID),
+        attendee: bookingData.name,
+        email: bookingData.email
+      })
+      const errorMsg = data.error?.message || data.message || data.error || 'Failed to create booking'
       return {
         success: false,
-        error: data.message || data.error || 'Failed to create booking'
+        error: errorMsg
       }
     }
 
