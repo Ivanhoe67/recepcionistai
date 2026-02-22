@@ -9,6 +9,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { sendWhatsAppText } from '@/lib/evolution-api'
 import { processAgentMessage, formatConversationHistory } from '@/features/whatsapp-agent/services/agent.service'
+import {
+  extractBookingData,
+  createCalBooking,
+  formatBookingDate,
+  looksLikeBookingCompletion
+} from '@/features/whatsapp-agent/services/booking.service'
 
 const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || ''
 const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || ''
@@ -284,6 +290,53 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
 
     // Add to history
     history.push({ role: 'assistant', content: aiText })
+
+    // Check if this looks like a booking completion and try to create real booking
+    if (looksLikeBookingCompletion(aiText)) {
+      console.log('Booking completion detected, extracting data...')
+
+      const bookingData = await extractBookingData(history)
+      console.log('Extracted booking data:', bookingData)
+
+      if (bookingData.isComplete) {
+        console.log('All booking data complete, creating Cal.com booking...')
+
+        const calResult = await createCalBooking(bookingData)
+
+        if (calResult.success) {
+          // Send confirmation with real booking details
+          const confirmationMsg = `✅ ¡Tu cita ha sido CONFIRMADA!\n\n` +
+            `📅 Fecha: ${formatBookingDate(calResult.scheduledAt!)}\n` +
+            `👤 Nombre: ${bookingData.name}\n` +
+            `📧 Email: ${bookingData.email}\n\n` +
+            `Recibirás un email de confirmación de Cal.com. ¡Nos vemos pronto!`
+
+          await sendWhatsAppText({
+            to: msg.key.remoteJid,
+            text: confirmationMsg,
+            instance: EVOLUTION_INSTANCE
+          })
+
+          history.push({ role: 'assistant', content: confirmationMsg })
+
+          // Save appointment to database
+          await supabase.from('appointments').insert({
+            business_id: business.id,
+            lead_id: lead.id,
+            scheduled_at: calResult.scheduledAt,
+            source: 'whatsapp',
+            status: 'confirmed',
+            cal_event_id: calResult.bookingUid,
+            notes: `Phone: ${bookingData.phone}`
+          })
+
+          console.log('Booking created and saved successfully')
+        } else {
+          console.error('Cal.com booking failed:', calResult.error)
+          // Don't send error to customer - the original "registered" message is fine
+        }
+      }
+    }
 
     // Update conversation
     await supabase
