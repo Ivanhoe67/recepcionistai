@@ -297,67 +297,91 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
     if (looksLikeBookingCompletion(aiText)) {
       console.log('✅ Booking completion detected, extracting data...')
 
-      const bookingData = await extractBookingData(history)
-      console.log('📋 Extracted booking data:', JSON.stringify(bookingData))
+      try {
+        const bookingData = await extractBookingData(history)
+        console.log('📋 Extracted booking data:', JSON.stringify(bookingData))
 
-      if (bookingData.isComplete) {
-        console.log('✅ All booking data complete, creating Cal.com booking...')
-        console.log('📅 Date:', bookingData.date, 'Time:', bookingData.time)
+        if (bookingData.isComplete) {
+          console.log('✅ All booking data complete, creating Cal.com booking...')
+          console.log('📅 Date:', bookingData.date, 'Time:', bookingData.time)
 
-        const calResult = await createCalBooking(bookingData)
-        console.log('📞 Cal.com result:', JSON.stringify(calResult))
+          const calResult = await createCalBooking(bookingData)
+          console.log('📞 Cal.com result:', JSON.stringify(calResult))
 
-        if (calResult.success) {
-          // Send confirmation with real booking details
-          let confirmationMsg = `✅ ¡Tu cita ha sido CONFIRMADA!\n\n` +
-            `📅 Fecha: ${formatBookingDate(calResult.scheduledAt!)}\n` +
-            `👤 Nombre: ${bookingData.name}\n` +
-            `📧 Email: ${bookingData.email}\n`
+          if (calResult.success) {
+            // Send confirmation with real booking details
+            let confirmationMsg = `✅ ¡Tu cita ha sido CONFIRMADA!\n\n` +
+              `📅 Fecha: ${formatBookingDate(calResult.scheduledAt!)}\n` +
+              `👤 Nombre: ${bookingData.name}\n` +
+              `📧 Email: ${bookingData.email}\n`
 
-          if (calResult.meetingUrl) {
-            confirmationMsg += `🔗 Link: ${calResult.meetingUrl}\n`
+            if (calResult.meetingUrl) {
+              confirmationMsg += `🔗 Link: ${calResult.meetingUrl}\n`
+            }
+
+            confirmationMsg += `\nRecibirás un email de confirmación de Cal.com. ¡Nos vemos pronto!`
+
+            await sendWhatsAppText({
+              to: msg.key.remoteJid,
+              text: confirmationMsg,
+              instance: EVOLUTION_INSTANCE
+            })
+
+            history.push({ role: 'assistant', content: confirmationMsg })
+
+            // Save appointment to database
+            await supabase.from('appointments').insert({
+              business_id: business.id,
+              lead_id: lead.id,
+              scheduled_at: calResult.scheduledAt,
+              source: 'whatsapp',
+              status: 'confirmed',
+              cal_event_id: calResult.bookingUid,
+              notes: `Phone: ${bookingData.phone}`
+            })
+
+            console.log('Booking created and saved successfully')
+          } else {
+            console.error('❌ Cal.com booking failed:', calResult.error)
+
+            // Send specific error message
+            let errorMsg = `⚠️ No pudimos agendar tu cita: ${calResult.error}\n\n`
+            errorMsg += `Por favor intenta con otra fecha u horario. Disponibilidad: Lunes a Domingo, 4PM-9PM (hora de Detroit).`
+
+            await sendWhatsAppText({
+              to: msg.key.remoteJid,
+              text: errorMsg,
+              instance: EVOLUTION_INSTANCE
+            })
+
+            history.push({ role: 'assistant', content: errorMsg })
           }
-
-          confirmationMsg += `\nRecibirás un email de confirmación de Cal.com. ¡Nos vemos pronto!`
-
-          await sendWhatsAppText({
-            to: msg.key.remoteJid,
-            text: confirmationMsg,
-            instance: EVOLUTION_INSTANCE
-          })
-
-          history.push({ role: 'assistant', content: confirmationMsg })
-
-          // Save appointment to database
-          await supabase.from('appointments').insert({
-            business_id: business.id,
-            lead_id: lead.id,
-            scheduled_at: calResult.scheduledAt,
-            source: 'whatsapp',
-            status: 'confirmed',
-            cal_event_id: calResult.bookingUid,
-            notes: `Phone: ${bookingData.phone}`
-          })
-
-          console.log('Booking created and saved successfully')
         } else {
-          console.error('❌ Cal.com booking failed:', calResult.error)
+          console.log('⚠️ Booking data incomplete:', JSON.stringify(bookingData))
 
-          // Send honest message about the issue
-          const errorMsg = `⚠️ Hubo un problema al procesar tu reserva automáticamente. ` +
-            `Nuestro equipo te contactará pronto para confirmar los detalles de tu cita. ` +
-            `Disculpa las molestias.`
+          // Ask for missing data
+          const missingMsg = `Para completar tu reserva, necesito algunos datos adicionales. ¿Podrías confirmarme tu nombre, email y el horario que prefieres?`
 
           await sendWhatsAppText({
             to: msg.key.remoteJid,
-            text: errorMsg,
+            text: missingMsg,
             instance: EVOLUTION_INSTANCE
           })
 
-          history.push({ role: 'assistant', content: errorMsg })
+          history.push({ role: 'assistant', content: missingMsg })
         }
-      } else {
-        console.log('⚠️ Booking data incomplete:', JSON.stringify(bookingData))
+      } catch (bookingError) {
+        console.error('❌ Booking process error:', bookingError)
+
+        const errorMsg = `⚠️ Hubo un problema técnico al procesar tu reserva. Por favor intenta de nuevo en unos momentos.`
+
+        await sendWhatsAppText({
+          to: msg.key.remoteJid,
+          text: errorMsg,
+          instance: EVOLUTION_INSTANCE
+        })
+
+        history.push({ role: 'assistant', content: errorMsg })
       }
     } else {
       console.log('❌ No booking phrase detected')

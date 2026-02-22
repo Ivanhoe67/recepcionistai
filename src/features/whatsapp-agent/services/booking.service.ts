@@ -129,23 +129,31 @@ function findNearestSlot(slots: string[], requestedTime: string, date: string): 
   const [reqHours, reqMinutes] = requestedTime.split(':').map(Number)
   const requestedMinutes = reqHours * 60 + reqMinutes
 
+  console.log('Finding nearest slot to:', requestedTime, '(', requestedMinutes, 'minutes)')
+
   let nearestSlot = slots[0]
   let minDiff = Infinity
 
   for (const slot of slots) {
-    // Parse slot time (format: "2026-02-23T16:15:00-05:00")
-    const slotTime = new Date(slot)
-    const slotHours = slotTime.getHours()
-    const slotMins = slotTime.getMinutes()
+    // Parse slot time from string (format: "2026-02-23T16:15:00-05:00")
+    // Extract hours and minutes directly from string to avoid timezone issues
+    const timeMatch = slot.match(/T(\d{2}):(\d{2})/)
+    if (!timeMatch) continue
+
+    const slotHours = parseInt(timeMatch[1])
+    const slotMins = parseInt(timeMatch[2])
     const slotTotalMinutes = slotHours * 60 + slotMins
 
     const diff = Math.abs(slotTotalMinutes - requestedMinutes)
+    console.log(`Slot ${slot}: ${slotHours}:${slotMins} (${slotTotalMinutes} min) - diff: ${diff}`)
+
     if (diff < minDiff) {
       minDiff = diff
       nearestSlot = slot
     }
   }
 
+  console.log('Selected nearest slot:', nearestSlot)
   return nearestSlot
 }
 

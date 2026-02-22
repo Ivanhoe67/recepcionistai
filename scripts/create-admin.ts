@@ -20,8 +20,13 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     }
 })
 
-const adminEmail = 'rosabalivan67@gmail.com'
-const adminPassword = 'Ivaner@6797'
+const adminEmail = process.env.ADMIN_EMAIL
+const adminPassword = process.env.ADMIN_PASSWORD
+
+if (!adminEmail || !adminPassword) {
+    console.error('Error: ADMIN_EMAIL or ADMIN_PASSWORD is missing in .env.local')
+    process.exit(1)
+}
 
 async function createAdmin() {
     console.log(`Setting up admin user: ${adminEmail}...`)
