@@ -25,7 +25,19 @@ import { createAppointmentFromWebhook } from '@/features/appointments/services/a
 export async function POST(request: NextRequest) {
     try {
         const data = await request.json()
-        const { call_id, function_name, arguments: args } = data
+
+        let args = data.arguments
+        if (typeof args === 'string') {
+            try {
+                args = JSON.parse(args)
+            } catch (e) {
+                args = {}
+            }
+        }
+        args = args || {}
+
+        const call_id = data.call_id || data.callId
+        const function_name = data.function_name || data.name
 
         console.log(`Retell function call: ${function_name}`, { call_id, args })
 
@@ -34,7 +46,7 @@ export async function POST(request: NextRequest) {
                 return await handleBookAppointment(call_id, args)
 
             case 'check_availability':
-                return await handleCheckAvailability(args)
+                return await handleCheckAvailability(call_id, args)
 
             case 'get_services':
                 return await handleGetServices(call_id)
@@ -60,13 +72,20 @@ export async function POST(request: NextRequest) {
 async function handleBookAppointment(
     callId: string,
     args: {
-        date: string      // YYYY-MM-DD
-        time: string      // HH:mm
+        date?: string      // YYYY-MM-DD
+        time?: string      // HH:mm
         duration_minutes?: number
         notes?: string
     }
 ) {
     const supabase = createAdminClient()
+
+    if (!callId) {
+        return NextResponse.json({
+            success: false,
+            message: 'Hubo un error de conexión, por favor intenta de nuevo.'
+        })
+    }
 
     // Find lead by retell_call_id
     const { data: lead, error: leadError } = await supabase
@@ -79,16 +98,16 @@ async function handleBookAppointment(
         console.error('Lead not found for call:', callId)
         return NextResponse.json({
             success: false,
-            message: 'No pude encontrar tu información. Por favor intenta de nuevo.'
+            message: 'No pude encontrar tu información para agendar la cita. Por favor intenta de nuevo.'
         })
     }
 
     // Parse date and time
-    const scheduledAt = parseDateTime(args.date, args.time)
+    const scheduledAt = parseDateTime(args.date || '', args.time || '09:00')
     if (!scheduledAt) {
         return NextResponse.json({
             success: false,
-            message: 'La fecha u hora proporcionada no es válida. Por favor intenta con otro horario.'
+            message: 'No logré entender bien el día o la hora que me indicaste. ¿Podrías repetirlo?'
         })
     }
 
@@ -140,7 +159,7 @@ async function handleBookAppointment(
 
     return NextResponse.json({
         success: true,
-        message: `Perfecto, tu cita ha sido agendada para el ${formattedDate} a las ${formattedTime}. Recibirás una confirmación por mensaje.`,
+        message: `Perfecto, tu cita ha sido agendada para el ${formattedDate} a las ${formattedTime}. Recibirás una confirmación.`,
         appointment_id: result.appointmentId,
         scheduled_at: scheduledAt.toISOString()
     })
@@ -149,25 +168,47 @@ async function handleBookAppointment(
 /**
  * Check availability for a given date
  */
-async function handleCheckAvailability(args: { date: string }) {
+async function handleCheckAvailability(callId: string, args: { date?: string }) {
     const supabase = createAdminClient()
 
+    if (!callId) {
+        return NextResponse.json({
+            success: false,
+            message: 'Tengo un problema técnico momentáneo. No pude encontrar tu información.'
+        })
+    }
+
+    // Find business from the call
+    const { data: lead } = await supabase
+        .from('leads')
+        .select('business_id')
+        .eq('retell_call_id', callId)
+        .maybeSingle()
+
+    if (!lead || !lead.business_id) {
+        return NextResponse.json({
+            success: false,
+            message: 'Tengo un problema técnico. No pude encontrar el negocio asociado a esta llamada.'
+        })
+    }
+
     // Use parseDateTime with a dummy time just to safely extract the date part
-    const parsedDate = parseDateTime(args.date || '', '09:00')
+    const parsedDate = parseDateTime(args.date || 'hoy', '09:00')
     if (!parsedDate) {
         return NextResponse.json({
             success: false,
-            message: 'No entendí la fecha. ¿Podrías decirme qué día te gustaría agendar?'
+            message: 'No entendí la fecha. ¿Podrías decirme qué día te gustaría revisar horarios?'
         })
     }
 
     const startOfDay = new Date(parsedDate.setHours(0, 0, 0, 0))
     const endOfDay = new Date(parsedDate.setHours(23, 59, 59, 999))
 
-    // Get all appointments for that day
+    // Get all appointments for that day FOR THIS SPECIFIC BUSINESS
     const { data: appointments } = await supabase
         .from('appointments')
         .select('scheduled_at, duration_minutes')
+        .eq('business_id', lead.business_id)
         .gte('scheduled_at', startOfDay.toISOString())
         .lte('scheduled_at', endOfDay.toISOString())
         .eq('status', 'scheduled')
@@ -180,10 +221,15 @@ async function handleCheckAvailability(args: { date: string }) {
 
     // Calculate available slots (30 min increments)
     const slots: string[] = []
+
+    // Build a Set of HH:mm formats for quick lookup of booked hours
     const bookedSlots = new Set(
-        (appointments || []).map(a =>
-            new Date(a.scheduled_at).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
-        )
+        (appointments || []).map(a => {
+            const date = new Date(a.scheduled_at)
+            const h = date.getHours().toString().padStart(2, '0')
+            const m = date.getMinutes().toString().padStart(2, '0')
+            return `${h}:${m}`
+        })
     )
 
     for (let hour = businessHours.start; hour < businessHours.end; hour++) {
@@ -195,13 +241,28 @@ async function handleCheckAvailability(args: { date: string }) {
         }
     }
 
+    // Avoid giving too many options, pick 3 spread out options or first 3
+    const formatTime = (t: string) => {
+        const [h, m] = t.split(':')
+        const hNum = parseInt(h, 10)
+        const ampm = hNum >= 12 ? 'pm' : 'am'
+        const h12 = hNum % 12 || 12
+        return `${h12}:${m} ${ampm}`
+    }
+
+    let message = ''
+    if (slots.length > 0) {
+        const firstSlots = slots.slice(0, 3).map(formatTime).join(', ')
+        message = `Sí, tenemos disponibilidad. Por ejemplo a las ${firstSlots}, y algunos otros horarios. ¿Qué hora te conviene más?`
+    } else {
+        message = 'Lo siento, no tenemos disponibilidad para esa fecha. ¿Te gustaría revisar otro día?'
+    }
+
     return NextResponse.json({
         success: true,
         date: args.date,
         available_slots: slots,
-        message: slots.length > 0
-            ? `Tenemos disponibilidad a las ${slots.slice(0, 3).join(', ')} y otros horarios. ¿Cuál prefieres?`
-            : 'Lo siento, no hay disponibilidad para esa fecha. ¿Te gustaría revisar otro día?'
+        message: message
     })
 }
 

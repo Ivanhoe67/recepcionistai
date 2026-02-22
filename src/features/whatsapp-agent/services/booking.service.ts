@@ -57,17 +57,28 @@ export async function extractBookingData(
       }),
       prompt: `Analiza esta conversación y extrae los datos de la cita si están completos.
 
+FECHA ACTUAL: ${new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+ZONA HORARIA: America/Detroit (Eastern Time)
+
 CONVERSACIÓN:
 ${conversationText}
 
 INSTRUCCIONES:
 - Extrae: nombre, email, teléfono, fecha (YYYY-MM-DD), hora (HH:MM 24h)
-- isComplete = true SOLO si tienes TODOS los datos
+- isComplete = true SOLO si tienes TODOS los datos (nombre, email, teléfono, fecha, hora)
 - Si falta algún dato, pon string vacío "" y isComplete = false
-- Para la fecha, usa el año actual (${new Date().getFullYear()}) si no se especifica
-- Convierte hora AM/PM a formato 24h (ej: 2:00 PM = 14:00)
-- Si el cliente dijo "mañana", calcula la fecha real
-- Hora por defecto: 09:00 si no se especifica`
+
+FECHAS RELATIVAS:
+- "hoy" = fecha actual
+- "mañana" = fecha actual + 1 día
+- "lunes/martes/etc" = próximo día de la semana que corresponda
+- Siempre usa formato YYYY-MM-DD
+
+HORAS:
+- "4 de la tarde" o "4pm" = 16:00
+- "5 de la tarde" o "5pm" = 17:00
+- Convierte SIEMPRE a formato 24 horas (HH:MM)
+- Si no especifica hora, usa 16:00 (inicio del horario disponible 4PM-9PM)`
     })
 
     return result.object
