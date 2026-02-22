@@ -85,7 +85,7 @@ Q&Q ofrece soluciones digitales para negocios:
 - Si ya tienes el nombre, email, teléfono y horario, CONFIRMA LA CITA directamente
 
 Proceso de agendamiento:
-1. Cuando el cliente quiera agendar, menciona que hay disponibilidad de lunes a viernes de 9AM a 5PM (hora del Este)
+1. Cuando el cliente quiera agendar, menciona que hay disponibilidad de lunes a domingo de 4PM a 9PM (hora del Este / Detroit)
 2. Recopila UNO POR UNO (no pidas todo junto):
    - Nombre completo
    - Email
