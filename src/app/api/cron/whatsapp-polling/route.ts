@@ -330,15 +330,41 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
             history.push({ role: 'assistant', content: confirmationMsg })
 
             // Save appointment to database
-            await supabase.from('appointments').insert({
-              business_id: business.id,
-              lead_id: lead.id,
-              scheduled_at: calResult.scheduledAt,
-              source: 'whatsapp',
-              status: 'confirmed',
-              cal_event_id: calResult.bookingUid,
-              notes: `Phone: ${bookingData.phone}`
-            })
+            const { data: appointmentData, error: appointmentError } = await supabase
+              .from('appointments')
+              .insert({
+                business_id: business.id,
+                lead_id: lead.id,
+                scheduled_at: calResult.scheduledAt,
+                source: 'sms', // Use 'sms' as whatsapp maps to sms in the schema
+                status: 'scheduled',
+                cal_event_id: calResult.bookingUid,
+                notes: `WhatsApp booking - Phone: ${bookingData.phone}`
+              })
+              .select('id')
+              .single()
+
+            if (appointmentError) {
+              console.error('❌ Error saving appointment to database:', appointmentError)
+            } else {
+              console.log('✅ Appointment saved to database:', appointmentData?.id)
+
+              // Update lead with email and status
+              const { error: leadUpdateError } = await supabase
+                .from('leads')
+                .update({
+                  email: bookingData.email,
+                  name: bookingData.name,
+                  status: 'appointment_scheduled'
+                })
+                .eq('id', lead.id)
+
+              if (leadUpdateError) {
+                console.error('❌ Error updating lead:', leadUpdateError)
+              } else {
+                console.log('✅ Lead updated with email and status')
+              }
+            }
 
             console.log('Booking created and saved successfully')
           } else {

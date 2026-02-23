@@ -83,6 +83,9 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                       {lead.name || t('table.noName')}
                     </div>
                     <div className="text-sm text-sky-600/60">{lead.phone}</div>
+                    {lead.email && (
+                      <div className="text-xs text-sky-500/50">{lead.email}</div>
+                    )}
                   </Link>
                 </td>
                 <td>
