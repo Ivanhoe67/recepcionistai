@@ -204,12 +204,53 @@ export default function LandingPage() {
             </div>
 
             <div className="space-y-4">
-              <div className="glass-card p-6">
-                <div className="aspect-square rounded-xl bg-gradient-to-br from-sky-100 to-sky-200 flex items-center justify-center">
-                  <Bot className="w-32 h-32 text-sky-500" />
+              {/* WhatsApp Chat Mockup */}
+              <div className="rounded-2xl overflow-hidden shadow-xl border border-sky-100">
+                {/* Chat header */}
+                <div className="flex items-center gap-3 px-4 py-3 bg-[#075E54]">
+                  <div className="w-9 h-9 rounded-full bg-sky-400 flex items-center justify-center">
+                    <Bot className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white font-semibold text-sm">RecepcionistaAI</p>
+                    <p className="text-green-300 text-xs">En línea · Responde al instante</p>
+                  </div>
+                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                </div>
+                {/* Messages */}
+                <div className="bg-[#ECE5DD] px-3 py-4 space-y-3">
+                  <div className="flex justify-start">
+                    <div className="bg-white rounded-lg px-3 py-2 max-w-[78%] shadow-sm">
+                      <p className="text-gray-800 text-sm">Hola, ¿tienen citas para mañana?</p>
+                      <p className="text-gray-400 text-xs text-right mt-1">2:34 PM</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <div className="bg-[#D1FAD7] rounded-lg px-3 py-2 max-w-[78%] shadow-sm">
+                      <p className="text-gray-800 text-sm">¡Hola! Sí 😊 Tenemos disponibilidad mañana a las 10am, 2pm y 4pm. ¿Cuál te funciona?</p>
+                      <p className="text-gray-400 text-xs text-right mt-1">2:34 PM ✓✓</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-start">
+                    <div className="bg-white rounded-lg px-3 py-2 max-w-[78%] shadow-sm">
+                      <p className="text-gray-800 text-sm">A las 2pm perfecto</p>
+                      <p className="text-gray-400 text-xs text-right mt-1">2:35 PM</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <div className="bg-[#D1FAD7] rounded-lg px-3 py-2 max-w-[78%] shadow-sm">
+                      <p className="text-gray-800 text-sm">✅ ¡Listo! Cita confirmada para mañana a las 2:00 PM. Te envío recordatorio 1 hora antes.</p>
+                      <p className="text-gray-400 text-xs text-right mt-1">2:35 PM ✓✓</p>
+                    </div>
+                  </div>
+                </div>
+                {/* AI badge */}
+                <div className="flex items-center justify-center gap-2 py-2 bg-sky-50">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <p className="text-xs text-sky-600 font-medium">Respondido por IA · menos de 1 segundo</p>
                 </div>
               </div>
-              <p className="text-sky-700 text-center leading-relaxed">
+              <p className="text-sky-700 text-center leading-relaxed text-sm">
                 {t('solution.close')}
               </p>
             </div>
@@ -351,10 +392,61 @@ export default function LandingPage() {
                 </span>
               ))}
             </div>
-            <div className="rounded-2xl bg-gradient-to-br from-sky-100 to-sky-200 aspect-video flex items-center justify-center">
-              <div className="text-center">
-                <BarChart3 className="w-24 h-24 text-sky-400 mx-auto mb-4" />
-                <p className="text-sky-500 font-medium">Dashboard RecepcionistaAI</p>
+            {/* Dashboard Mockup */}
+            <div className="rounded-2xl overflow-hidden shadow-xl border border-sky-100">
+              {/* Window bar */}
+              <div className="bg-sky-900 px-4 py-2.5 flex items-center gap-3">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-400" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                  <div className="w-3 h-3 rounded-full bg-green-400" />
+                </div>
+                <p className="text-sky-300 text-xs font-medium mx-auto">RecepcionistaAI — Dashboard</p>
+              </div>
+              {/* Dashboard body */}
+              <div className="bg-sky-50 p-4">
+                {/* Metric cards */}
+                <div className="grid grid-cols-4 gap-2 mb-4">
+                  {[
+                    { label: 'Total Leads', value: '148', trend: '↑ 12%', trendColor: 'text-emerald-600' },
+                    { label: 'Citas hoy', value: '7', trend: '↑ 3', trendColor: 'text-emerald-600' },
+                    { label: 'Mensajes', value: '94', trend: '↑ 28%', trendColor: 'text-emerald-600' },
+                    { label: 'Conversión', value: '68%', trend: '↑ 5%', trendColor: 'text-emerald-600' },
+                  ].map((m, i) => (
+                    <div key={i} className="bg-white rounded-lg p-2.5 border border-sky-100">
+                      <p className="text-xs text-gray-400 mb-1">{m.label}</p>
+                      <p className="text-lg font-bold text-gray-800">{m.value}</p>
+                      <p className={`text-xs font-semibold ${m.trendColor}`}>{m.trend}</p>
+                    </div>
+                  ))}
+                </div>
+                {/* Leads table */}
+                <div className="bg-white rounded-lg border border-sky-100 overflow-hidden">
+                  <div className="px-3 py-2 border-b border-sky-50 flex items-center justify-between bg-sky-50">
+                    <p className="text-xs font-semibold text-gray-600">Leads recientes</p>
+                    <span className="text-xs text-sky-500">Ver todos →</span>
+                  </div>
+                  {[
+                    { name: 'María García', channel: 'WhatsApp', status: 'Calificado', statusCls: 'bg-emerald-100 text-emerald-700' },
+                    { name: 'Carlos López', channel: 'Llamada', status: 'Cita agendada', statusCls: 'bg-sky-100 text-sky-700' },
+                    { name: 'Ana Rodríguez', channel: 'WhatsApp', status: 'Nuevo', statusCls: 'bg-amber-100 text-amber-700' },
+                  ].map((lead, i) => (
+                    <div key={i} className="px-3 py-2 flex items-center justify-between border-b border-sky-50 last:border-0">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-600">
+                          {lead.name[0]}
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-gray-700">{lead.name}</p>
+                          <p className="text-xs text-gray-400">{lead.channel}</p>
+                        </div>
+                      </div>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${lead.statusCls}`}>
+                        {lead.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
