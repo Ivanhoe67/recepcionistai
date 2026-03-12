@@ -31,150 +31,171 @@
         "createAccount": "Crear Cuenta"
     },
     "Landing": {
+        "nav": {
+            "comoFunciona": "Cómo funciona",
+            "beneficios": "Beneficios",
+            "planes": "Planes",
+            "faq": "FAQ",
+            "demo": "Agenda tu demo"
+        },
         "features": {
-            "title": "Características principales",
+            "title": "Cómo funciona",
             "voice": {
                 "title": "Agente de voz",
                 "description": "Atiende llamadas entrantes y agenda citas automáticamente."
             },
             "sms": {
-                "title": "SMS Inteligentes",
-                "description": "Automatiza conversaciones vía SMS y WhatsApp 24/7."
+                "title": "Mensajes inteligentes por WhatsApp",
+                "description": "Automatiza conversaciones vía WhatsApp 24/7."
             }
         },
         "hero": {
-            "title": "Tu Recepcionista AI Personal",
-            "subtitle": "Automatiza tus llamadas, SMS y agendamiento de citas con inteligencia artificial.",
-            "cta": "Empezar ahora",
+            "eyebrow": "Para negocios de servicios que atienden por WhatsApp, llamadas y citas",
+            "title": "Deja de perder clientes por mensajes, llamadas y citas desorganizadas.",
+            "subtitle": "RecepcionistaAI ayuda a negocios de servicios a responder más rápido, organizar sus conversaciones y agendar citas en un solo sistema que trabaja por ti 24/7.",
+            "supportLine": "Ideal para inmigración, taxes, seguros, barberías, peluquerías, spa y otros negocios que viven de responder y agendar bien.",
+            "cta": "Agenda tu demo",
+            "ctaDemo": "Agenda tu demo",
             "badge": "Potenciado por Inteligencia Artificial",
-            "callAI": "Llamar al AI Ahora",
+            "callAI": "Agenda tu demo",
             "connecting": "Conectando...",
             "endCall": "Terminar Llamada",
-            "whatsapp": "WhatsApp Demo",
-            "whatsappMsg": "¡Hola! Me interesa Recepcionista AI, quiero agendar una demo.",
+            "whatsapp": "Escríbenos por WhatsApp",
+            "whatsappDemo": "¡Hola! Quiero agendar una demo de RecepcionistaAI.",
+            "whatsappMsg": "¡Hola! Me interesa RecepcionistaAI, tengo una consulta.",
             "subheadline": "Atiende llamadas, responde mensajes y agenda citas 24/7. Sin contratar personal. Sin perder clientes.",
             "demoVideo": "O mira el video demo",
             "trust": {
                 "trial": "7 días de prueba gratis",
-                "setup": "Configuración incluida",
-                "cancel": "Cancela cuando quieras"
+                "setup": "Soporte en español",
+                "cancel": "Configuración simple"
             },
             "stats": {
                 "callsAttended": "Llamadas atendidas"
             }
         },
         "problems": {
-            "title": "¿Te suena familiar?",
-            "subtitle": "Estos problemas le cuestan dinero a tu negocio todos los días",
-            "p1": {
-                "title": "Llamadas perdidas",
-                "desc": "Clientes que llaman fuera de horario o cuando estás ocupado. Cada llamada perdida es dinero que se va.",
-                "stat": "67%",
-                "statLabel": "de clientes no vuelven a llamar"
-            },
-            "p2": {
-                "title": "Tiempo desperdiciado",
-                "desc": "Horas contestando las mismas preguntas: horarios, precios, ubicación. Tiempo que podrías usar para vender.",
-                "stat": "4hrs",
-                "statLabel": "diarias en tareas repetitivas"
-            },
-            "p3": {
-                "title": "Personal costoso",
-                "desc": "Una recepcionista cuesta $800-1,500/mes, solo trabaja 8 horas, se enferma y toma vacaciones.",
-                "stat": "$1,200",
-                "statLabel": "costo mensual promedio"
-            }
+            "title": "¿Te pasa esto en tu negocio?",
+            "intro": "Muchos negocios de servicios no pierden clientes por falta de demanda. Los pierden por desorden, respuestas tardías y falta de seguimiento.",
+            "pain1": "Te escriben por WhatsApp y no siempre respondes a tiempo",
+            "pain2": "Pierdes llamadas cuando estás atendiendo o fuera de horario",
+            "pain3": "Se te escapan citas por falta de seguimiento",
+            "pain4": "No sabes en qué etapa está cada prospecto o cliente",
+            "pain5": "Todo depende de ti o de alguien de tu equipo",
+            "pain6": "Manejas demasiadas cosas entre chats, llamadas y notas sueltas",
+            "close": "Si esto te pasa, no necesitas trabajar más duro. Necesitas más control."
         },
         "solution": {
             "badge": "La Solución",
-            "title": "RecepcionistaAI trabaja por ti 24/7",
-            "subtitle": "Por menos de $7 al día, tienes una recepcionista que nunca descansa, nunca se enferma y siempre está de buen humor.",
-            "f1": {
-                "title": "Agente de voz 24/7",
-                "desc": "Atiende llamadas entrantes y agenda citas automáticamente."
+            "title": "Todo en un solo lugar para atender mejor y vender más",
+            "intro": "Con RecepcionistaAI puedes centralizar la atención y el seguimiento de tu negocio en un solo sistema.",
+            "item1": "Mensajes de WhatsApp",
+            "item2": "Llamadas",
+            "item3": "Leads",
+            "item4": "Citas",
+            "item5": "Seguimiento",
+            "item6": "Métricas y analíticas",
+            "close": "Así dejas de manejar todo entre chats, llamadas, agenda y memoria, y empiezas a operar con más orden, más claridad y más control."
+        },
+        "benefits": {
+            "title": "Lo que ganas con RecepcionistaAI",
+            "b1": {
+                "title": "Responde más rápido",
+                "desc": "Atiende mensajes y consultas sin dejar que las oportunidades se enfríen."
             },
-            "f2": {
-                "title": "SMS Inteligentes",
-                "desc": "Automatiza conversaciones vía SMS y WhatsApp 24/7."
+            "b2": {
+                "title": "No pierdas llamadas importantes",
+                "desc": "Tu negocio puede seguir captando clientes incluso cuando no puedes contestar."
             },
-            "f3": {
+            "b3": {
                 "title": "Agenda citas automáticamente",
-                "desc": "Sincroniza con tu calendario y permite a los clientes reservar sin tu intervención."
+                "desc": "Reduce trabajo manual y facilita que tus clientes reserven sin tanta fricción."
             },
-            "f4": {
-                "title": "Dashboard con métricas",
-                "desc": "Ve todas las interacciones, leads capturados y oportunidades en un solo lugar."
+            "b4": {
+                "title": "Organiza tus leads y clientes",
+                "desc": "Ve quién escribió, quién llamó y en qué etapa está cada oportunidad."
+            },
+            "b5": {
+                "title": "Ten más control de tu negocio",
+                "desc": "Mide actividad, seguimiento y resultados desde un solo panel."
+            },
+            "b6": {
+                "title": "Trabaja con más orden y menos caos",
+                "desc": "Deja de depender solo de tu memoria, de tu celular o de procesos improvisados."
             }
         },
         "steps": {
-            "title": "Empieza en 3 simples pasos",
+            "title": "Empieza en 3 pasos",
             "subtitle": "Nosotros nos encargamos de todo",
             "s1": {
                 "title": "Agenda tu demo",
-                "desc": "Habla con nuestro agente AI por WhatsApp y agenda una llamada de demostración gratuita."
+                "desc": "Conoce cómo se vería RecepcionistaAI aplicado a tu negocio."
             },
             "s2": {
                 "title": "Elige tu plan",
-                "desc": "Selecciona el plan que mejor se adapte a tu negocio. Incluye 7 días de prueba gratis."
+                "desc": "Selecciona la opción que mejor se adapta a tu operación. Todos incluyen 7 días de prueba gratis."
             },
             "s3": {
-                "title": "Listo para atender",
-                "desc": "Configuramos tu agente personalizado y empiezas a recibir clientes 24/7."
+                "title": "Empieza a atender mejor",
+                "desc": "Configuramos tu sistema para que organices mensajes, llamadas, leads y citas en un solo lugar."
             }
         },
-        "testimonials": {
-            "title": "Lo que dicen nuestros clientes",
-            "c1": {
-                "name": "Dr. Carlos Méndez",
-                "role": "Clínica Dental Sonrisa",
-                "quote": "Antes perdía 5-6 llamadas diarias. Ahora RecepcionistAI las atiende todas y hasta agenda las citas. Recuperé mi inversión en la primera semana."
-            },
-            "c2": {
-                "name": "María González",
-                "role": "Inmobiliaria MG",
-                "quote": "Mis agentes ya no pierden tiempo contestando preguntas básicas. La IA califica los leads y solo nos pasa los interesados reales."
-            },
-            "c3": {
-                "name": "Roberto Sánchez",
-                "role": "Taller Automotriz RS",
-                "quote": "El equipo de RecepcionistAI configuró todo por mí. Ahora atiendo clientes hasta los domingos sin trabajar."
-            }
+        "forWho": {
+            "title": "Diseñado para negocios de servicios que viven de responder y agendar bien",
+            "intro": "RecepcionistaAI es ideal para negocios donde una llamada perdida, un mensaje sin responder o una cita mal gestionada puede convertirse en un cliente perdido.",
+            "item1": "Oficinas de inmigración",
+            "item2": "Negocios de taxes",
+            "item3": "Agencias de seguros",
+            "item4": "Barberías",
+            "item5": "Peluquerías",
+            "item6": "Spa",
+            "item7": "Consultorios y otros negocios que trabajan por cita",
+            "close": "Si tu negocio recibe clientes por WhatsApp, llamadas o agenda, esta solución puede ayudarte."
+        },
+        "product": {
+            "title": "Mira lo que puedes controlar desde un solo panel",
+            "intro": "RecepcionistaAI te permite visualizar y organizar lo más importante de tu operación comercial y de atención.",
+            "tag1": "Leads organizados en un solo lugar",
+            "tag2": "Citas agendadas y pendientes",
+            "tag3": "Conversaciones centralizadas",
+            "tag4": "Métricas y rendimiento",
+            "tag5": "Seguimiento más claro de cada oportunidad",
+            "close": "No se trata solo de tener un panel bonito. Se trata de saber qué está pasando en tu negocio y dónde se están perdiendo oportunidades."
         },
         "faq": {
-            "title": "Preguntas Frecuentes",
+            "title": "Diseñado para ayudarte, no para complicarte",
             "q1": {
-                "q": "¿Cómo funciona la prueba de 7 días?",
-                "a": "Al elegir tu plan, tienes 7 días completos para probar el servicio. Si no estás satisfecho, cancelas antes de que termine el periodo y no se te cobra nada."
+                "q": "¿Tengo que saber de tecnología?",
+                "a": "No. RecepcionistaAI está pensado para negocios reales que quieren más orden sin complicarse con sistemas difíciles."
             },
             "q2": {
-                "q": "¿Necesito cambiar mi número de teléfono?",
-                "a": "No. Puedes mantener tu número actual y redirigir las llamadas a RecepcionistAI, o podemos darte un número nuevo dedicado."
+                "q": "¿Y si tengo algún problema?",
+                "a": "Recibes soporte para que puedas usar el sistema con seguridad y claridad."
             },
             "q3": {
-                "q": "¿La IA suena como un robot?",
-                "a": "No. Usamos la tecnología de voz más avanzada disponible. Nuestros clientes reportan que sus usuarios no notan la diferencia con una persona real."
+                "q": "¿De verdad vale la pena?",
+                "a": "Perder uno o dos clientes por no responder a tiempo o no dar seguimiento puede costar más que la mensualidad."
             },
             "q4": {
-                "q": "¿Qué pasa si la IA no puede responder algo?",
-                "a": "Puedes configurar reglas para transferir llamadas a un humano en casos específicos, o la IA puede tomar un mensaje y notificarte inmediatamente."
+                "q": "¿Esto funciona para mi tipo de negocio?",
+                "a": "Si en tu negocio entran clientes por mensajes, llamadas o citas, hay una alta probabilidad de que te ayude a organizar mejor tu operación."
             },
             "q5": {
-                "q": "¿Quién configura el agente de IA?",
-                "a": "Nosotros nos encargamos de toda la configuración. Solo necesitamos la información de tu negocio (horarios, servicios, precios) y configuramos tu agente personalizado."
-            },
-            "q6": {
-                "q": "¿Puedo cancelar en cualquier momento?",
-                "a": "Sí. No hay contratos ni compromisos. Puedes cancelar tu suscripción cuando quieras desde tu panel de control."
-            },
-            "q7": {
-                "q": "¿Funciona en mi país?",
-                "a": "RecepcionistAI funciona en toda Latinoamérica, Estados Unidos y España. Soportamos números locales en múltiples países."
+                "q": "¿Hay prueba gratis?",
+                "a": "Sí. Todos los planes incluyen 7 días de prueba gratis."
             }
         },
+        "freeTrial": {
+            "title": "Pruébalo 7 días gratis",
+            "desc": "Descubre cómo se siente trabajar con más orden, más seguimiento y menos trabajo manual antes de comprometerte.",
+            "support": "Ve cómo se organizan tus leads, conversaciones y citas en un solo sistema pensado para negocios de servicios.",
+            "cta": "Probar 7 días gratis"
+        },
         "finalCta": {
-            "title": "¿Listo para no perder más clientes?",
-            "subtitle": "Habla con nuestro agente AI y descubre cómo podemos ayudar a tu negocio",
-            "footer": "7 días gratis • Configuración incluida • Cancela cuando quieras"
+            "title": "Menos caos. Más control.",
+            "subtitle": "Si hoy manejas tu negocio entre WhatsApp, llamadas y citas sin un sistema claro, RecepcionistaAI puede ayudarte a organizar todo y dejar de perder oportunidades.",
+            "footer": "Atención más ordenada · Seguimiento más claro · Más control sobre tu negocio",
+            "whatsapp": "Hablar por WhatsApp"
         },
         "footer": {
             "product": "Producto",
@@ -306,33 +327,39 @@
         "loadError": "Error al cargar los datos del negocio"
     },
     "Pricing": {
-        "title": "Planes simples, sin sorpresas",
-        "subtitle": "Elige el plan que mejor se adapte a tu negocio",
+        "title": "Elige el plan que mejor se adapta a tu negocio",
+        "subtitle": "Empieza con la opción que mejor encaje con tu forma de atender clientes. Todos los planes incluyen 7 días de prueba gratis.",
         "popular": "Más Popular",
-        "cta": "Empezar con 7 días gratis",
-        "trial": "Todos los planes incluyen 7 días de prueba gratis y configuración personalizada.",
+        "cta": "Quiero este plan",
+        "trial": "Una sola oportunidad perdida por falta de seguimiento puede costar más que la mensualidad.",
+        "trialCta": "Agenda tu demo y te ayudamos a elegir el mejor plan",
         "starter": {
-            "name": "Básico",
-            "desc": "Perfecto para pequeños negocios"
+            "name": "Impulso",
+            "desc": "Pensado para negocios que quieren comenzar automatizando su canal más usado: WhatsApp.",
+            "ideal": "Negocios que reciben la mayoría de sus consultas por WhatsApp y quieren responder más rápido, dar mejor seguimiento y agendar más citas."
         },
         "pro": {
-            "name": "Pro",
-            "desc": "Para negocios en crecimiento"
+            "name": "Profesional",
+            "desc": "Pensado para negocios que necesitan automatizar la atención por llamadas y dejar de perder oportunidades fuera de horario.",
+            "ideal": "Negocios que reciben llamadas constantemente y pierden clientes potenciales porque no siempre pueden contestar."
         },
         "enterprise": {
-            "name": "Enterprise",
-            "desc": "Para equipos y franquicias",
-            "cta": "Contactar Ventas"
+            "name": "Escala",
+            "desc": "La solución más completa para negocios que quieren centralizar atención, seguimiento y crecimiento en un solo sistema.",
+            "ideal": "Negocios que quieren una operación más organizada, profesional y preparada para crecer sin caos.",
+            "cta": "Quiero este plan"
         },
         "features": {
-            "messages": "{count} mensajes/mes",
+            "dashboard": "Dashboard",
+            "analytics": "Analíticas",
+            "leads": "Gestión de leads",
+            "messages": "Automatización de mensajes",
+            "appointments": "Gestión de citas",
+            "voice": "Agente de voz para llamadas",
+            "minutes": "{count} minutos de voz",
             "phone": "{count} número de teléfono",
             "autoReply": "Respuestas automáticas",
-            "dashboard": "Dashboard básico",
             "support": "Soporte por email",
-            "minutes": "{count} minutos de voz",
-            "appointments": "Agenda de citas",
-            "analytics": "Analíticas avanzadas",
             "integrations": "Integraciones",
             "priority": "Soporte prioritario",
             "unlimited": "Mensajes ilimitados",
@@ -344,8 +371,9 @@
         }
     },
     "Footer": {
-        "description": "Tu recepcionista AI que trabaja 24/7 para que tú no tengas que hacerlo.",
-        "rights": "Todos los derechos reservados."
+        "description": "Organiza mensajes, llamadas, leads y citas en un solo sistema para atender mejor y perder menos oportunidades.",
+        "rights": "Todos los derechos reservados.",
+        "support": "Soporte en español"
     },
     "Sidebar": {
         "dashboard": "Dashboard",

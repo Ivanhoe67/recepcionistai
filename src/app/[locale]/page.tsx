@@ -1,9 +1,11 @@
-import { Phone, MessageSquare, Calendar, Clock, TrendingUp, CheckCircle2, Play, Star, Zap, Users, BarChart3, Bot, ChevronDown } from 'lucide-react'
+import { Phone, MessageSquare, Calendar, Clock, CheckCircle2, Play, Zap, BarChart3, Bot, ChevronDown, Users, TrendingUp, Shield, ArrowRight } from 'lucide-react'
 import { FloatingContactButtons } from '@/components/landing/FloatingContactButtons'
 import { HeroCTAButtons, FinalCTAButtons } from '@/components/landing/HeroCTAButtons'
 import { Link } from '@/lib/navigation'
 import { useTranslations } from 'next-intl'
 import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher'
+
+const WHATSAPP_NUMBER = "15179302149"
 
 export default function LandingPage() {
   const t = useTranslations('Landing')
@@ -11,27 +13,32 @@ export default function LandingPage() {
   const tPricing = useTranslations('Pricing')
   const tFooter = useTranslations('Footer')
 
+  const demoMsg = encodeURIComponent("¡Hola! Quiero agendar una demo de RecepcionistaAI.")
+
   return (
     <div className="liquid-bg min-h-screen">
-      {/* Navigation */}
+      {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50">
         <div className="glass-card mx-4 mt-4 md:mx-8 rounded-2xl">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-3">
-              <img src="/logo.svg" alt="RecepcionistAI" className="w-10 h-10" />
+              <img src="/logo.svg" alt="RecepcionistaAI" className="w-10 h-10" />
               <span className="text-xl font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
-                RecepcionistAI
+                RecepcionistaAI
               </span>
             </div>
             <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-sky-700 hover:text-sky-900 font-medium transition-colors">
-                {t('features.title')}
+              <a href="#como-funciona" className="text-sky-700 hover:text-sky-900 font-medium transition-colors">
+                {t('nav.comoFunciona')}
               </a>
-              <a href="#pricing" className="text-sky-700 hover:text-sky-900 font-medium transition-colors">
-                {tPricing('title')}
+              <a href="#beneficios" className="text-sky-700 hover:text-sky-900 font-medium transition-colors">
+                {t('nav.beneficios')}
+              </a>
+              <a href="#planes" className="text-sky-700 hover:text-sky-900 font-medium transition-colors">
+                {t('nav.planes')}
               </a>
               <a href="#faq" className="text-sky-700 hover:text-sky-900 font-medium transition-colors">
-                FAQ
+                {t('nav.faq')}
               </a>
             </div>
             <div className="flex items-center gap-3">
@@ -42,12 +49,14 @@ export default function LandingPage() {
               >
                 {authT('login')}
               </Link>
-              <Link
-                href="/signup"
+              <a
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${demoMsg}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="glass-button text-sm px-4 py-2"
               >
-                {authT('signup')}
-              </Link>
+                {t('nav.demo')}
+              </a>
             </div>
           </div>
         </div>
@@ -59,41 +68,33 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 md:px-8 overflow-hidden">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center space-y-8">
-            {/* Badge */}
+          <div className="text-center space-y-6">
+            {/* Eyebrow */}
             <div className="inline-flex items-center gap-2 glass-badge-sky px-4 py-2 rounded-full">
               <Zap className="w-4 h-4" />
-              <span>{t('hero.badge')}</span>
+              <span>{t('hero.eyebrow')}</span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-sky-900 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-sky-900 leading-tight max-w-4xl mx-auto">
               {t('hero.title')}
-              <br />
-              <span className="bg-gradient-to-r from-sky-500 to-sky-700 bg-clip-text text-transparent">
-                {t('hero.subtitle')}
-              </span>
             </h1>
 
-            {/* Subheadline */}
+            {/* Subtitle */}
             <p className="text-xl md:text-2xl text-sky-700 max-w-3xl mx-auto leading-relaxed">
-              {t('hero.subheadline')}
+              {t('hero.subtitle')}
+            </p>
+
+            {/* Support line */}
+            <p className="text-base text-sky-500 max-w-2xl mx-auto">
+              {t('hero.supportLine')}
             </p>
 
             {/* CTA Buttons */}
             <HeroCTAButtons />
 
-            {/* Secondary CTA */}
-            <a
-              href="#demo"
-              className="inline-flex items-center gap-2 text-sky-600 hover:text-sky-800 font-medium transition-colors"
-            >
-              <Play className="w-4 h-4" />
-              {t('hero.demoVideo')}
-            </a>
-
             {/* Trust Indicators */}
-            <div className="flex flex-wrap items-center justify-center gap-6 pt-8 text-sky-600">
+            <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-sky-600">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                 <span>{t('hero.trust.trial')}</span>
@@ -109,95 +110,66 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Hero Image/Demo */}
+          {/* Demo Video */}
           <div id="demo" className="mt-16 relative">
             <div className="glass-card p-2 md:p-4 max-w-5xl mx-auto">
               <div className="relative rounded-2xl overflow-hidden aspect-video">
                 <iframe
                   className="w-full h-full absolute inset-0"
                   src="https://www.loom.com/embed/ae56793a37ec465eaeb1d5d748586d67"
-                  title="RecepcionistAI Demo"
+                  title="RecepcionistaAI Demo"
                   frameBorder="0"
                   allowFullScreen
                 />
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Floating Stats */}
-            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex gap-4">
-              <div className="glass-card px-6 py-3 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-emerald-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-sky-900">98%</p>
-                  <p className="text-xs text-sky-600">{t('hero.stats.callsAttended')}</p>
-                </div>
-              </div>
+      {/* Problema */}
+      <section id="problema" className="py-20 px-4 md:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
+              {t('problems.title')}
+            </h2>
+            <p className="text-xl text-sky-700">
+              {t('problems.intro')}
+            </p>
+          </div>
+
+          <div className="glass-card p-8 md:p-12">
+            <ul className="space-y-4">
+              {[
+                t('problems.pain1'),
+                t('problems.pain2'),
+                t('problems.pain3'),
+                t('problems.pain4'),
+                t('problems.pain5'),
+                t('problems.pain6'),
+              ].map((pain, index) => (
+                <li key={index} className="flex items-start gap-4">
+                  <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-2 h-2 rounded-full bg-red-500" />
+                  </div>
+                  <span className="text-lg text-sky-800">{pain}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 pt-8 border-t border-sky-100">
+              <p className="text-xl font-semibold text-sky-900 text-center">
+                {t('problems.close')}
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Problem Section */}
-      <section className="py-20 px-4 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
-              {t('problems.title')}
-            </h2>
-            <p className="text-xl text-sky-700">
-              {t('problems.subtitle')}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: Phone,
-                title: t('problems.p1.title'),
-                description: t('problems.p1.desc'),
-                stat: t('problems.p1.stat'),
-                statLabel: t('problems.p1.statLabel')
-              },
-              {
-                icon: Clock,
-                title: t('problems.p2.title'),
-                description: t('problems.p2.desc'),
-                stat: t('problems.p2.stat'),
-                statLabel: t('problems.p2.statLabel')
-              },
-              {
-                icon: Users,
-                title: t('problems.p3.title'),
-                description: t('problems.p3.desc'),
-                stat: t('problems.p3.stat'),
-                statLabel: t('problems.p3.statLabel')
-              }
-            ].map((problem, index) => (
-              <div
-                key={index}
-                className="glass-card p-8 text-center hover:border-red-200 transition-colors group"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center mx-auto mb-6 group-hover:bg-red-200 transition-colors">
-                  <problem.icon className="w-8 h-8 text-red-500" />
-                </div>
-                <h3 className="text-xl font-bold text-sky-900 mb-3">{problem.title}</h3>
-                <p className="text-sky-600 mb-6">{problem.description}</p>
-                <div className="pt-4 border-t border-sky-100">
-                  <p className="text-3xl font-bold text-red-500">{problem.stat}</p>
-                  <p className="text-sm text-sky-600">{problem.statLabel}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Solution Section */}
-      <section className="py-20 px-4 md:px-8 relative">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+      {/* Solución */}
+      <section id="solucion" className="py-20 px-4 md:px-8 relative">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 glass-badge-success px-4 py-2 rounded-full mb-4">
               <CheckCircle2 className="w-4 h-4" />
               <span>{t('solution.badge')}</span>
@@ -206,57 +178,81 @@ export default function LandingPage() {
               {t('solution.title')}
             </h2>
             <p className="text-xl text-sky-700 max-w-2xl mx-auto">
-              {t('solution.subtitle')}
+              {t('solution.intro')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div className="space-y-6">
-              {[
-                {
-                  icon: Phone,
-                  title: t('solution.f1.title'),
-                  description: t('solution.f1.desc')
-                },
-                {
-                  icon: MessageSquare,
-                  title: t('solution.f2.title'),
-                  description: t('solution.f2.desc')
-                },
-                {
-                  icon: Calendar,
-                  title: t('solution.f3.title'),
-                  description: t('solution.f3.desc')
-                },
-                {
-                  icon: BarChart3,
-                  title: t('solution.f4.title'),
-                  description: t('solution.f4.desc')
-                }
-              ].map((feature, index) => (
-                <div key={index} className="flex gap-4 items-start">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center flex-shrink-0">
-                    <feature.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-sky-900 mb-1">{feature.title}</h3>
-                    <p className="text-sky-600">{feature.description}</p>
-                  </div>
-                </div>
-              ))}
+            <div className="glass-card p-8">
+              <ul className="space-y-4">
+                {[
+                  { icon: MessageSquare, text: t('solution.item1') },
+                  { icon: Phone, text: t('solution.item2') },
+                  { icon: Users, text: t('solution.item3') },
+                  { icon: Calendar, text: t('solution.item4') },
+                  { icon: ArrowRight, text: t('solution.item5') },
+                  { icon: BarChart3, text: t('solution.item6') },
+                ].map((item, index) => (
+                  <li key={index} className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="text-lg font-medium text-sky-800">{item.text}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            <div className="glass-card p-6">
-              <div className="aspect-square rounded-xl bg-gradient-to-br from-sky-100 to-sky-200 flex items-center justify-center">
-                <Bot className="w-32 h-32 text-sky-500" />
+            <div className="space-y-4">
+              <div className="glass-card p-6">
+                <div className="aspect-square rounded-xl bg-gradient-to-br from-sky-100 to-sky-200 flex items-center justify-center">
+                  <Bot className="w-32 h-32 text-sky-500" />
+                </div>
               </div>
+              <p className="text-sky-700 text-center leading-relaxed">
+                {t('solution.close')}
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
-      <section id="features" className="py-20 px-4 md:px-8 bg-gradient-to-b from-transparent via-sky-50/50 to-transparent">
+      {/* Beneficios */}
+      <section id="beneficios" className="py-20 px-4 md:px-8 bg-gradient-to-b from-transparent via-sky-50/50 to-transparent">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
+              {t('benefits.title')}
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { icon: Zap, key: 'b1' },
+              { icon: Phone, key: 'b2' },
+              { icon: Calendar, key: 'b3' },
+              { icon: Users, key: 'b4' },
+              { icon: BarChart3, key: 'b5' },
+              { icon: Shield, key: 'b6' },
+            ].map(({ icon: Icon, key }) => (
+              <div key={key} className="glass-card p-8 hover:border-sky-300 transition-colors group">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Icon className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-sky-900 mb-3">
+                  {t(`benefits.${key}.title` as any)}
+                </h3>
+                <p className="text-sky-600">
+                  {t(`benefits.${key}.desc` as any)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Cómo funciona */}
+      <section id="como-funciona" className="py-20 px-4 md:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
@@ -269,38 +265,23 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              {
-                step: "1",
-                title: t('steps.s1.title'),
-                description: t('steps.s1.desc'),
-                icon: MessageSquare
-              },
-              {
-                step: "2",
-                title: t('steps.s2.title'),
-                description: t('steps.s2.desc'),
-                icon: CheckCircle2
-              },
-              {
-                step: "3",
-                title: t('steps.s3.title'),
-                description: t('steps.s3.desc'),
-                icon: Zap
-              }
-            ].map((step, index) => (
+              { step: '1', titleKey: 'steps.s1.title', descKey: 'steps.s1.desc', icon: MessageSquare },
+              { step: '2', titleKey: 'steps.s2.title', descKey: 'steps.s2.desc', icon: CheckCircle2 },
+              { step: '3', titleKey: 'steps.s3.title', descKey: 'steps.s3.desc', icon: Zap },
+            ].map((item, index) => (
               <div key={index} className="text-center relative">
                 {index < 2 && (
                   <div className="hidden md:block absolute top-16 left-[60%] w-[80%] border-t-2 border-dashed border-sky-300" />
                 )}
                 <div className="glass-card p-8 relative">
                   <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-white">
-                    {step.step}
+                    {item.step}
                   </div>
                   <div className="w-14 h-14 rounded-xl bg-sky-100 flex items-center justify-center mx-auto mb-4">
-                    <step.icon className="w-7 h-7 text-sky-600" />
+                    <item.icon className="w-7 h-7 text-sky-600" />
                   </div>
-                  <h3 className="text-xl font-bold text-sky-900 mb-3">{step.title}</h3>
-                  <p className="text-sky-600">{step.description}</p>
+                  <h3 className="text-xl font-bold text-sky-900 mb-3">{t(item.titleKey as any)}</h3>
+                  <p className="text-sky-600">{t(item.descKey as any)}</p>
                 </div>
               </div>
             ))}
@@ -308,60 +289,84 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="py-20 px-4 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+      {/* Para quién es */}
+      <section id="para-quien" className="py-20 px-4 md:px-8 bg-gradient-to-b from-transparent via-sky-50/50 to-transparent">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
-              {t('testimonials.title')}
+              {t('forWho.title')}
             </h2>
+            <p className="text-xl text-sky-700">
+              {t('forWho.intro')}
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                name: t('testimonials.c1.name'),
-                role: t('testimonials.c1.role'),
-                quote: t('testimonials.c1.quote'),
-                rating: 5
-              },
-              {
-                name: t('testimonials.c2.name'),
-                role: t('testimonials.c2.role'),
-                quote: t('testimonials.c2.quote'),
-                rating: 5
-              },
-              {
-                name: t('testimonials.c3.name'),
-                role: t('testimonials.c3.role'),
-                quote: t('testimonials.c3.quote'),
-                rating: 5
-              }
-            ].map((testimonial, index) => (
-              <div key={index} className="glass-card p-8">
-                <div className="flex gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  ))}
+          <div className="glass-card p-8 md:p-12">
+            <div className="grid sm:grid-cols-2 gap-4 mb-8">
+              {[
+                t('forWho.item1'),
+                t('forWho.item2'),
+                t('forWho.item3'),
+                t('forWho.item4'),
+                t('forWho.item5'),
+                t('forWho.item6'),
+                t('forWho.item7'),
+              ].map((item, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                  <span className="text-sky-800 font-medium">{item}</span>
                 </div>
-                <p className="text-sky-700 mb-6 italic">&quot;{testimonial.quote}&quot;</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white font-bold">
-                    {testimonial.name.split(' ').map(n => n[0]).join('')}
-                  </div>
-                  <div>
-                    <p className="font-bold text-sky-900">{testimonial.name}</p>
-                    <p className="text-sm text-sky-600">{testimonial.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="pt-6 border-t border-sky-100 text-center">
+              <p className="text-sky-700 text-lg">{t('forWho.close')}</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-20 px-4 md:px-8">
+      {/* Capturas / Producto */}
+      <section id="producto" className="py-20 px-4 md:px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
+              {t('product.title')}
+            </h2>
+            <p className="text-xl text-sky-700 max-w-2xl mx-auto">
+              {t('product.intro')}
+            </p>
+          </div>
+
+          <div className="glass-card p-4 md:p-8 mb-8">
+            <div className="flex flex-wrap gap-3 justify-center mb-8">
+              {[
+                t('product.tag1'),
+                t('product.tag2'),
+                t('product.tag3'),
+                t('product.tag4'),
+                t('product.tag5'),
+              ].map((tag, index) => (
+                <span key={index} className="glass-badge-sky px-4 py-2 rounded-full text-sm font-medium">
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <div className="rounded-2xl bg-gradient-to-br from-sky-100 to-sky-200 aspect-video flex items-center justify-center">
+              <div className="text-center">
+                <BarChart3 className="w-24 h-24 text-sky-400 mx-auto mb-4" />
+                <p className="text-sky-500 font-medium">Dashboard RecepcionistaAI</p>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-center text-lg text-sky-700 max-w-2xl mx-auto">
+            {t('product.close')}
+          </p>
+        </div>
+      </section>
+
+      {/* Planes */}
+      <section id="planes" className="py-20 px-4 md:px-8 bg-gradient-to-b from-transparent via-sky-50/50 to-transparent">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
@@ -378,12 +383,13 @@ export default function LandingPage() {
                 name: tPricing('starter.name'),
                 price: 199,
                 description: tPricing('starter.desc'),
+                ideal: tPricing('starter.ideal'),
                 features: [
-                  tPricing('features.messages', { count: 500 }),
-                  tPricing('features.phone', { count: 1 }),
-                  tPricing('features.autoReply'),
                   tPricing('features.dashboard'),
-                  tPricing('features.support')
+                  tPricing('features.analytics'),
+                  tPricing('features.leads'),
+                  tPricing('features.messages'),
+                  tPricing('features.appointments'),
                 ],
                 cta: tPricing('cta'),
                 popular: false
@@ -392,14 +398,13 @@ export default function LandingPage() {
                 name: tPricing('pro.name'),
                 price: 299,
                 description: tPricing('pro.desc'),
+                ideal: tPricing('pro.ideal'),
                 features: [
-                  tPricing('features.messages', { count: 2000 }),
-                  tPricing('features.minutes', { count: 100 }),
-                  tPricing('features.phone', { count: 3 }),
-                  tPricing('features.appointments'),
+                  tPricing('features.dashboard'),
                   tPricing('features.analytics'),
-                  tPricing('features.integrations'),
-                  tPricing('features.priority')
+                  tPricing('features.leads'),
+                  tPricing('features.voice'),
+                  tPricing('features.appointments'),
                 ],
                 cta: tPricing('cta'),
                 popular: true
@@ -408,14 +413,14 @@ export default function LandingPage() {
                 name: tPricing('enterprise.name'),
                 price: 499,
                 description: tPricing('enterprise.desc'),
+                ideal: tPricing('enterprise.ideal'),
                 features: [
-                  tPricing('features.unlimited'),
-                  tPricing('features.minutes', { count: 500 }),
-                  tPricing('features.phoneUnlimited'),
-                  tPricing('features.api'),
-                  tPricing('features.users'),
-                  tPricing('features.reports'),
-                  tPricing('features.manager')
+                  tPricing('features.dashboard'),
+                  tPricing('features.analytics'),
+                  tPricing('features.leads'),
+                  tPricing('features.voice'),
+                  tPricing('features.messages'),
+                  tPricing('features.appointments'),
                 ],
                 cta: tPricing('enterprise.cta'),
                 popular: false
@@ -423,22 +428,22 @@ export default function LandingPage() {
             ].map((plan, index) => (
               <div
                 key={index}
-                className={`glass-card p-8 relative ${plan.popular ? 'border-2 border-sky-400 scale-105' : ''}`}
+                className={`glass-card p-8 relative flex flex-col ${plan.popular ? 'border-2 border-sky-400 scale-105' : ''}`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                     <span className="glass-badge-sky px-4 py-1">{tPricing('popular')}</span>
                   </div>
                 )}
-                <div className="text-center mb-8">
+                <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold text-sky-900 mb-2">{plan.name}</h3>
-                  <p className="text-sky-600 mb-4">{plan.description}</p>
+                  <p className="text-sky-600 mb-4 text-sm">{plan.description}</p>
                   <div className="flex items-baseline justify-center gap-1">
                     <span className="text-4xl font-bold text-sky-900">${plan.price}</span>
                     <span className="text-sky-600">/mes</span>
                   </div>
                 </div>
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-6 flex-1">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-center gap-3">
                       <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
@@ -446,6 +451,9 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
+                <div className="pt-4 border-t border-sky-100 mb-6">
+                  <p className="text-xs text-sky-500 text-center leading-relaxed">{plan.ideal}</p>
+                </div>
                 <Link
                   href="/signup"
                   className={`block text-center py-3 px-6 rounded-xl font-semibold transition-all ${plan.popular
@@ -459,14 +467,25 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <p className="text-center text-sky-600 mt-8">
-            {tPricing('trial')}
-          </p>
+          <div className="mt-12 text-center space-y-4">
+            <p className="text-sky-700 font-medium text-lg">
+              {tPricing('trial')}
+            </p>
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${demoMsg}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 glass-button px-8 py-4 text-lg"
+            >
+              <Calendar className="w-5 h-5" />
+              {tPricing('trialCta')}
+            </a>
+          </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-20 px-4 md:px-8 bg-gradient-to-b from-transparent via-sky-50/50 to-transparent">
+      <section id="faq" className="py-20 px-4 md:px-8">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
@@ -481,8 +500,6 @@ export default function LandingPage() {
               { q: t('faq.q3.q'), a: t('faq.q3.a') },
               { q: t('faq.q4.q'), a: t('faq.q4.a') },
               { q: t('faq.q5.q'), a: t('faq.q5.a') },
-              { q: t('faq.q6.q'), a: t('faq.q6.a') },
-              { q: t('faq.q7.q'), a: t('faq.q7.a') }
             ].map((faq, index) => (
               <details key={index} className="glass-card group">
                 <summary className="p-6 cursor-pointer list-none flex items-center justify-between">
@@ -498,20 +515,47 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* Prueba gratis */}
+      <section id="prueba" className="py-20 px-4 md:px-8 bg-gradient-to-b from-transparent via-sky-50/50 to-transparent">
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="glass-card p-12">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6">
+              <TrendingUp className="w-8 h-8 text-emerald-600" />
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
+              {t('freeTrial.title')}
+            </h2>
+            <p className="text-xl text-sky-700 mb-4">
+              {t('freeTrial.desc')}
+            </p>
+            <p className="text-sky-500 mb-8">
+              {t('freeTrial.support')}
+            </p>
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-2 glass-button text-lg px-10 py-4"
+            >
+              <CheckCircle2 className="w-5 h-5" />
+              {t('freeTrial.cta')}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Final */}
       <section className="py-20 px-4 md:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="glass-card p-12 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-sky-600/20" />
             <div className="relative">
-              <h2 className="text-3xl md:text-4xl font-bold text-sky-900 mb-4">
+              <h2 className="text-3xl md:text-5xl font-bold text-sky-900 mb-6">
                 {t('finalCta.title')}
               </h2>
               <p className="text-xl text-sky-700 mb-8 max-w-2xl mx-auto">
                 {t('finalCta.subtitle')}
               </p>
               <FinalCTAButtons />
-              <p className="text-sky-600 mt-6">
+              <p className="text-sky-500 mt-6 text-sm">
                 {t('finalCta.footer')}
               </p>
             </div>
@@ -523,31 +567,34 @@ export default function LandingPage() {
       <footer className="py-12 px-4 md:px-8 border-t border-sky-200">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
+            <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-4">
-                <img src="/logo.svg" alt="RecepcionistAI" className="w-10 h-10" />
+                <img src="/logo.svg" alt="RecepcionistaAI" className="w-10 h-10" />
                 <span className="text-xl font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">
-                  RecepcionistAI
+                  RecepcionistaAI
                 </span>
               </div>
-              <p className="text-sky-600">
+              <p className="text-sky-600 mb-3">
                 {tFooter('description')}
               </p>
+              <p className="text-sky-500 text-sm font-medium">{tFooter('support')}</p>
             </div>
             <div>
               <h4 className="font-bold text-sky-900 mb-4">{t('footer.product')}</h4>
               <ul className="space-y-2 text-sky-600">
-                <li><a href="#features" className="hover:text-sky-800">{t('features.title')}</a></li>
-                <li><a href="#pricing" className="hover:text-sky-800">{tPricing('title')}</a></li>
-                <li><a href="#faq" className="hover:text-sky-800">FAQ</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-sky-900 mb-4">{t('footer.company')}</h4>
-              <ul className="space-y-2 text-sky-600">
-                <li><a href="#" className="hover:text-sky-800">{t('footer.about')}</a></li>
-                <li><a href="#" className="hover:text-sky-800">{t('footer.blog')}</a></li>
-                <li><a href="#" className="hover:text-sky-800">{t('footer.contact')}</a></li>
+                <li><a href="#como-funciona" className="hover:text-sky-800">{t('nav.comoFunciona')}</a></li>
+                <li><a href="#planes" className="hover:text-sky-800">{t('nav.planes')}</a></li>
+                <li><a href="#faq" className="hover:text-sky-800">{t('nav.faq')}</a></li>
+                <li>
+                  <a
+                    href={`https://wa.me/${WHATSAPP_NUMBER}?text=${demoMsg}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-sky-800"
+                  >
+                    WhatsApp
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
@@ -559,7 +606,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="pt-8 border-t border-sky-200 text-center text-sky-600">
-            <p>© {new Date().getFullYear()} RecepcionistAI. {tFooter('rights')}</p>
+            <p>© {new Date().getFullYear()} RecepcionistaAI. {tFooter('rights')}</p>
           </div>
         </div>
       </footer>
