@@ -149,8 +149,8 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
     .eq('key', 'last_whatsapp_poll_timestamp')
     .maybeSingle()
 
-  // Use 10 minutes ago if no timestamp (to avoid processing very old messages)
-  const lastTimestamp = config?.value ? parseInt(config.value) : Math.floor(Date.now() / 1000) - 600
+  // Use 30 seconds ago if no timestamp (catch very recent messages only)
+  const lastTimestamp = config?.value ? parseInt(config.value) : Math.floor(Date.now() / 1000) - 30
 
   // Find ONE valid message
   for (const msg of messages) {
@@ -185,12 +185,18 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
 
     if (existing) continue
 
+    // Use remoteJidAlt for @lid addressing mode (new WhatsApp format)
+    const jid = msg.key.remoteJid.endsWith('@lid') && msg.key.remoteJidAlt
+      ? msg.key.remoteJidAlt
+      : msg.key.remoteJid
+    const phoneNumber = jid.split('@')[0]
+
     // Mark as processed FIRST
     const { error: insertErr } = await supabase
       .from('processed_whatsapp_messages')
       .insert({
         message_id: msg.key.id,
-        remote_jid: msg.key.remoteJid,
+        remote_jid: jid,
         timestamp: msg.messageTimestamp
       })
 
@@ -211,8 +217,6 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
       .single()
 
     if (!business) return 'No business found'
-
-    const phoneNumber = msg.key.remoteJid.split('@')[0]
 
     // Get/create lead
     let { data: lead } = await supabase
@@ -283,7 +287,7 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
 
     // Send response
     await sendWhatsAppText({
-      to: msg.key.remoteJid,
+      to: jid,
       text: aiText,
       instance: EVOLUTION_INSTANCE
     })
@@ -318,7 +322,7 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
             confirmationMsg += `\nRecibirás un email de confirmación de Cal.com. ¡Nos vemos pronto!`
 
             await sendWhatsAppText({
-              to: msg.key.remoteJid,
+              to: jid,
               text: confirmationMsg,
               instance: EVOLUTION_INSTANCE
             })
@@ -371,7 +375,7 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
             errorMsg += `Por favor intenta con otra fecha u horario. Disponibilidad: Lunes a Domingo, 4PM-9PM (hora de Detroit).`
 
             await sendWhatsAppText({
-              to: msg.key.remoteJid,
+              to: jid,
               text: errorMsg,
               instance: EVOLUTION_INSTANCE
             })
@@ -385,7 +389,7 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
           const missingMsg = `Para completar tu reserva, necesito algunos datos adicionales. ¿Podrías confirmarme tu nombre, email y el horario que prefieres?`
 
           await sendWhatsAppText({
-            to: msg.key.remoteJid,
+            to: jid,
             text: missingMsg,
             instance: EVOLUTION_INSTANCE
           })
@@ -398,7 +402,7 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
         const errorMsg = `⚠️ Hubo un problema técnico al procesar tu reserva. Por favor intenta de nuevo en unos momentos.`
 
         await sendWhatsAppText({
-          to: msg.key.remoteJid,
+          to: jid,
           text: errorMsg,
           instance: EVOLUTION_INSTANCE
         })
