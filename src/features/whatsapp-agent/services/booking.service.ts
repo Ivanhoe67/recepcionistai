@@ -179,21 +179,11 @@ export async function createCalBooking(
   }
 
   try {
-    const availableSlots = await getAvailableSlots(bookingData.date)
-
-    if (availableSlots.length === 0) {
-      return { success: false, error: 'No hay disponibilidad para esa fecha' }
-    }
-
-    // Find the nearest available slot
-    const nearestSlot = findNearestSlot(availableSlots, bookingData.time, bookingData.date)
-    if (!nearestSlot) {
-      return { success: false, error: 'No se encontró un horario disponible cercano' }
-    }
-
-    // Parse the slot time to get UTC format for Cal.com API v2
-    const slotDate = new Date(nearestSlot)
-    const startTime = slotDate.toISOString()
+    // Build start time directly from booking data (skip slot validation)
+    const [year, month, day] = bookingData.date.split('-').map(Number)
+    const [hours, minutes] = bookingData.time.split(':').map(Number)
+    const localDate = new Date(year, month - 1, day, hours, minutes, 0)
+    const startTime = localDate.toISOString()
 
     const response = await fetch('https://api.cal.com/v2/bookings', {
       method: 'POST',
