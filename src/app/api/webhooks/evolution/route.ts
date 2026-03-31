@@ -91,8 +91,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 'ignored', reason: 'empty message' })
     }
 
+    // Deduplicate: skip if already processed
+    const supabase = createAdminClient()
+    const messageId = payload.data.key.id
+    const { data: existing } = await supabase
+      .from('processed_whatsapp_messages')
+      .select('id')
+      .eq('message_id', messageId)
+      .maybeSingle()
+
+    if (existing) {
+      return NextResponse.json({ status: 'ignored', reason: 'already processed' })
+    }
+
+    // Mark as processed before responding to prevent duplicates
+    const { error: insertErr } = await supabase
+      .from('processed_whatsapp_messages')
+      .insert({ message_id: messageId, remote_jid: remoteJid, timestamp: payload.data.messageTimestamp })
+
+    if (insertErr) {
+      return NextResponse.json({ status: 'ignored', reason: 'duplicate' })
+    }
+
     // Process message synchronously (setTimeout doesn't work in Vercel serverless)
-    await processAndRespond(phoneNumber, messageText, senderName, remoteJid, payload.instance)
+    await processAndRespond(phoneNumber, messageText, senderName, remoteJid, payload.instance, supabase)
 
     return NextResponse.json({ status: 'received' })
   } catch (error) {
@@ -106,9 +128,9 @@ async function processAndRespond(
   message: string,
   senderName: string,
   remoteJid: string,
-  instance: string
+  instance: string,
+  supabase: ReturnType<typeof createAdminClient>
 ) {
-  const supabase = createAdminClient()
 
   try {
     // 1. Find business (single-business setup - use first)
@@ -186,7 +208,7 @@ async function processAndRespond(
     })
 
     // 5. Get AI response
-    const { data: business } = await supabase
+    const { data: businessInfo } = await supabase
       .from('businesses')
       .select('name')
       .eq('id', businessId)
@@ -197,7 +219,7 @@ async function processAndRespond(
       conversationHistory,
       message,
       {
-        businessName: business?.name || 'Nuestro Negocio',
+        businessName: businessInfo?.name || 'Nuestro Negocio',
         agentName: 'Asistente Virtual',
         timezone: process.env.CAL_TIMEZONE || 'America/Detroit'
       }
