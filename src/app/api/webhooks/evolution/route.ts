@@ -21,6 +21,7 @@ interface EvolutionWebhookPayload {
   data: {
     key: {
       remoteJid: string
+      remoteJidAlt?: string
       fromMe: boolean
       id: string
     }
@@ -62,7 +63,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 'ignored', reason: 'own message' })
     }
 
-    const remoteJid = payload.data.key.remoteJid
+    // Use remoteJidAlt for @lid addressing mode (new WhatsApp format)
+    const remoteJid = payload.data.key.remoteJid.endsWith('@lid') && payload.data.key.remoteJidAlt
+      ? payload.data.key.remoteJidAlt
+      : payload.data.key.remoteJid
     const phoneNumber = remoteJid.split('@')[0]
     const senderName = payload.data.pushName || 'Usuario'
 
