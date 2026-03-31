@@ -9,6 +9,12 @@ import { createAdminClient } from '@/lib/supabase/server'
 import { sendWhatsAppText, transcribeAudio } from '@/lib/evolution-api'
 import { processAgentMessage, formatConversationHistory } from '@/features/whatsapp-agent/services/agent.service'
 import { createAppointmentFromWebhook } from '@/features/appointments/services/appointments.service'
+import {
+  extractBookingData,
+  createCalBooking,
+  formatBookingDate,
+  looksLikeBookingCompletion
+} from '@/features/whatsapp-agent/services/booking.service'
 
 const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || ''
 const BUSINESS_PHONE = process.env.BUSINESS_PHONE || ''
@@ -232,35 +238,62 @@ async function processAndRespond(
       timestamp: new Date().toISOString()
     })
 
-    // 7. Update conversation
-    await supabase
-      .from('sms_conversations')
-      .update({
-        messages,
-        last_message_at: new Date().toISOString()
-      })
-      .eq('id', conversation.id)
+    // 8. Send AI response via WhatsApp
+    await sendWhatsAppText({ to: remoteJid, text: agentResponse.text, instance })
 
-    // 8. Create appointment if booking was made
-    if (agentResponse.bookingData) {
-      await createAppointmentFromWebhook({
-        leadId: lead.id,
-        businessId,
-        scheduledAt: agentResponse.bookingData.scheduledAt,
-        durationMinutes: 30,
-        source: 'whatsapp',
-        notes: `Agendado por WhatsApp. ${agentResponse.bookingData.notes || ''}`
-      })
+    // 9. If booking phrase detected, create Cal.com booking and send confirmation
+    if (looksLikeBookingCompletion(agentResponse.text)) {
+      try {
+        const bookingData = await extractBookingData(messages)
+
+        if (bookingData.isComplete) {
+          const calResult = await createCalBooking(bookingData)
+
+          if (calResult.success) {
+            let confirmMsg = `✅ ¡Tu cita ha sido CONFIRMADA!\n\n` +
+              `📅 Fecha: ${formatBookingDate(calResult.scheduledAt!)}\n` +
+              `👤 Nombre: ${bookingData.name}\n` +
+              `📧 Email: ${bookingData.email}\n`
+            if (calResult.meetingUrl) confirmMsg += `🔗 Link: ${calResult.meetingUrl}\n`
+            confirmMsg += `\nRecibirás un email de confirmación. ¡Nos vemos pronto!`
+
+            await sendWhatsAppText({ to: remoteJid, text: confirmMsg, instance })
+            messages.push({ role: 'assistant', content: confirmMsg, timestamp: new Date().toISOString() })
+
+            // Save appointment to DB
+            await supabase.from('appointments').insert({
+              business_id: businessId,
+              lead_id: lead.id,
+              scheduled_at: calResult.scheduledAt,
+              source: 'sms',
+              status: 'scheduled',
+              cal_event_id: calResult.bookingUid,
+              notes: `WhatsApp booking - ${bookingData.phone}`
+            })
+
+            await supabase.from('leads').update({
+              email: bookingData.email,
+              name: bookingData.name,
+              status: 'appointment_scheduled'
+            }).eq('id', lead.id)
+
+          } else {
+            const errMsg = `⚠️ No pudimos agendar tu cita: ${calResult.error}\n\nPor favor intenta con otra fecha u horario.`
+            await sendWhatsAppText({ to: remoteJid, text: errMsg, instance })
+            messages.push({ role: 'assistant', content: errMsg, timestamp: new Date().toISOString() })
+          }
+        }
+      } catch (bookingError) {
+        console.error('Booking error:', bookingError)
+      }
     }
 
-    // 9. Send response via WhatsApp
-    await sendWhatsAppText({
-      to: remoteJid,
-      text: agentResponse.text,
-      instance
-    })
+    // 10. Update conversation with any extra messages
+    await supabase.from('sms_conversations')
+      .update({ messages, last_message_at: new Date().toISOString() })
+      .eq('id', conversation.id)
 
-    // 10. Create notification
+    // 11. Create notification
     await supabase.from('notifications').insert({
       user_id: userId,
       lead_id: lead.id,
