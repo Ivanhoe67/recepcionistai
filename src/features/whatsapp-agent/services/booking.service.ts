@@ -46,6 +46,14 @@ export async function extractBookingData(
       .map(m => `${m.role}: ${m.content}`)
       .join('\n')
 
+    // Only use last 12 messages to avoid confusion from old conversation data
+    const recentMessages = messages.slice(-12)
+    const recentText = recentMessages.map(m => `${m.role}: ${m.content}`).join('\n')
+
+    const now = new Date()
+    const todayISO = now.toISOString().split('T')[0]
+    const todayName = now.toLocaleDateString('es-ES', { weekday: 'long', timeZone: 'America/Detroit' })
+
     const result = await generateObject({
       model: openai('gpt-4o-mini'),
       schema: z.object({
@@ -56,30 +64,29 @@ export async function extractBookingData(
         time: z.string().describe('Hora de la cita en formato HH:MM (24 horas)'),
         isComplete: z.boolean().describe('true si TODOS los datos están presentes y confirmados')
       }),
-      prompt: `Analiza esta conversación y extrae los datos de la cita si están completos.
+      prompt: `Extrae los datos de la cita de esta conversación. Usa SOLO la fecha y hora MÁS RECIENTE que confirmó el usuario (ignora correcciones previas).
 
-FECHA ACTUAL: ${new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-ZONA HORARIA: America/Detroit (Eastern Time)
+FECHA HOY: ${todayISO} (${todayName}), zona horaria America/Detroit
 
-CONVERSACIÓN:
-${conversationText}
+CONVERSACIÓN (últimos mensajes):
+${recentText}
 
-INSTRUCCIONES:
-- Extrae: nombre, email, teléfono, fecha (YYYY-MM-DD), hora (HH:MM 24h)
-- isComplete = true SOLO si tienes TODOS los datos (nombre, email, teléfono, fecha, hora)
-- Si falta algún dato, pon string vacío "" y isComplete = false
+REGLAS:
+- Extrae el nombre, email, teléfono, fecha y hora MÁS RECIENTE confirmada por el usuario
+- Si el usuario corrigió la fecha/hora, usa la corrección más reciente
+- isComplete = true SOLO si tienes TODOS: nombre, email, teléfono, fecha, hora
+- Si falta algún dato, pon "" y isComplete = false
 
-FECHAS RELATIVAS:
-- "hoy" = fecha actual
-- "mañana" = fecha actual + 1 día
-- "lunes/martes/etc" = próximo día de la semana que corresponda
-- Siempre usa formato YYYY-MM-DD
+FECHAS RELATIVAS (calcular desde ${todayISO}):
+- "hoy" = ${todayISO}
+- "mañana" = día siguiente
+- "lunes/martes/miércoles/jueves/viernes/sábado/domingo" = próximo día de esa semana en formato YYYY-MM-DD
 
-HORAS:
-- "4 de la tarde" o "4pm" = 16:00
-- "5 de la tarde" o "5pm" = 17:00
-- Convierte SIEMPRE a formato 24 horas (HH:MM)
-- Si no especifica hora, usa 16:00 (inicio del horario disponible 4PM-9PM)`
+HORAS (convertir a 24h):
+- "10 de la mañana" / "10am" / "10" (en contexto de mañana) = 10:00
+- "4 de la tarde" / "4pm" = 16:00
+- "5pm" = 17:00
+- Sin AM/PM y antes de 12 = asumir AM`
     })
 
     return result.object
