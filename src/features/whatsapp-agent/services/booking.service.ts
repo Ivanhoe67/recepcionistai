@@ -179,11 +179,14 @@ export async function createCalBooking(
   }
 
   try {
-    // Build start time directly from booking data (skip slot validation)
-    const [year, month, day] = bookingData.date.split('-').map(Number)
-    const [hours, minutes] = bookingData.time.split(':').map(Number)
-    const localDate = new Date(year, month - 1, day, hours, minutes, 0)
-    const startTime = localDate.toISOString()
+    // Build start time converting from America/Detroit to UTC
+    // Vercel runs in UTC so we must convert explicitly
+    const dtString = `${bookingData.date}T${bookingData.time}:00`
+    const refDate = new Date(dtString + 'Z') // treat as UTC temporarily
+    const utcStr = refDate.toLocaleString('en-US', { timeZone: 'UTC' })
+    const tzStr = refDate.toLocaleString('en-US', { timeZone: CAL_TIMEZONE })
+    const offsetMs = new Date(utcStr).getTime() - new Date(tzStr).getTime()
+    const startTime = new Date(refDate.getTime() + offsetMs).toISOString()
 
     const response = await fetch('https://api.cal.com/v2/bookings', {
       method: 'POST',
