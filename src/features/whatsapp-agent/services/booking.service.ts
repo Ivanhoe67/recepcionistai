@@ -104,10 +104,18 @@ async function getAvailableSlots(date: string): Promise<string[]> {
   nextDay.setDate(nextDay.getDate() + 1)
   const endDate = nextDay.toISOString().split('T')[0]
 
-  const url = `https://api.cal.com/v1/slots?apiKey=${CAL_API_KEY}&eventTypeId=${CAL_EVENT_TYPE_ID}&startTime=${date}&endTime=${endDate}&timeZone=${CAL_TIMEZONE}`
+  const params = new URLSearchParams({
+    eventTypeId: CAL_EVENT_TYPE_ID,
+    startTime: date,
+    endTime: endDate,
+    timeZone: CAL_TIMEZONE
+  })
+  const url = `https://api.cal.com/v1/slots?${params}`
 
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${CAL_API_KEY}` }
+    })
     const data = await response.json()
 
     if (data.slots && data.slots[date]) {
@@ -129,7 +137,6 @@ function findNearestSlot(slots: string[], requestedTime: string, date: string): 
   const [reqHours, reqMinutes] = requestedTime.split(':').map(Number)
   const requestedMinutes = reqHours * 60 + reqMinutes
 
-  console.log('Finding nearest slot to:', requestedTime, '(', requestedMinutes, 'minutes)')
 
   let nearestSlot = slots[0]
   let minDiff = Infinity
@@ -145,7 +152,6 @@ function findNearestSlot(slots: string[], requestedTime: string, date: string): 
     const slotTotalMinutes = slotHours * 60 + slotMins
 
     const diff = Math.abs(slotTotalMinutes - requestedMinutes)
-    console.log(`Slot ${slot}: ${slotHours}:${slotMins} (${slotTotalMinutes} min) - diff: ${diff}`)
 
     if (diff < minDiff) {
       minDiff = diff
@@ -153,7 +159,6 @@ function findNearestSlot(slots: string[], requestedTime: string, date: string): 
     }
   }
 
-  console.log('Selected nearest slot:', nearestSlot)
   return nearestSlot
 }
 
@@ -174,10 +179,7 @@ export async function createCalBooking(
   }
 
   try {
-    // First, get available slots for the requested date
-    console.log('Fetching available slots for:', bookingData.date)
     const availableSlots = await getAvailableSlots(bookingData.date)
-    console.log('Available slots:', availableSlots.length, 'slots found')
 
     if (availableSlots.length === 0) {
       return { success: false, error: 'No hay disponibilidad para esa fecha' }
@@ -192,15 +194,6 @@ export async function createCalBooking(
     // Parse the slot time to get UTC format for Cal.com API v2
     const slotDate = new Date(nearestSlot)
     const startTime = slotDate.toISOString()
-
-    console.log('Creating Cal.com booking:', {
-      eventTypeId: CAL_EVENT_TYPE_ID,
-      requestedTime: `${bookingData.date} ${bookingData.time}`,
-      actualSlot: nearestSlot,
-      startTimeUTC: startTime,
-      attendee: bookingData.name,
-      email: bookingData.email
-    })
 
     const response = await fetch('https://api.cal.com/v2/bookings', {
       method: 'POST',
@@ -228,21 +221,13 @@ export async function createCalBooking(
     const data = await response.json()
 
     if (!response.ok) {
-      console.error('Cal.com API error:', JSON.stringify(data, null, 2))
-      console.error('Request was:', {
-        start: startTime,
-        eventTypeId: parseInt(CAL_EVENT_TYPE_ID),
-        attendee: bookingData.name,
-        email: bookingData.email
-      })
+      console.error('Cal.com API error:', response.status)
       const errorMsg = data.error?.message || data.message || data.error || 'Failed to create booking'
       return {
         success: false,
         error: errorMsg
       }
     }
-
-    console.log('Cal.com booking created:', data)
 
     return {
       success: true,
@@ -309,10 +294,6 @@ export function looksLikeBookingCompletion(lastAssistantMessage: string): boolea
 
   const lowerMessage = lastAssistantMessage.toLowerCase()
   const matches = bookingPhrases.some(phrase => lowerMessage.includes(phrase.toLowerCase()))
-
-  if (matches) {
-    console.log('Booking phrase detected in:', lastAssistantMessage.substring(0, 100))
-  }
 
   return matches
 }

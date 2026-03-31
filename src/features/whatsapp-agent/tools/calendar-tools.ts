@@ -31,12 +31,12 @@ export const getAvailabilityTool = tool({
       if (CAL_API_KEY && CAL_CALENDAR_ID) {
         const response = await fetch(
           `${CAL_API_URL}/availability?` + new URLSearchParams({
-            apiKey: CAL_API_KEY,
             eventTypeId: CAL_CALENDAR_ID,
             startTime: startDate.toISOString(),
             endTime: endDate.toISOString(),
             timeZone: CAL_TIMEZONE
-          })
+          }),
+          { headers: { Authorization: `Bearer ${CAL_API_KEY}` } }
         )
 
         if (response.ok) {
@@ -94,9 +94,12 @@ export const bookAppointmentTool = tool({
 
       // If using Cal.com API
       if (CAL_API_KEY && CAL_CALENDAR_ID) {
-        const response = await fetch(`${CAL_API_URL}/bookings?apiKey=${CAL_API_KEY}`, {
+        const response = await fetch(`${CAL_API_URL}/bookings`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${CAL_API_KEY}`
+          },
           body: JSON.stringify({
             eventTypeId: parseInt(CAL_CALENDAR_ID),
             start: scheduledAt.toISOString(),
@@ -160,10 +163,8 @@ export const searchAppointmentsTool = tool({
     try {
       if (CAL_API_KEY) {
         const response = await fetch(
-          `${CAL_API_URL}/bookings?` + new URLSearchParams({
-            apiKey: CAL_API_KEY,
-            attendeeEmail: email
-          })
+          `${CAL_API_URL}/bookings?` + new URLSearchParams({ attendeeEmail: email }),
+          { headers: { Authorization: `Bearer ${CAL_API_KEY}` } }
         )
 
         if (response.ok) {

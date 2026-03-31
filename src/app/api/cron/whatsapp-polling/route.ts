@@ -26,7 +26,7 @@ const LOCK_DURATION_MS = 2000
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
-  if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+  if (!CRON_SECRET || authHeader !== `Bearer ${CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -292,21 +292,17 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
     history.push({ role: 'assistant', content: aiText })
 
     // Check if this looks like a booking completion and try to create real booking
-    console.log('Checking if booking completion... aiText:', aiText.substring(0, 100))
-
     if (looksLikeBookingCompletion(aiText)) {
-      console.log('✅ Booking completion detected, extracting data...')
+      console.log('Booking completion detected, extracting data...')
 
       try {
         const bookingData = await extractBookingData(history)
-        console.log('📋 Extracted booking data:', JSON.stringify(bookingData))
 
         if (bookingData.isComplete) {
-          console.log('✅ All booking data complete, creating Cal.com booking...')
-          console.log('📅 Date:', bookingData.date, 'Time:', bookingData.time)
+          console.log('All booking data complete, creating Cal.com booking...')
 
           const calResult = await createCalBooking(bookingData)
-          console.log('📞 Cal.com result:', JSON.stringify(calResult))
+          console.log('Cal.com booking result:', calResult.success ? 'success' : calResult.error)
 
           if (calResult.success) {
             // Send confirmation with real booking details

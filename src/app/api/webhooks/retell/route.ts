@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = JSON.parse(payload)
-    console.log(`Received Retell event: ${data.event}`, JSON.stringify(data, null, 2))
+    console.log(`Received Retell event: ${data.event}`)
 
     // Handle different event types
     switch (data.event) {
@@ -253,7 +253,7 @@ async function handleCallAnalyzed(data: RetellCallAnalyzedEvent) {
   }
 
   const analysis = call.call_analysis
-  console.log('Processing call_analyzed:', call.call_id, JSON.stringify(analysis, null, 2))
+  console.log('Processing call_analyzed:', call.call_id)
 
   // Try to find lead by retell_call_id first, then by phone number
   let lead: { id: string; business_id: string } | null = null
