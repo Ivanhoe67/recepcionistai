@@ -111,39 +111,20 @@ async function processAndRespond(
   const supabase = createAdminClient()
 
   try {
-    // 1. Find or create business (using BUSINESS_PHONE or first business)
-    let businessId: string
-    let userId: string
+    // 1. Find business (single-business setup - use first)
+    const { data: business } = await supabase
+      .from('businesses')
+      .select('id, user_id, name')
+      .limit(1)
+      .single()
 
-    if (BUSINESS_PHONE) {
-      const { data: business } = await supabase
-        .from('businesses')
-        .select('id, user_id, name')
-        .eq('phone', BUSINESS_PHONE)
-        .maybeSingle()
-
-      if (business) {
-        businessId = business.id
-        userId = business.user_id
-      } else {
-        console.error('Business not found for phone:', BUSINESS_PHONE)
-        return
-      }
-    } else {
-      // Get first business (fallback for single-business setup)
-      const { data: business } = await supabase
-        .from('businesses')
-        .select('id, user_id, name')
-        .limit(1)
-        .single()
-
-      if (!business) {
-        console.error('No business found')
-        return
-      }
-      businessId = business.id
-      userId = business.user_id
+    if (!business) {
+      console.error('No business found')
+      return
     }
+
+    const businessId = business.id
+    const userId = business.user_id
 
     // 2. Find or create lead
     let { data: lead } = await supabase
