@@ -13,10 +13,6 @@ import { createAppointmentFromWebhook } from '@/features/appointments/services/a
 const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || ''
 const BUSINESS_PHONE = process.env.BUSINESS_PHONE || ''
 
-// Simple in-memory message buffer for grouping (resets on server restart)
-// In production, use Redis or database
-const messageBuffer: Map<string, { messages: string[]; timer: NodeJS.Timeout | null }> = new Map()
-const MESSAGE_GROUP_DELAY = 8000 // 8 seconds
 
 interface EvolutionWebhookPayload {
   apikey?: string
@@ -48,18 +44,13 @@ export async function POST(request: NextRequest) {
   try {
     const payload: EvolutionWebhookPayload = await request.json()
 
-    // Log incoming webhook for debugging
-    console.log('Evolution webhook received:', JSON.stringify(payload, null, 2))
-
-    // TODO: Re-enable API key check after debugging
-    // Temporarily disabled to debug webhook flow
-    // const headerApiKey = request.headers.get('apikey') || request.headers.get('x-api-key')
-    // const bodyApiKey = payload.apikey
-    // const receivedKey = headerApiKey || bodyApiKey
-    // if (EVOLUTION_API_KEY && receivedKey !== EVOLUTION_API_KEY) {
-    //   console.log('Invalid API key. Received:', receivedKey, 'Expected:', EVOLUTION_API_KEY)
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
+    // Validate API key from header or body
+    const headerApiKey = request.headers.get('apikey') || request.headers.get('x-api-key')
+    const bodyApiKey = payload.apikey
+    const receivedKey = headerApiKey || bodyApiKey
+    if (EVOLUTION_API_KEY && receivedKey !== EVOLUTION_API_KEY) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     // Only process incoming messages
     if (payload.event !== 'messages.upsert' && payload.event !== 'MESSAGES_UPSERT') {
@@ -96,46 +87,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 'ignored', reason: 'empty message' })
     }
 
-    // Buffer messages to group rapid successive messages
-    await bufferAndProcess(phoneNumber, messageText, senderName, remoteJid, payload.instance)
+    // Process message synchronously (setTimeout doesn't work in Vercel serverless)
+    await processAndRespond(phoneNumber, messageText, senderName, remoteJid, payload.instance)
 
     return NextResponse.json({ status: 'received' })
   } catch (error) {
     console.error('Evolution webhook error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-}
-
-async function bufferAndProcess(
-  phoneNumber: string,
-  message: string,
-  senderName: string,
-  remoteJid: string,
-  instance: string
-) {
-  const buffer = messageBuffer.get(phoneNumber) || { messages: [], timer: null }
-
-  // Add message to buffer
-  buffer.messages.push(message)
-
-  // Clear existing timer
-  if (buffer.timer) {
-    clearTimeout(buffer.timer)
-  }
-
-  // Set new timer
-  buffer.timer = setTimeout(async () => {
-    const messages = buffer.messages
-    messageBuffer.delete(phoneNumber)
-
-    // Combine all buffered messages
-    const combinedMessage = messages.join('\n')
-
-    // Process with AI
-    await processAndRespond(phoneNumber, combinedMessage, senderName, remoteJid, instance)
-  }, MESSAGE_GROUP_DELAY)
-
-  messageBuffer.set(phoneNumber, buffer)
 }
 
 async function processAndRespond(
