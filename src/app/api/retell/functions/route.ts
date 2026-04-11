@@ -213,11 +213,11 @@ async function handleCheckAvailability(callId: string, args: { date?: string }) 
         .lte('scheduled_at', endOfDay.toISOString())
         .eq('status', 'scheduled')
 
-    // Define business hours (9 AM - 6 PM)
-    const businessHours = {
-        start: 9,
-        end: 18
-    }
+    // Define business hours by day of week
+    const dayOfWeek = parsedDate.getDay() // 0=Sunday, 6=Saturday
+    const businessHours = dayOfWeek === 0
+        ? { start: 10, end: 17 }  // Sunday: 10AM - 5PM
+        : { start: 16, end: 21 }  // Mon-Sat: 4PM - 9PM
 
     // Calculate available slots (30 min increments)
     const slots: string[] = []

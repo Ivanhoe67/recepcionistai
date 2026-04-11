@@ -372,7 +372,7 @@ async function processOneMessage(supabase: ReturnType<typeof createAdminClient>)
 
             // Send specific error message
             let errorMsg = `⚠️ No pudimos agendar tu cita: ${calResult.error}\n\n`
-            errorMsg += `Por favor intenta con otra fecha u horario. Disponibilidad: Lunes a Domingo, 4PM-9PM (hora de Detroit).`
+            errorMsg += `Por favor intenta con otra fecha u horario. Disponibilidad: Lunes a Sábado 4PM-9PM, Domingos 10AM-5PM (hora de Detroit).`
 
             await sendWhatsAppText({
               to: jid,
