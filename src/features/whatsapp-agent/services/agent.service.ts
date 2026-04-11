@@ -6,6 +6,7 @@
 
 import { generateText } from 'ai'
 import { openai } from '@ai-sdk/openai'
+import { getAvailabilityTool } from '@/features/whatsapp-agent/tools/calendar-tools'
 
 interface Message {
   role: 'user' | 'assistant' | 'system'
@@ -85,7 +86,7 @@ Q&Q ofrece soluciones digitales para negocios:
 - Si ya tienes el nombre, email, teléfono y horario, CONFIRMA LA CITA directamente
 
 Proceso de agendamiento:
-1. Cuando el cliente quiera agendar, menciona que hay disponibilidad de lunes a sábado de 4PM a 9PM, y los domingos de 10AM a 5PM (hora del Este / Detroit)
+1. Cuando el cliente quiera agendar, usa la herramienta get_availability para consultar los horarios reales disponibles y muéstrale opciones concretas
 2. Recopila UNO POR UNO (no pidas todo junto):
    - Nombre completo
    - Email
@@ -149,7 +150,9 @@ export async function processAgentMessage(
     const result = await generateText({
       model: openai('gpt-4o-mini'),
       messages,
-      temperature: 0.7
+      temperature: 0.7,
+      tools: { get_availability: getAvailabilityTool },
+      maxSteps: 3
     })
 
     let finalText = result.text || ''
